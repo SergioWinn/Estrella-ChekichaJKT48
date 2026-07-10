@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { FilterPill } from "@/components/FilterPill";
 import { CloseIcon } from "@/components/UiIcons";
@@ -28,13 +29,32 @@ export function CollectionClient({
   success: string;
   username: string;
 }) {
+  const searchParams = useSearchParams();
   const [filter, setFilter] = useState<(typeof FILTER_OPTIONS)[number]>("All");
-  const [deskMode, setDeskMode] = useState<(typeof DESK_MODES)[number]>("Add");
-  const [deskOpen, setDeskOpen] = useState(false);
+  const [deskMode, setDeskMode] = useState<(typeof DESK_MODES)[number]>(() => {
+    const modeParam = searchParams.get("mode");
+    if (modeParam === "add" || modeParam === "manage") return modeParam === "add" ? "Add" : "Manage";
+    return "Add";
+  });
+  const [deskOpen, setDeskOpen] = useState(() => {
+    const modeParam = searchParams.get("mode");
+    return modeParam === "add" || modeParam === "manage";
+  });
   const [addFilter, setAddFilter] = useState<(typeof FILTER_OPTIONS)[number]>("All");
   const [addQuery, setAddQuery] = useState("");
   const [visibleSlotCount, setVisibleSlotCount] = useState(SLOT_PAGE_SIZE);
   const debouncedAddQuery = useDebouncedValue(addQuery);
+
+  useEffect(() => {
+    const mode = deskOpen ? (deskMode === "Add" ? "add" : "manage") : null;
+    const url = new URL(window.location.href);
+    if (mode) {
+      url.searchParams.set("mode", mode);
+    } else {
+      url.searchParams.delete("mode");
+    }
+    window.history.replaceState(null, "", url.toString());
+  }, [deskOpen, deskMode]);
 
   const visibleEntries = useMemo(
     () => (filter === "All" ? entries : entries.filter((entry) => entry.event_type === filter)),
@@ -70,8 +90,8 @@ export function CollectionClient({
         />
       </section>
 
-      {success ? <div className="rounded-2xl border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm text-[var(--accent)]">{success}</div> : null}
-      {error ? <div className="rounded-2xl border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
+      {success ? <div className="rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm text-[var(--accent)]">{success}</div> : null}
+      {error ? <div className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
 
       <section className="grid gap-4 md:grid-cols-3">
         <div className="app-card p-4">
@@ -120,7 +140,7 @@ export function CollectionClient({
             <article key={entry.id} className="app-card p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)]">
+                  <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)]">
                     {entry.member_avatar_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={entry.member_avatar_url} alt={entry.member_name} className="h-full w-full object-cover" />
@@ -241,7 +261,7 @@ export function CollectionClient({
                               <div className="min-w-0">
                                 <div className="truncate text-sm font-semibold text-[var(--foreground)] md:text-[0.95rem]">{slot.member_name}</div>
                                 <div className="truncate text-sm text-[var(--muted)] md:text-[0.95rem]">{slot.event_name}</div>
-                                <div className="mt-1 text-xs uppercase tracking-[0.18em] text-[var(--muted)]">
+                                <div className="mt-1 text-xs uppercase tracking-[0.14em] text-[var(--muted)]">
                                   {slot.slot_label} | {formatEventDate(slot.start_time)} | {formatEventTime(slot.start_time, slot.end_time)} WIB
                                 </div>
                               </div>
@@ -257,7 +277,7 @@ export function CollectionClient({
                                    className="app-input min-h-11 w-full px-4 py-3 text-sm outline-none md:text-[0.95rem] lg:w-24"
                                 />
                               </div>
-                              <button className="min-h-11 rounded-2xl bg-[var(--accent)] px-5 py-3 text-sm font-bold text-[var(--accent-foreground)] transition hover:bg-[var(--accent-strong)] md:text-[0.95rem]">
+                              <button className="min-h-11 rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-bold text-[var(--accent-foreground)] transition hover:bg-[var(--accent-strong)] md:text-[0.95rem]">
                                 Add
                               </button>
                             </form>
@@ -316,11 +336,11 @@ export function CollectionClient({
                             defaultValue={entry.quantity}
                              className="app-input min-h-11 flex-1 px-4 py-3 text-sm outline-none md:text-[0.95rem]"
                           />
-                          <button className="rounded-2xl border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--accent-soft)] md:text-[0.95rem]">Save</button>
+                          <button className="rounded-xl border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--accent-soft)] md:text-[0.95rem]">Save</button>
                         </form>
                         <form action={deleteCollectionEntryAction}>
                           <input type="hidden" name="entry_id" value={entry.id} />
-                          <button className="rounded-2xl border border-[var(--danger-border)] bg-[var(--danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--danger)] transition hover:border-[var(--danger)] hover:bg-[var(--danger-soft)] md:text-[0.95rem]">Remove</button>
+                          <button className="rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--danger)] transition hover:border-[var(--danger)] hover:bg-[var(--danger-soft)] md:text-[0.95rem]">Remove</button>
                         </form>
                       </div>
                     </article>

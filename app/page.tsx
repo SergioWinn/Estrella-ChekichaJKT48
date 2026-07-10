@@ -33,46 +33,39 @@ export default async function Page() {
 
   return (
     <div className="space-y-6">
-      <section className="space-y-6">
-        <div className="grid gap-px overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--border)] md:grid-cols-2 xl:grid-cols-4">
-          <div className="bg-[var(--surface)] p-5">
-            <div className="text-4xl font-extrabold tracking-[-0.03em] text-[var(--foreground)]">{snapshot.show_event_sessions}</div>
-            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Show / Event sessions</p>
-            <p className="mt-1 text-sm text-[var(--muted)]">Archive rows that feed the homepage ranking.</p>
-          </div>
-          <div className="bg-[var(--surface)] p-5">
-            <div className="text-3xl font-extrabold tracking-[-0.03em] text-[var(--foreground)]">{copy.latestShowEventCopy}</div>
-            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Latest show / event</p>
-            <p className="mt-1 text-sm text-[var(--muted)]">Most recent show/event date saved in the archive.</p>
-          </div>
-          <div className="bg-[var(--surface)] p-5">
-            <div className="text-4xl font-extrabold tracking-[-0.03em] text-[var(--foreground)]">{copy.topMemberName}</div>
-            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Top ranked member</p>
-            <p className="mt-1 text-sm text-[var(--muted)]">{copy.topMemberSubcopy}</p>
-          </div>
-          <div className="bg-[var(--surface)] p-5">
-            <div className="text-4xl font-extrabold tracking-[-0.03em] text-[var(--accent)]">{copy.waitingCopy}</div>
-            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Open draws</p>
-            <p className="mt-1 text-sm text-[var(--muted)]">Still tracked here, but no longer the main story.</p>
+      <section className="grid gap-4 xl:grid-cols-[1.7fr_0.75fr]">
+        <div className="app-shell p-6 sm:p-8">
+          <SectionHeader
+            label="JKT48 cheki tracker"
+            title="See who shows up most in show/event cheki."
+            description="This homepage now starts from archive patterns: a full ranking, the latest six assigned members, and a quick count of special-event sessions."
+            titleClassName="max-w-3xl text-4xl sm:text-5xl"
+            descriptionClassName="max-w-3xl text-base leading-8"
+          />
+          <div className="mt-6 flex flex-wrap gap-x-10 gap-y-3">
+            <div>
+              <div className="text-2xl font-extrabold tracking-[-0.03em] text-[var(--foreground)]">{snapshot.show_event_sessions}</div>
+              <p className="mt-0.5 text-sm text-[var(--muted-strong)]">Show/event sessions</p>
+            </div>
+            <div>
+              <div className="text-2xl font-extrabold tracking-[-0.03em] text-[var(--foreground)]">{copy.latestShowEventCopy}</div>
+              <p className="mt-0.5 text-sm text-[var(--muted-strong)]">Latest session</p>
+            </div>
+            <div>
+              <div className="text-2xl font-extrabold tracking-[-0.03em] text-[var(--foreground)]">{copy.topMemberName}</div>
+              <p className="mt-0.5 text-sm text-[var(--muted-strong)]">Top member</p>
+            </div>
+            <div>
+              <div className="text-2xl font-extrabold tracking-[-0.03em] text-[var(--accent)]">{copy.waitingCopy}</div>
+              <p className="mt-0.5 text-sm text-[var(--muted-strong)]">Open draws</p>
+            </div>
           </div>
         </div>
-
-        <div className="grid gap-4 xl:grid-cols-[1.7fr_0.75fr]">
-          <div className="app-shell p-6 sm:p-8">
-            <SectionHeader
-              label="JKT48 cheki tracker"
-              title="See who shows up most in show/event cheki."
-              description="This homepage now starts from archive patterns: a full ranking, the latest six assigned members, and a quick count of special-event sessions."
-              titleClassName="max-w-3xl text-4xl sm:text-5xl"
-              descriptionClassName="max-w-3xl text-base leading-8"
-            />
-          </div>
-          <div className="app-shell p-6">
-            <div className="text-sm font-semibold text-[var(--accent)]">Scope</div>
-            <p className="mt-4 text-lg leading-8 text-[var(--foreground-soft)]">
-              Birthday and Graduation stay in the counts below, but the main ranking and recent list only read from show/event archive rows.
-            </p>
-          </div>
+        <div className="app-shell p-6">
+          <div className="text-sm font-semibold text-[var(--accent)]">Scope</div>
+          <p className="mt-4 text-lg leading-8 text-[var(--foreground-soft)]">
+            Birthday and Graduation stay in the counts below, but the main ranking and recent list only read from show/event archive rows.
+          </p>
         </div>
       </section>
 

@@ -246,8 +246,8 @@ export function AdminWorkspace({
         </div>
       </section>
 
-      {success ? <div className="rounded-2xl border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm text-[var(--accent)]">{success}</div> : null}
-      {error ? <div className="rounded-2xl border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
+      {success ? <div className="rounded-xl border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm text-[var(--accent)]">{success}</div> : null}
+      {error ? <div className="rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
 
       <div className="rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-5 py-4 text-lg font-bold text-[var(--accent)]">
         Admin role active
@@ -350,7 +350,7 @@ export function AdminWorkspace({
                       <input type="hidden" name="member_id_b" value={event.member_id_b || ""} />
                     )}
 
-                    <button className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
+                    <button className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
                       Save result
                     </button>
                   </form>
@@ -383,11 +383,11 @@ export function AdminWorkspace({
               <form action={createEventAction} className="space-y-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-[var(--muted)]">Event date</label>
-                  <input type="date" name="event_date" value={createDate} onChange={(event) => setCreateDate(event.target.value)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
+                  <input type="date" name="event_date" value={createDate} onChange={(event) => setCreateDate(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-[var(--muted)]">Time</label>
-                  <select name="start_time_value" value={createTimeValue} onChange={(event) => setCreateTimeValue(event.target.value)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
+                  <select name="start_time_value" value={createTimeValue} onChange={(event) => setCreateTimeValue(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
                     {TIME_OPTIONS.map((value) => (
                       <option key={value} value={value}>{value}</option>
                     ))}
@@ -412,7 +412,7 @@ export function AdminWorkspace({
                           }
                         }
                       }}
-                      className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none"
+                      className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none"
                     >
                       {presets.map((preset) => (
                         <option key={preset.id} value={preset.event_name}>{preset.event_name}</option>
@@ -425,7 +425,7 @@ export function AdminWorkspace({
                 {createSingleMember ? <input type="hidden" name="slot_mode" value="1" /> : (
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Slot mode</label>
-                    <select name="slot_mode" value={createSlotMode} onChange={(event) => setCreateSlotMode(event.target.value)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
+                    <select name="slot_mode" value={createSlotMode} onChange={(event) => setCreateSlotMode(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
                       <option value="1">1 slot</option>
                       <option value="2">2 slots</option>
                     </select>
@@ -460,7 +460,7 @@ export function AdminWorkspace({
                   dateText={createEventDateText}
                   footer={createSingleMember ? "Single-member event" : `${createSlotMode} slot mode`}
                 />
-                <button className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
+                <button className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
                   Save event row
                 </button>
               </form>
@@ -472,7 +472,7 @@ export function AdminWorkspace({
                 <>
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Saved event row</label>
-                    <select value={selectedEventId} onChange={(event) => setSelectedEventId(event.target.value)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
+                    <select value={selectedEventId} onChange={(event) => setSelectedEventId(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
                       {events.map((event) => (
                         <option key={String(event.id || event.start_time)} value={String(event.id || "")}>{eventOptionLabel(event)}</option>
                       ))}
@@ -483,11 +483,11 @@ export function AdminWorkspace({
                       <input type="hidden" name="event_id" value={selectedEvent.id || ""} />
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Event date</label>
-                        <input type="date" name="event_date" defaultValue={eventDateValue(selectedEvent.start_time)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
+                        <input type="date" name="event_date" defaultValue={eventDateValue(selectedEvent.start_time)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
                       </div>
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Time</label>
-                        <select name="start_time_value" defaultValue={eventTimeValue(selectedEvent.start_time)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
+                        <select name="start_time_value" defaultValue={eventTimeValue(selectedEvent.start_time)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
                           {TIME_OPTIONS.map((value) => (
                             <option key={value} value={value}>{value}</option>
                           ))}
@@ -499,20 +499,20 @@ export function AdminWorkspace({
                       <div className="grid gap-3 sm:grid-cols-2">
                         <div className="space-y-2">
                           <label className="block text-sm font-semibold text-[var(--muted)]">Event / Setlist</label>
-                          <input name="event_name" defaultValue={selectedEvent.event_name || ""} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
+                          <input name="event_name" defaultValue={selectedEvent.event_name || ""} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
                         </div>
                         <div className="space-y-2">
                           <label className="block text-sm font-semibold text-[var(--muted)]">Event type</label>
-                          <input name="event_type" defaultValue={selectedEvent.event_type || "Roulette"} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
+                          <input name="event_type" defaultValue={selectedEvent.event_type || "Roulette"} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
                         </div>
                       </div>
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Event image URL</label>
-                        <input name="event_image_url" defaultValue={selectedEvent.event_image_url || ""} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-base text-[var(--foreground)] outline-none" />
+                        <input name="event_image_url" defaultValue={selectedEvent.event_image_url || ""} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-base text-[var(--foreground)] outline-none" />
                       </div>
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Slot mode</label>
-                        <select name="slot_mode" defaultValue={String(selectedEvent.slot_mode || 1)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
+                        <select name="slot_mode" defaultValue={String(selectedEvent.slot_mode || 1)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
                           <option value="1">1 slot</option>
                           <option value="2">2 slots</option>
                         </select>
@@ -542,7 +542,7 @@ export function AdminWorkspace({
                         dateText={`${formatEventDate(selectedEvent.start_time)} | ${formatEventTime(selectedEvent.start_time, selectedEvent.end_time)} WIB`}
                         footer={`Current mode: ${selectedEvent.slot_mode || 1} slot`}
                       />
-                      <button className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
+                      <button className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
                         Save event changes
                       </button>
                     </form>
@@ -553,7 +553,7 @@ export function AdminWorkspace({
                         <input type="checkbox" name="confirm_delete" />
                         Confirm delete for this event row
                       </label>
-                      <button className="mt-4 rounded-2xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)]">Delete event row</button>
+                      <button className="mt-4 rounded-xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)]">Delete event row</button>
                     </form>
                   </div>
                 </>
@@ -582,17 +582,17 @@ export function AdminWorkspace({
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Nickname</label>
-                    <input name="nickname" value={newNickname} onChange={(event) => setNewNickname(event.target.value)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
+                    <input name="nickname" value={newNickname} onChange={(event) => setNewNickname(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
                   </div>
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Full name</label>
-                    <input name="full_name" value={newFullName} onChange={(event) => setNewFullName(event.target.value)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
+                    <input name="full_name" value={newFullName} onChange={(event) => setNewFullName(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
                   </div>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Team / status</label>
-                    <select name="status" value={newStatus} onChange={(event) => setNewStatus(event.target.value)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
+                    <select name="status" value={newStatus} onChange={(event) => setNewStatus(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
                       {STATUS_OPTIONS.map((status) => (
                         <option key={status} value={status}>{status}</option>
                       ))}
@@ -600,7 +600,7 @@ export function AdminWorkspace({
                   </div>
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Generation</label>
-                    <select name="generasi" value={newGenerasi} onChange={(event) => setNewGenerasi(event.target.value)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
+                    <select name="generasi" value={newGenerasi} onChange={(event) => setNewGenerasi(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
                       {GENERATION_OPTIONS.map((generation) => (
                         <option key={generation} value={generation}>{generation}</option>
                       ))}
@@ -609,7 +609,7 @@ export function AdminWorkspace({
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-[var(--muted)]">Avatar URL</label>
-                  <input name="avatar_url" value={newAvatarUrl} onChange={(event) => setNewAvatarUrl(event.target.value)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-base text-[var(--foreground)] outline-none" />
+                  <input name="avatar_url" value={newAvatarUrl} onChange={(event) => setNewAvatarUrl(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-base text-[var(--foreground)] outline-none" />
                 </div>
                 <MemberPreviewCard
                   title="Preview"
@@ -619,7 +619,7 @@ export function AdminWorkspace({
                   generasi={newGenerasi}
                   avatarUrl={newAvatarUrl}
                 />
-                <button className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
+                <button className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
                   Save member
                 </button>
               </form>
@@ -644,17 +644,17 @@ export function AdminWorkspace({
                       <div className="grid gap-3 sm:grid-cols-2">
                         <div className="space-y-2">
                           <label className="block text-sm font-semibold text-[var(--muted)]">Edit nickname</label>
-                          <input name="nickname" defaultValue={selectedMember.nickname || ""} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
+                          <input name="nickname" defaultValue={selectedMember.nickname || ""} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
                         </div>
                         <div className="space-y-2">
                           <label className="block text-sm font-semibold text-[var(--muted)]">Edit full name</label>
-                          <input name="full_name" defaultValue={selectedMember.full_name || ""} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
+                          <input name="full_name" defaultValue={selectedMember.full_name || ""} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
                         </div>
                       </div>
                       <div className="grid gap-3 sm:grid-cols-2">
                         <div className="space-y-2">
                           <label className="block text-sm font-semibold text-[var(--muted)]">Edit team / status</label>
-                          <select name="status" defaultValue={selectedMember.status || "LOVE"} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
+                          <select name="status" defaultValue={selectedMember.status || "LOVE"} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
                             {STATUS_OPTIONS.map((status) => (
                               <option key={status} value={status}>{status}</option>
                             ))}
@@ -662,7 +662,7 @@ export function AdminWorkspace({
                         </div>
                         <div className="space-y-2">
                           <label className="block text-sm font-semibold text-[var(--muted)]">Edit generation</label>
-                          <select name="generasi" defaultValue={String(selectedMember.generasi || 3)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
+                          <select name="generasi" defaultValue={String(selectedMember.generasi || 3)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
                             {GENERATION_OPTIONS.map((generation) => (
                               <option key={generation} value={generation}>{generation}</option>
                             ))}
@@ -671,7 +671,7 @@ export function AdminWorkspace({
                       </div>
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Edit avatar URL</label>
-                        <input name="avatar_url" defaultValue={selectedMember.avatar_url || ""} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-base text-[var(--foreground)] outline-none" />
+                        <input name="avatar_url" defaultValue={selectedMember.avatar_url || ""} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-base text-[var(--foreground)] outline-none" />
                       </div>
                       <MemberPreviewCard
                         title="Edit preview"
@@ -681,7 +681,7 @@ export function AdminWorkspace({
                         generasi={String(selectedMember.generasi || 3)}
                         avatarUrl={selectedMember.avatar_url || undefined}
                       />
-                      <button className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
+                      <button className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
                         Save member changes
                       </button>
                     </form>
@@ -692,7 +692,7 @@ export function AdminWorkspace({
                         <input type="checkbox" name="confirm_delete" />
                         Confirm delete for this member record
                       </label>
-                      <button className="mt-4 rounded-2xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)]">Delete member</button>
+                      <button className="mt-4 rounded-xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)]">Delete member</button>
                     </form>
                   </div>
                 </>

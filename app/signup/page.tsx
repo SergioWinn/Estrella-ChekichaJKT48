@@ -27,12 +27,12 @@ export default async function SignupPage({
         </div>
         <div className="app-shell p-6">
           <h3 className="text-2xl font-bold text-[var(--foreground)]">Signup</h3>
-          {error ? <div className="mt-4 rounded-2xl border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
+          {error ? <div className="mt-4 rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
           <form action={signupAction} className="mt-5 space-y-4">
             <input name="username" placeholder="username" className="app-input min-h-11 w-full px-4 py-3 outline-none placeholder:text-[var(--muted)]" />
             <input name="password" type="password" placeholder="password" className="app-input min-h-11 w-full px-4 py-3 outline-none placeholder:text-[var(--muted)]" />
             <input name="confirmPassword" type="password" placeholder="confirm password" className="app-input min-h-11 w-full px-4 py-3 outline-none placeholder:text-[var(--muted)]" />
-            <button className="inline-flex min-h-11 w-full items-center justify-center rounded-2xl bg-[var(--accent)] px-4 py-3 text-sm font-bold text-[var(--accent-foreground)] transition hover:bg-[var(--accent-strong)]">
+            <button className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[var(--accent)] px-4 py-3 text-sm font-bold text-[var(--accent-foreground)] transition hover:bg-[var(--accent-strong)]">
               Create account
             </button>
           </form>

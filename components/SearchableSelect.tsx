@@ -26,11 +26,13 @@ export function SearchableSelect({
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [selectedLabel, setSelectedLabel] = useState(
     options.find((o) => o.value === (value ?? defaultValue ?? ""))?.label ?? "",
   );
   const containerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
 
   const filtered = query.trim()
     ? options.filter((o) => o.label.toLowerCase().includes(query.toLowerCase()))
@@ -40,7 +42,19 @@ export function SearchableSelect({
     if (open && inputRef.current) {
       inputRef.current.focus();
     }
+    if (open) {
+      setHighlightedIndex(0);
+    }
   }, [open]);
+
+  useEffect(() => {
+    if (open && listRef.current) {
+      const active = listRef.current.querySelector("[data-highlighted]");
+      if (active) {
+        active.scrollIntoView({ block: "nearest" });
+      }
+    }
+  }, [highlightedIndex, open]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -52,6 +66,39 @@ export function SearchableSelect({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  function handleKeyDown(event: React.KeyboardEvent) {
+    if (!open) {
+      if (event.key === "ArrowDown" || event.key === "Enter") {
+        setOpen(true);
+        event.preventDefault();
+      }
+      return;
+    }
+
+    switch (event.key) {
+      case "ArrowDown":
+        setHighlightedIndex((prev) => Math.min(prev + 1, filtered.length - 1));
+        event.preventDefault();
+        break;
+      case "ArrowUp":
+        setHighlightedIndex((prev) => Math.max(prev - 1, 0));
+        event.preventDefault();
+        break;
+      case "Enter":
+        if (filtered[highlightedIndex]) {
+          handleSelect(filtered[highlightedIndex]);
+        }
+        event.preventDefault();
+        break;
+      case "Escape":
+        setOpen(false);
+        setQuery("");
+        setHighlightedIndex(0);
+        event.preventDefault();
+        break;
+    }
+  }
 
   function handleSelect(option: Option) {
     setSelectedLabel(option.label);
@@ -87,21 +134,30 @@ export function SearchableSelect({
               ref={inputRef}
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => { setQuery(e.target.value); setHighlightedIndex(0); }}
+              onKeyDown={handleKeyDown}
               placeholder={placeholder}
               className="min-h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-2 text-sm outline-none placeholder:text-[var(--muted)]"
             />
           </div>
-          <div className="overflow-y-auto">
+          <div ref={listRef} className="overflow-y-auto" role="listbox">
             {filtered.length ? (
-              filtered.map((option) => (
+              filtered.map((option, index) => (
                 <button
                   key={option.value}
                   type="button"
+                  role="option"
+                  aria-selected={option.value === selected?.value}
+                  data-highlighted={index === highlightedIndex ? true : undefined}
                   onClick={() => handleSelect(option)}
+                  onMouseEnter={() => setHighlightedIndex(index)}
                   className={`flex w-full items-center px-4 py-2.5 text-left text-sm transition hover:bg-[var(--surface-hover)] ${
+                    index === highlightedIndex
+                      ? "bg-[var(--surface-hover)]"
+                      : ""
+                  } ${
                     option.value === selected?.value
-                      ? "bg-[var(--accent-soft)] font-semibold text-[var(--accent)]"
+                      ? "font-semibold text-[var(--accent)]"
                       : "text-[var(--foreground)]"
                   }`}
                 >

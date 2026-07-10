@@ -23,8 +23,8 @@ function DateRail({ value }: { value: string }) {
   return (
     <div className="flex min-h-full items-center justify-center border-b border-[var(--border)] pb-3 md:justify-start md:border-b-0 md:border-r md:pb-0 md:pr-4">
       <div className="text-center md:min-w-14">
-        <div className="text-4xl font-extrabold tracking-[-0.06em] text-[var(--foreground)] md:text-[3.1rem]">{day}</div>
-        <div className="mt-1 text-base font-bold uppercase tracking-[0.12em] text-[var(--muted-strong)] md:text-lg">{month}</div>
+        <div className="text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-[3.1rem]">{day}</div>
+        <div className="mt-1 text-base font-bold text-[var(--muted-strong)] md:text-lg">{month}</div>
       </div>
     </div>
   );
@@ -77,15 +77,15 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
     <div className="space-y-6">
       <section className="app-shell grid gap-4 p-4 md:grid-cols-[0.9fr_0.9fr_1.3fr] md:p-5">
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--muted)]">Events shown</div>
-          <div className="mt-3 text-3xl font-extrabold tracking-[-0.06em] text-[var(--foreground)] md:text-4xl">{filtered.length}</div>
+          <div className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{filtered.length}</div>
+          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Events shown</p>
         </div>
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--muted)]">Open slots</div>
-          <div className={`mt-3 text-3xl font-extrabold tracking-[-0.06em] md:text-4xl ${pendingCount ? "text-[var(--accent)]" : "text-[var(--foreground)]"}`}>{pendingCount}</div>
+          <div className={`text-3xl font-extrabold tracking-[-0.04em] md:text-4xl ${pendingCount ? "text-[var(--accent)]" : "text-[var(--foreground)]"}`}>{pendingCount}</div>
+          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Open slots</p>
         </div>
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--muted)]">Filter</div>
+          <p className="text-sm font-semibold text-[var(--muted-strong)]">Filter</p>
           <div className="mt-3 flex flex-wrap gap-2.5 md:flex-nowrap">
             {FILTERS.map((option) => (
               <FilterPill
@@ -104,7 +104,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
       {sections.length ? (
         sections.map(([monthLabel, monthRows]) => (
           <section key={monthLabel} className="app-card space-y-5 p-5 sm:p-6">
-            <div className="text-sm font-bold uppercase tracking-[0.34em] text-[var(--muted-strong)] md:text-base">{monthLabel}</div>
+            <div className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--muted-strong)] md:text-base">{monthLabel}</div>
             <div className="grid gap-6 xl:grid-cols-2">
               {monthRows.map((row) => {
                 const card = buildTimelineCardState(row);
@@ -155,9 +155,11 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
           </section>
         ))
       ) : (
-        <div className="app-card p-6 text-sm text-[var(--muted)]">
-          No events match this filter.
-        </div>
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-16 text-center text-sm text-[var(--muted)]">
+            <svg aria-hidden="true" className="size-12 text-[var(--muted-strong)]" fill="none" viewBox="0 0 24 24"><path d="M12 6v6l4 2" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5"/><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/></svg>
+            <span className="font-semibold text-[var(--foreground)]">No events match this filter.</span>
+            <span>Try a different filter or check back after the next session is archived.</span>
+          </div>
       )}
     </div>
   );

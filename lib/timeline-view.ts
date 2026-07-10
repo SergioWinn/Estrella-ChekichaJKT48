@@ -2,7 +2,9 @@ import { relationToMember } from "./archive-data.ts";
 import type { TimelineEvent } from "./types.ts";
 
 export function buildTimelineFilterNote(filterType: string): string {
-  return filterType === "All" ? "Showing every event type" : `Showing only ${filterType} events`;
+  if (filterType === "All") return "Showing every event type across all months";
+  if (filterType === "Roulette") return "Roulette = lottery-drawn show/event sessions. Only these shown.";
+  return `Showing only ${filterType} events`;
 }
 
 export function buildTimelineCardState(row: TimelineEvent) {

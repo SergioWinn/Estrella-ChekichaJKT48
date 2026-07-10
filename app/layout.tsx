@@ -60,15 +60,15 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <div className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <header className="mb-6 rounded-[2rem] border border-[var(--border)] bg-[var(--panel)] p-5 shadow-[0_18px_50px_rgba(0,0,0,0.18)] backdrop-blur-sm">
+          <header className="mb-6 rounded-xl border border-[var(--border)] bg-[var(--panel)] p-5 backdrop-blur-sm">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div className="space-y-2">
-                <div className="inline-flex items-center gap-3 text-sm font-bold uppercase tracking-[0.22em] text-[var(--accent)]">
+                <div className="inline-flex items-center gap-3 text-sm font-semibold text-[var(--accent)]">
                   <span className="inline-block size-2 rounded-full bg-[var(--accent)]" />
                   JKT48 Cheki Tracker
                 </div>
                 <div>
-                  <h1 className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-4xl">Chekicha Archive Monitor</h1>
+                  <h1 className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-4xl text-balance">Chekicha Archive Monitor</h1>
                   <p className="mt-2 max-w-2xl text-sm text-[var(--muted)] sm:text-base">
                     See which draws are still open, who has been assigned, and which members appear most often.
                   </p>

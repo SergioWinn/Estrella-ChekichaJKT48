@@ -75,23 +75,23 @@ export function CollectionClient({
 
       <section className="grid gap-4 md:grid-cols-3">
         <div className="app-card p-4">
-          <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--muted)]">Signed in</div>
-          <div className="mt-3 truncate text-2xl font-extrabold tracking-[-0.05em] text-[var(--foreground)] md:text-3xl">@{username}</div>
+          <div className="truncate text-2xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-3xl">@{username}</div>
+          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Signed in</p>
         </div>
         <div className="app-card p-4">
-          <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--muted)]">Total cheki</div>
-          <div className="mt-3 text-3xl font-extrabold tracking-[-0.06em] text-[var(--foreground)] md:text-4xl">{totalQuantity}</div>
+          <div className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{totalQuantity}</div>
+          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Total cheki</p>
         </div>
         <div className="app-card p-4">
-          <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--muted)]">Tracked members</div>
-          <div className="mt-3 text-3xl font-extrabold tracking-[-0.06em] text-[var(--foreground)] md:text-4xl">{uniqueMembers}</div>
+          <div className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{uniqueMembers}</div>
+          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Tracked members</p>
         </div>
       </section>
 
       <section className="app-card p-4 md:p-5">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-3">
-            <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--muted)]">Collection type</div>
+            <div className="text-sm font-semibold text-[var(--muted-strong)]">Collection type</div>
             <div className="flex flex-wrap gap-2">
               {FILTER_OPTIONS.map((option) => (
                 <FilterPill
@@ -159,14 +159,14 @@ export function CollectionClient({
       )}
 
       {deskOpen ? (
-        <div className="collection-desk-overlay fixed inset-0 z-50 flex items-start justify-center overflow-y-auto px-4 py-6 backdrop-blur-sm" onClick={() => setDeskOpen(false)}>
+        <div className="collection-desk-overlay fixed inset-0 z-[var(--z-modal-backdrop)] flex items-start justify-center overflow-y-auto px-4 py-6 backdrop-blur-sm" onClick={() => setDeskOpen(false)}>
           <div
-            className="collection-desk-shell w-full max-w-6xl rounded-[1.75rem] border border-[var(--border)] bg-[var(--panel)] p-5 shadow-[0_20px_64px_rgba(0,0,0,0.32)]"
+            className="collection-desk-shell w-full max-w-6xl rounded-xl border border-[var(--border)] bg-[var(--panel)] p-5 shadow-[0_20px_64px_rgba(0,0,0,0.32)]"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Collection desk</div>
+                <div className="text-xs font-semibold text-[var(--accent)]">Collection desk</div>
                 <h3 className="mt-2 text-lg font-extrabold text-[var(--foreground)] md:text-xl">Add, update, or remove saved entries.</h3>
               </div>
               <button
@@ -194,19 +194,19 @@ export function CollectionClient({
             {deskMode === "Add" ? (
               <div className="mt-5 space-y-5">
                 {collectibleSlots.length ? (
-                  <section className="collection-desk-card app-card p-4 md:p-5">
+                  <section className="p-4 md:p-5">
                     <div className="flex flex-col gap-4">
                       <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
                         <div>
-                          <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Find slots</div>
+                          <div className="text-sm font-semibold text-[var(--accent)]">Find slots</div>
                           <div className="mt-1 text-sm text-[var(--muted)]">Search by member or event, then add the slot straight to your shelf.</div>
                         </div>
-                        <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+                        <div className="text-xs font-semibold text-[var(--muted)]">
                           {filteredCollectibleSlots.length} matches
                         </div>
                       </div>
 
-                        <div className="app-card-strong grid gap-3 p-4">
+                        <div className="grid gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-4">
                         <input
                           value={addQuery}
                           onChange={(event) => {
@@ -237,7 +237,7 @@ export function CollectionClient({
                       {visibleCollectibleSlots.length ? (
                         <div className="grid gap-3">
                           {visibleCollectibleSlots.map((slot) => (
-                              <form key={slot.slot_uid} action={addCollectionAction} className="collection-desk-card app-card-strong grid gap-3 p-4 lg:grid-cols-[minmax(0,1fr)_7rem_auto] lg:items-center">
+                              <form key={slot.slot_uid} action={addCollectionAction} className="grid gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 lg:grid-cols-[minmax(0,1fr)_7rem_auto] lg:items-center">
                               <div className="min-w-0">
                                 <div className="truncate text-sm font-semibold text-[var(--foreground)] md:text-[0.95rem]">{slot.member_name}</div>
                                 <div className="truncate text-sm text-[var(--muted)] md:text-[0.95rem]">{slot.event_name}</div>
@@ -264,7 +264,7 @@ export function CollectionClient({
                           ))}
                         </div>
                       ) : (
-                         <div className="collection-desk-card app-card-strong p-4 text-sm text-[var(--muted)]">
+                        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-4 text-sm text-[var(--muted)]">
                           No slots match this search yet. Try a different member name or switch the type filter.
                         </div>
                       )}
@@ -290,7 +290,7 @@ export function CollectionClient({
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 {entries.length ? (
                   entries.map((entry) => (
-                    <article key={entry.id} className="collection-desk-card app-card p-4">
+                    <article key={entry.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <div className="text-sm font-semibold text-[var(--foreground)] md:text-[0.95rem]">{entry.member_name}</div>
@@ -326,8 +326,10 @@ export function CollectionClient({
                     </article>
                   ))
                 ) : (
-                   <div className="collection-desk-card app-card p-6 text-sm text-[var(--muted)]">
-                    Your shelf is still empty, so there is nothing to edit yet.
+                  <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-16 text-center text-sm text-[var(--muted)]">
+                    <svg aria-hidden="true" className="size-12 text-[var(--muted-strong)]" fill="none" viewBox="0 0 24 24"><path d="M12 6v6l4 2" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5"/><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/></svg>
+                    <span className="font-semibold text-[var(--foreground)]">Your shelf is empty</span>
+                    <span>Use the <strong>Add cards</strong> desk to grow your collection.</span>
                   </div>
                 )}
               </div>

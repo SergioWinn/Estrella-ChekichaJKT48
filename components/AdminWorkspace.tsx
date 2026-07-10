@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
+import { SearchableSelect } from "@/components/SearchableSelect";
 import {
   createEventAction,
   createMemberAction,
@@ -82,8 +83,8 @@ const TIME_OPTIONS = Array.from({ length: (24 * 60) / TIME_STEP_MINUTES }, (_, i
 function AdminStatCard({ label, value, tone = "text-[var(--foreground)]" }: { label: string; tone?: string; value: number | string }) {
   return (
     <article className="app-card p-5">
-      <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">{label}</div>
-      <div className={`mt-3 text-4xl font-extrabold tracking-[-0.05em] ${tone}`}>{value}</div>
+      <div className={`text-4xl font-extrabold tracking-[-0.04em] ${tone}`}>{value}</div>
+      <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">{label}</p>
     </article>
   );
 }
@@ -103,10 +104,10 @@ function EventPreviewCard({
 }) {
   return (
     <div className="app-card p-5">
-      <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Event details</div>
+      <div className="text-xs font-semibold text-[var(--accent)]">Event details</div>
       <div className="mt-4 grid gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-center">
         <div>
-          <div className="text-4xl font-extrabold tracking-[-0.05em] text-[var(--foreground)]">{eventName}</div>
+          <div className="text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)]">{eventName}</div>
           {dateText ? <div className="mt-4 text-base text-[var(--muted)]">{dateText}</div> : null}
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground)]">
@@ -119,7 +120,7 @@ function EventPreviewCard({
             ) : null}
           </div>
         </div>
-        <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-[1.35rem] border border-[var(--border)] bg-[var(--panel)]">
+        <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--panel)]">
           {eventImageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={eventImageUrl} alt={eventName} className="h-full w-full object-contain" />
@@ -149,10 +150,10 @@ function MemberPreviewCard({
 }) {
   return (
     <div className="app-card p-5">
-      <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">{title}</div>
+      <div className="text-xs font-semibold text-[var(--accent)]">{title}</div>
       <div className="mt-4 grid gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-center">
         <div>
-          <div className="text-4xl font-extrabold tracking-[-0.05em] text-[var(--foreground)]">{nickname || "Nickname"}</div>
+          <div className="text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)]">{nickname || "Nickname"}</div>
           <div className="mt-4 text-xl text-[var(--muted)]">{fullName || "Full name"}</div>
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)]">
@@ -163,7 +164,7 @@ function MemberPreviewCard({
             </span>
           </div>
         </div>
-        <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-[1.35rem] border border-[var(--border)] bg-[var(--panel)]">
+        <div className="flex min-h-40 items-center justify-center overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--panel)]">
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={avatarUrl} alt={nickname || "Member avatar"} className="h-full w-full object-cover" />
@@ -223,13 +224,14 @@ export function AdminWorkspace({
   const createEventType = selectedCreatePreset?.event_type || "Roulette";
   const createSingleMember = singleMemberEvent(createEventType);
   const createEventDateText = `${createDate || "No date"} | ${createTimeValue} WIB`;
+  const memberOptions = useMemo(() => members.map((m) => ({ label: memberOptionLabel(m), value: m.id })), [members]);
 
   return (
     <div className="space-y-6">
       <section className="grid gap-4 xl:grid-cols-[1.7fr_1fr]">
         <div className="app-shell p-6 sm:p-8">
-          <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Admin console</div>
-          <h2 className="mt-4 max-w-4xl text-4xl font-extrabold tracking-[-0.06em] text-[var(--foreground)] sm:text-6xl">
+            <div className="text-xs font-semibold text-[var(--accent)]">Admin console</div>
+          <h2 className="mt-4 max-w-4xl text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-6xl">
             Operate the archive, not the public showcase.
           </h2>
           <p className="mt-6 max-w-4xl text-lg leading-9 text-[var(--muted)] sm:text-[1.45rem]">
@@ -237,7 +239,7 @@ export function AdminWorkspace({
           </p>
         </div>
         <div className="app-shell p-6">
-          <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Restricted workspace</div>
+            <div className="text-xs font-semibold text-[var(--accent)]">Restricted workspace</div>
           <p className="mt-3 text-xl leading-8 text-[var(--foreground-soft)]">
             This page is visible only to accounts with the <span className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-base font-semibold text-[var(--foreground)]">admin</span> role.
           </p>
@@ -247,7 +249,7 @@ export function AdminWorkspace({
       {success ? <div className="rounded-2xl border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm text-[var(--accent)]">{success}</div> : null}
       {error ? <div className="rounded-2xl border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
 
-      <div className="rounded-[1.4rem] border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-5 py-4 text-lg font-bold text-[var(--accent)]">
+      <div className="rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-5 py-4 text-lg font-bold text-[var(--accent)]">
         Admin role active
       </div>
 
@@ -276,11 +278,14 @@ export function AdminWorkspace({
 
       {activeTab === "queue" ? (
         <section className="space-y-4">
-          <div className="rounded-[1.8rem] border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
-            <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Primary queue</div>
-            <h3 className="mt-4 text-3xl font-extrabold tracking-[-0.05em] text-[var(--foreground)] sm:text-5xl">Update Roulette Results</h3>
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
+            <div className="text-xs font-semibold text-[var(--accent)]">Primary queue</div>
+            <h3 className="mt-4 text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-5xl">Update Roulette Results</h3>
             <p className="mt-5 max-w-4xl text-lg leading-9 text-[var(--muted)]">
               Resolve waiting entries first. Slot assignment is the most time-sensitive admin task, so it stays at the front of this workspace.
+            </p>
+            <p className="mt-3 text-sm leading-6 text-[var(--muted-strong)]">
+              <strong className="font-semibold text-[var(--foreground)]">Roulette</strong> — a standard show/event session where which members attend is determined by lottery. Archive entries are logged after the result is known.
             </p>
           </div>
 
@@ -297,14 +302,14 @@ export function AdminWorkspace({
                 const waitingB = hasPendingSlotB(event) && !singleMemberEvent(event.event_type);
 
                 return (
-                  <form key={String(event.id || `${event.event_name}-${event.start_time}`)} action={updateQueueAction} className="space-y-4 rounded-[1.75rem] border border-[var(--border)] bg-[var(--surface)] p-5">
+                  <form key={String(event.id || `${event.event_name}-${event.start_time}`)} action={updateQueueAction} className="space-y-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
                     <input type="hidden" name="event_id" value={event.id || ""} />
                     <input type="hidden" name="event_name" value={event.event_name || "Event"} />
                     <input type="hidden" name="slot_mode" value={event.slot_mode || 1} />
                     <div className="grid gap-4 md:grid-cols-[1fr_8rem] md:items-start">
                       <div>
-                        <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Waiting draw</div>
-                        <div className="mt-4 text-4xl font-extrabold tracking-[-0.05em] text-[var(--foreground)]">{event.event_name || "Untitled event"}</div>
+                        <div className="text-xs font-semibold text-[var(--accent)]">Waiting draw</div>
+                        <div className="mt-4 text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)]">{event.event_name || "Untitled event"}</div>
                         <div className="mt-5 text-lg text-[var(--muted)]">{formatEventDate(event.start_time)} | {formatEventTime(event.start_time, event.end_time)} WIB</div>
                         <div className="mt-5 flex flex-wrap gap-2">
                           {waitingA ? <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-2 text-sm font-bold uppercase tracking-[0.08em] text-[var(--foreground)]">Slot A waiting for roulette</span> : null}
@@ -323,23 +328,23 @@ export function AdminWorkspace({
 
                     <div className="space-y-3">
                       <label className="block text-sm font-semibold text-[var(--muted)]">Assign result</label>
-                      <select name="member_id_a" defaultValue={event.member_id_a || ""} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
-                        <option value="">{singleMemberEvent(event.event_type) ? "None (Member waiting)" : "None (Waiting for roulette)"}</option>
-                        {members.map((member) => (
-                          <option key={member.id} value={member.id}>{memberOptionLabel(member)}</option>
-                        ))}
-                      </select>
+                      <SearchableSelect
+                        name="member_id_a"
+                        defaultValue={event.member_id_a || ""}
+                        options={memberOptions}
+                        placeholder={singleMemberEvent(event.event_type) ? "None (Member waiting)" : "None (Waiting for roulette)"}
+                      />
                     </div>
 
                     {waitingB ? (
                       <div className="space-y-3">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Assign slot B</label>
-                        <select name="member_id_b" defaultValue={event.member_id_b || ""} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
-                          <option value="">None (Waiting for roulette)</option>
-                          {members.map((member) => (
-                            <option key={member.id} value={member.id}>{memberOptionLabel(member)}</option>
-                          ))}
-                        </select>
+                        <SearchableSelect
+                          name="member_id_b"
+                          defaultValue={event.member_id_b || ""}
+                          options={memberOptions}
+                          placeholder="None (Waiting for roulette)"
+                        />
                       </div>
                     ) : (
                       <input type="hidden" name="member_id_b" value={event.member_id_b || ""} />
@@ -353,23 +358,27 @@ export function AdminWorkspace({
               })}
             </section>
           ) : (
-            <div className="rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface)] p-6 text-sm text-[var(--muted)]">No roulette rows are waiting right now.</div>
+            <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-12 text-center text-sm text-[var(--muted)]">
+              <svg aria-hidden="true" className="size-10 text-[var(--muted-strong)]" fill="none" viewBox="0 0 24 24"><path d="M12 6v6l4 2" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5"/><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/></svg>
+              <span className="font-semibold text-[var(--foreground)]">All caught up</span>
+              <span>No roulette rows are waiting right now. Every slot has been filled.</span>
+            </div>
           )}
         </section>
       ) : null}
 
       {activeTab === "events" ? (
         <section className="space-y-4">
-          <div className="rounded-[1.8rem] border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
-            <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Schedule desk</div>
-            <h3 className="mt-4 text-3xl font-extrabold tracking-[-0.05em] text-[var(--foreground)] sm:text-5xl">Create or edit archive rows</h3>
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
+            <div className="text-xs font-semibold text-[var(--accent)]">Schedule desk</div>
+            <h3 className="mt-4 text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-5xl">Create or edit archive rows</h3>
             <p className="mt-5 max-w-4xl text-lg leading-9 text-[var(--muted)]">
               Use the event tools below to schedule a new row or correct an existing one without losing context.
             </p>
           </div>
 
           <div className="grid gap-6 xl:grid-cols-2">
-            <section className="space-y-5 rounded-[1.75rem] border border-[var(--border)] bg-[var(--surface)] p-5">
+            <section className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <div className="text-xl font-bold text-[var(--foreground)]">Create event row</div>
               <form action={createEventAction} className="space-y-4">
                 <div className="space-y-2">
@@ -424,22 +433,22 @@ export function AdminWorkspace({
                 )}
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-[var(--muted)]">Assign slot A now</label>
-                  <select name="member_id_a" value={createMemberA} onChange={(event) => setCreateMemberA(event.target.value)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
-                    <option value="">None (Waiting for roulette)</option>
-                    {members.map((member) => (
-                      <option key={member.id} value={member.id}>{memberOptionLabel(member)}</option>
-                    ))}
-                  </select>
+                  <SearchableSelect
+                    options={memberOptions}
+                    value={createMemberA}
+                    onChange={setCreateMemberA}
+                    placeholder="None (Waiting for roulette)"
+                  />
                 </div>
                 {!createSingleMember && createSlotMode === "2" ? (
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Assign slot B now</label>
-                    <select name="member_id_b" value={createMemberB} onChange={(event) => setCreateMemberB(event.target.value)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
-                      <option value="">None (Waiting for roulette)</option>
-                      {members.map((member) => (
-                        <option key={member.id} value={member.id}>{memberOptionLabel(member)}</option>
-                      ))}
-                    </select>
+                    <SearchableSelect
+                      options={memberOptions}
+                      value={createMemberB}
+                      onChange={setCreateMemberB}
+                      placeholder="None (Waiting for roulette)"
+                    />
                   </div>
                 ) : (
                   <input type="hidden" name="member_id_b" value="" />
@@ -457,7 +466,7 @@ export function AdminWorkspace({
               </form>
             </section>
 
-            <section className="space-y-5 rounded-[1.75rem] border border-[var(--border)] bg-[var(--surface)] p-5">
+            <section className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <div className="text-xl font-bold text-[var(--foreground)]">Edit event row</div>
               {selectedEvent ? (
                 <>
@@ -510,21 +519,21 @@ export function AdminWorkspace({
                       </div>
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Member slot A</label>
-                        <select name="member_id_a" defaultValue={selectedEvent.member_id_a || ""} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
-                          <option value="">None (Waiting for roulette)</option>
-                          {members.map((member) => (
-                            <option key={member.id} value={member.id}>{memberOptionLabel(member)}</option>
-                          ))}
-                        </select>
+                        <SearchableSelect
+                          name="member_id_a"
+                          defaultValue={selectedEvent.member_id_a || ""}
+                          options={memberOptions}
+                          placeholder="None (Waiting for roulette)"
+                        />
                       </div>
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Member slot B</label>
-                        <select name="member_id_b" defaultValue={selectedEvent.member_id_b || ""} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
-                          <option value="">None (Waiting for roulette)</option>
-                          {members.map((member) => (
-                            <option key={member.id} value={member.id}>{memberOptionLabel(member)}</option>
-                          ))}
-                        </select>
+                        <SearchableSelect
+                          name="member_id_b"
+                          defaultValue={selectedEvent.member_id_b || ""}
+                          options={memberOptions}
+                          placeholder="None (Waiting for roulette)"
+                        />
                       </div>
                       <EventPreviewCard
                         eventName={selectedEvent.event_name || "Untitled event"}
@@ -537,7 +546,7 @@ export function AdminWorkspace({
                         Save event changes
                       </button>
                     </form>
-                    <form action={deleteEventAction} className="rounded-[1.5rem] border border-[var(--danger-border)] bg-[var(--danger-soft)] p-4">
+                    <form action={deleteEventAction} className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-4">
                       <input type="hidden" name="event_id" value={selectedEvent.id || ""} />
                       <input type="hidden" name="event_name" value={selectedEvent.event_name || "Event"} />
                       <label className="flex items-center gap-3 text-sm text-[var(--danger-foreground)]">
@@ -549,7 +558,7 @@ export function AdminWorkspace({
                   </div>
                 </>
               ) : (
-                <div className="rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface)] p-6 text-sm text-[var(--muted)]">No event rows are available to edit yet.</div>
+                <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-sm text-[var(--muted)]">No event rows are available to edit yet.</div>
               )}
             </section>
           </div>
@@ -558,16 +567,16 @@ export function AdminWorkspace({
 
       {activeTab === "members" ? (
         <section className="space-y-4">
-          <div className="rounded-[1.8rem] border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
-            <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Member registry</div>
-            <h3 className="mt-4 text-3xl font-extrabold tracking-[-0.05em] text-[var(--foreground)] sm:text-5xl">Manage collector roster</h3>
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
+            <div className="text-xs font-semibold text-[var(--accent)]">Member registry</div>
+            <h3 className="mt-4 text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-5xl">Manage collector roster</h3>
             <p className="mt-5 max-w-4xl text-lg leading-9 text-[var(--muted)]">
               Add a new member quickly or open the edit tool only when you need to change existing records.
             </p>
           </div>
 
           <div className="grid gap-6 xl:grid-cols-2">
-            <section className="space-y-5 rounded-[1.75rem] border border-[var(--border)] bg-[var(--surface)] p-5">
+            <section className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <div className="text-xl font-bold text-[var(--foreground)]">Add member</div>
               <form action={createMemberAction} className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -616,18 +625,19 @@ export function AdminWorkspace({
               </form>
             </section>
 
-            <section className="space-y-5 rounded-[1.75rem] border border-[var(--border)] bg-[var(--surface)] p-5">
+            <section className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <div className="text-xl font-bold text-[var(--foreground)]">Edit / delete member</div>
               {selectedMember ? (
                 <>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-[var(--muted)]">Member record</label>
-                    <select value={selectedMemberId} onChange={(event) => setSelectedMemberId(event.target.value)} className="min-h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
-                      {members.map((member) => (
-                        <option key={member.id} value={member.id}>{memberOptionLabel(member)}</option>
-                      ))}
-                    </select>
-                  </div>
+                    <div className="space-y-2">
+                      <label className="block text-sm font-semibold text-[var(--muted)]">Member record</label>
+                      <SearchableSelect
+                        options={memberOptions}
+                        value={selectedMemberId}
+                        onChange={setSelectedMemberId}
+                        placeholder="Select a member..."
+                      />
+                    </div>
                   <div key={selectedMember.id} className="space-y-4">
                     <form action={updateMemberAction} className="space-y-4">
                       <input type="hidden" name="member_id" value={selectedMember.id} />
@@ -675,7 +685,7 @@ export function AdminWorkspace({
                         Save member changes
                       </button>
                     </form>
-                    <form action={deleteMemberAction} className="rounded-[1.5rem] border border-[var(--danger-border)] bg-[var(--danger-soft)] p-4">
+                    <form action={deleteMemberAction} className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-4">
                       <input type="hidden" name="member_id" value={selectedMember.id} />
                       <input type="hidden" name="nickname" value={selectedMember.nickname || "Member"} />
                       <label className="flex items-center gap-3 text-sm text-[var(--danger-foreground)]">
@@ -687,7 +697,11 @@ export function AdminWorkspace({
                   </div>
                 </>
               ) : (
-                <div className="rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface)] p-6 text-sm text-[var(--muted)]">No members are available to edit yet.</div>
+                <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-12 text-center text-sm text-[var(--muted)]">
+                  <svg aria-hidden="true" className="size-10 text-[var(--muted-strong)]" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5"/><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/></svg>
+                  <span className="font-semibold text-[var(--foreground)]">No members yet</span>
+                  <span>Create the first member record above, then edit it here.</span>
+                </div>
               )}
             </section>
           </div>

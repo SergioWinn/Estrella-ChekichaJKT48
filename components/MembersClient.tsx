@@ -44,12 +44,12 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
     <div className="space-y-6">
       <section className="app-shell grid gap-4 p-4 md:grid-cols-[0.9fr_0.9fr_1.3fr] md:p-5">
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--muted)]">Members shown</div>
-          <div className="mt-3 text-3xl font-extrabold tracking-[-0.06em] text-[var(--foreground)] md:text-4xl">{visibleMembers.length}</div>
+          <div className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{visibleMembers.length}</div>
+          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Members shown</p>
         </div>
         <div>
-          <div className="text-[10px] font-bold uppercase tracking-[0.28em] text-[var(--muted)]">With history</div>
-          <div className="mt-3 text-3xl font-extrabold tracking-[-0.06em] text-[var(--foreground)] md:text-4xl">{membersWithHistory}</div>
+          <div className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{membersWithHistory}</div>
+          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">With history</p>
         </div>
         <div className="space-y-3">
           <input
@@ -103,23 +103,25 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
           ))}
         </section>
       ) : (
-        <div className="app-card p-6 text-sm text-[var(--muted)]">
-          No members match this search or team filter.
-        </div>
+          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-16 text-center text-sm text-[var(--muted)]">
+            <svg aria-hidden="true" className="size-12 text-[var(--muted-strong)]" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5"/><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/></svg>
+            <span className="font-semibold text-[var(--foreground)]">No members found</span>
+            <span>Try a different search term or team filter.</span>
+          </div>
       )}
 
       {selectedMember ? (
         <div
-          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/55 px-4 py-6 backdrop-blur-sm"
+          className="fixed inset-0 z-[var(--z-modal-backdrop)] flex items-start justify-center overflow-y-auto bg-black/55 px-4 py-6 backdrop-blur-sm"
           onClick={() => setSelectedMemberId(null)}
         >
           <div
-            className="w-full max-w-4xl rounded-[1.75rem] border border-[var(--border)] bg-[var(--panel)] p-4 shadow-[0_20px_64px_rgba(0,0,0,0.32)] sm:p-5"
+            className="w-full max-w-4xl rounded-xl border border-[var(--border)] bg-[var(--panel)] p-4 shadow-[0_20px_64px_rgba(0,0,0,0.32)] sm:p-5"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4">
               <div className="grid flex-1 items-start gap-4 md:grid-cols-[14rem_1fr]">
-                <div className="flex aspect-square w-full items-center justify-center self-start overflow-hidden rounded-[1.5rem] border border-[var(--border)] bg-[var(--surface-strong)]">
+                <div className="flex aspect-square w-full items-center justify-center self-start overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)]">
                   {selectedMember.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={selectedMember.avatar_url} alt={selectedMember.nickname || "Member avatar"} className="h-full w-full object-cover" />
@@ -173,7 +175,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                     }
 
                     return (
-                      <article key={row.id} className="rounded-[1.1rem] border border-[var(--border)] bg-[var(--surface)] p-2.5">
+                      <article key={row.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2.5">
                         <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface-strong)]">
                           {row.event_image_url ? (
                             // eslint-disable-next-line @next/next/no-img-element

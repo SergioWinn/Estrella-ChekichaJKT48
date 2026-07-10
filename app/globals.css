@@ -2,9 +2,15 @@
 
 :root {
   color-scheme: dark;
-  --radius-sm: 0.75rem;
-  --radius-md: 1.25rem;
-  --radius-lg: 1.75rem;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-modal-backdrop: 40;
+  --z-modal: 50;
+  --z-toast: 60;
+  --z-tooltip: 70;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
   --background: #06101d;
   --background-alt: #07111d;
   --foreground: #eef6ff;
@@ -43,7 +49,7 @@
   --background-alt: #edf1f6;
   --foreground: #162235;
   --foreground-soft: rgba(22, 34, 53, 0.86);
-  --muted: rgba(68, 82, 106, 0.7);
+  --muted: rgba(68, 82, 106, 0.88);
   --muted-strong: #3c506f;
   --card: rgba(255, 255, 255, 0.7);
   --card-border: rgba(96, 114, 145, 0.13);
@@ -142,27 +148,50 @@ textarea {
 
 .app-shell {
   border: 1px solid var(--border);
-  border-radius: 2rem;
+  border-radius: 1rem;
   background: var(--surface);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.app-shell:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--hero-gradient-soft);
 }
 
 .app-card {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--surface);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.app-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: var(--hero-gradient-soft);
 }
 
 .app-card-strong {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--surface-strong);
+  transition: border-color 0.2s ease;
+}
+
+.app-card-strong:hover {
+  border-color: var(--border-strong);
 }
 
 .app-input {
   border: 1px solid var(--border);
-  border-radius: 1rem;
+  border-radius: 0.5rem;
   background: var(--surface-strong);
   color: var(--foreground);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.app-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .app-shell,
@@ -186,9 +215,7 @@ textarea {
 [data-theme="light"] .collection-desk-card {
   background: rgba(243, 246, 251, 0.92) !important;
   border-color: rgba(96, 114, 145, 0.12) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 8px 24px rgba(103, 118, 145, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 [data-theme="light"] .app-shell,
@@ -196,9 +223,7 @@ textarea {
 [data-theme="light"] .app-card-strong,
 [data-theme="light"] .app-input {
   border-color: rgba(96, 114, 145, 0.12);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    0 8px 24px rgba(103, 118, 145, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 @media (max-width: 640px) {

@@ -19,9 +19,9 @@ function QuickCountCard({
 }) {
   return (
     <article className="app-card p-5">
-      <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">{label}</div>
-      <div className={`mt-3 text-4xl font-extrabold tracking-[-0.05em] ${tone}`}>{value}</div>
-      <p className="mt-2 text-sm text-[var(--muted)]">{copy}</p>
+      <div className={`text-4xl font-extrabold tracking-[-0.03em] ${tone}`}>{value}</div>
+      <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">{label}</p>
+      <p className="mt-1 text-sm text-[var(--muted)]">{copy}</p>
     </article>
   );
 }
@@ -34,26 +34,26 @@ export default async function Page() {
   return (
     <div className="space-y-6">
       <section className="space-y-6">
-        <div className="grid gap-px overflow-hidden rounded-[2rem] border border-[var(--border)] bg-[var(--border)] md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-px overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--border)] md:grid-cols-2 xl:grid-cols-4">
           <div className="bg-[var(--surface)] p-5">
-            <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Show / event sessions</div>
-            <div className="mt-3 text-4xl font-extrabold tracking-[-0.05em] text-[var(--foreground)]">{snapshot.show_event_sessions}</div>
-            <p className="mt-2 text-sm text-[var(--muted)]">Archive rows that feed the homepage ranking.</p>
+            <div className="text-4xl font-extrabold tracking-[-0.03em] text-[var(--foreground)]">{snapshot.show_event_sessions}</div>
+            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Show / Event sessions</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">Archive rows that feed the homepage ranking.</p>
           </div>
           <div className="bg-[var(--surface)] p-5">
-            <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Latest show / event</div>
-            <div className="mt-3 text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)]">{copy.latestShowEventCopy}</div>
-            <p className="mt-2 text-sm text-[var(--muted)]">Most recent show/event date saved in the archive.</p>
+            <div className="text-3xl font-extrabold tracking-[-0.03em] text-[var(--foreground)]">{copy.latestShowEventCopy}</div>
+            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Latest show / event</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">Most recent show/event date saved in the archive.</p>
           </div>
           <div className="bg-[var(--surface)] p-5">
-            <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Top ranked member</div>
-            <div className="mt-3 text-4xl font-extrabold tracking-[-0.05em] text-[var(--foreground)]">{copy.topMemberName}</div>
-            <p className="mt-2 text-sm text-[var(--muted)]">{copy.topMemberSubcopy}</p>
+            <div className="text-4xl font-extrabold tracking-[-0.03em] text-[var(--foreground)]">{copy.topMemberName}</div>
+            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Top ranked member</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">{copy.topMemberSubcopy}</p>
           </div>
           <div className="bg-[var(--surface)] p-5">
-            <div className="text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Open draws</div>
-            <div className="mt-3 text-4xl font-extrabold tracking-[-0.05em] text-[var(--accent)]">{copy.waitingCopy}</div>
-            <p className="mt-2 text-sm text-[var(--muted)]">Still tracked here, but no longer the main story.</p>
+            <div className="text-4xl font-extrabold tracking-[-0.03em] text-[var(--accent)]">{copy.waitingCopy}</div>
+            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Open draws</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">Still tracked here, but no longer the main story.</p>
           </div>
         </div>
 
@@ -68,7 +68,7 @@ export default async function Page() {
             />
           </div>
           <div className="app-shell p-6">
-            <div className="text-[11px] font-bold uppercase tracking-[0.24em] text-[var(--accent)]">Scope</div>
+            <div className="text-sm font-semibold text-[var(--accent)]">Scope</div>
             <p className="mt-4 text-lg leading-8 text-[var(--foreground-soft)]">
               Birthday and Graduation stay in the counts below, but the main ranking and recent list only read from show/event archive rows.
             </p>
@@ -83,7 +83,7 @@ export default async function Page() {
               label="Show / event ranking"
               title="Members who appear most often"
               titleClassName="text-2xl sm:text-2xl"
-              actions={<div className="max-w-sm text-right text-sm leading-7 text-[var(--muted)]">Only members with 2+ appearances are shown. Ties keep the same rank number and are ordered by the latest show/event assignment.</div>}
+              description="Only members with 2+ appearances are shown. Ties keep the same rank number and are ordered by the latest show/event assignment."
             />
             <div className="mt-5 min-h-0 flex-1 grid gap-3 overflow-y-auto pr-2">
               {snapshot.leaderboard.length ? (
@@ -122,7 +122,7 @@ export default async function Page() {
               label="Recent 6"
               title="Latest six assigned show/event members"
               titleClassName="text-2xl sm:text-2xl"
-              actions={<div className="max-w-xs text-right text-sm leading-7 text-[var(--muted)]">Both slots from the same event can appear if both were filled.</div>}
+              description="Both slots from the same event can appear if both were filled."
             />
             <div className="mt-5 space-y-3">
               {snapshot.recent_assignments.length ? (
@@ -162,7 +162,7 @@ export default async function Page() {
           label="Quick counts"
           title="How the archive is split right now"
           titleClassName="text-2xl sm:text-2xl"
-          actions={<div className="max-w-xs text-right text-sm leading-7 text-[var(--muted)]">Small numbers only, no extra chart noise.</div>}
+          description="Small numbers only, no extra chart noise."
         />
         <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <QuickCountCard label={copy.quickCounts[0]!.label} value={copy.quickCounts[0]!.value} copy={copy.quickCounts[0]!.copy} tone="text-[var(--accent)]" />
@@ -177,7 +177,7 @@ export default async function Page() {
           label="Pending status"
           title="Open draws still in the archive"
           titleClassName="text-2xl sm:text-2xl"
-          actions={<div className="max-w-xs text-right text-sm leading-7 text-[var(--muted)]">Operational detail kept here as a secondary check.</div>}
+          description="Operational detail kept here as a secondary check."
         />
         <p className="mt-4 text-lg leading-8 text-[var(--foreground-soft)]">
           {copy.waitingCopy}. Use the admin or timeline pages when you want to resolve unfinished rows.

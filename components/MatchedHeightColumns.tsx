@@ -11,9 +11,9 @@ export function MatchedHeightColumns({
   right: ReactNode;
 }) {
   return (
-    <section className="grid gap-4 xl:grid-cols-[1.2fr_1fr]">
-      <div>{left}</div>
-      <div>{right}</div>
+    <section className="grid gap-4 xl:grid-cols-[1.2fr_1fr] items-stretch">
+      <div className="min-h-0">{left}</div>
+      <div className="min-h-0">{right}</div>
     </section>
   );
 }

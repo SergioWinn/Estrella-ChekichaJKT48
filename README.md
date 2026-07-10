@@ -34,7 +34,7 @@ The application is intentionally kept small and split by responsibility inside o
 - `app/` contains the route-level pages for overview, timeline, members, login, signup, collection, and admin.
 - `components/` contains interactive client components and reusable UI pieces.
 - `lib/` contains Supabase clients, archive transforms, server-side loaders, and server actions.
-- `middleware.ts` protects authenticated and role-gated routes.
+- `proxy.ts` protects authenticated and role-gated routes.
 
 This keeps the browser-facing UI simple while centralizing data access, auth checks, and mutation logic in a small set of server-side helpers.
 
@@ -55,7 +55,7 @@ This keeps the browser-facing UI simple while centralizing data access, auth che
 |-- components/   # Client and shared UI components
 |-- lib/          # Data loaders, Supabase clients, server actions
 |-- tests/        # Node-based tests
-|-- middleware.ts # Route protection
+|-- proxy.ts      # Route protection
 `-- README.md
 ```
 
@@ -114,7 +114,7 @@ For production, keep `SUPABASE_SERVICE_ROLE_KEY` only in Vercel environment sett
 - Building a focused full-stack product with Next.js App Router
 - Separating page rendering, client UI, and server-side data access
 - Using Supabase for auth, storage, and admin workflows
-- Protecting routes with middleware and role-aware redirects
+- Protecting routes with proxy and role-aware redirects
 - Turning archive-style operational data into a cleaner, faster interface
 
 ## Potential Improvements

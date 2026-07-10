@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createMiddlewareSupabaseClient } from "@/lib/supabase-ssr.ts";
 import { getAuthRedirectPath } from "@/lib/v2-helpers.ts";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { supabase, response } = createMiddlewareSupabaseClient(request);
   const {
     data: { user },

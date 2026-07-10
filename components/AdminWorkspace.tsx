@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { SearchableSelect } from "@/components/SearchableSelect";
@@ -221,6 +221,48 @@ export function AdminWorkspace({
   );
   const waitingSlotACount = queueRows.filter((event) => hasPendingSlotA(event)).length;
   const waitingSlotBCount = queueRows.filter((event) => hasPendingSlotB(event)).length;
+
+  useEffect(() => {
+    if (!presets.length) {
+      if (createPresetId) {
+        setCreatePresetId("");
+      }
+      return;
+    }
+
+    if (!presets.some((preset) => preset.id === createPresetId)) {
+      setCreatePresetId(presets[0]?.id ?? "");
+    }
+  }, [createPresetId, presets]);
+
+  useEffect(() => {
+    const nextEventId = String(events[0]?.id || "");
+    if (!events.length) {
+      if (selectedEventId) {
+        setSelectedEventId("");
+      }
+      return;
+    }
+
+    if (!events.some((event) => String(event.id || "") === selectedEventId)) {
+      setSelectedEventId(nextEventId);
+    }
+  }, [events, selectedEventId]);
+
+  useEffect(() => {
+    const nextMemberId = members[0]?.id || "";
+    if (!members.length) {
+      if (selectedMemberId) {
+        setSelectedMemberId("");
+      }
+      return;
+    }
+
+    if (!members.some((member) => member.id === selectedMemberId)) {
+      setSelectedMemberId(nextMemberId);
+    }
+  }, [members, selectedMemberId]);
+
   const createEventType = selectedCreatePreset?.event_type || "Roulette";
   const createSingleMember = singleMemberEvent(createEventType);
   const createEventDateText = `${createDate || "No date"} | ${createTimeValue} WIB`;

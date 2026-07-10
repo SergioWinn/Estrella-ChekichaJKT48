@@ -46,6 +46,17 @@ export function CollectionClient({
   const debouncedAddQuery = useDebouncedValue(addQuery);
 
   useEffect(() => {
+    const modeParam = searchParams.get("mode");
+    if (modeParam === "add" || modeParam === "manage") {
+      setDeskMode(modeParam === "add" ? "Add" : "Manage");
+      setDeskOpen(true);
+      return;
+    }
+
+    setDeskOpen(false);
+  }, [searchParams]);
+
+  useEffect(() => {
     const mode = deskOpen ? (deskMode === "Add" ? "add" : "manage") : null;
     const url = new URL(window.location.href);
     if (mode) {

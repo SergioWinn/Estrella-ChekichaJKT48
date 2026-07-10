@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 import { buildOverviewSnapshot, loadOverviewRows } from "@/lib/archive-data.ts";
 import { formatEventDate } from "@/lib/format.ts";
 import { buildHomepageCopy } from "@/lib/homepage-copy.ts";
+import { MatchedHeightColumns } from "@/components/MatchedHeightColumns";
 import { SectionHeader } from "@/components/SectionHeader";
 
 export const dynamic = "force-dynamic";
@@ -73,15 +74,16 @@ export default async function Page() {
         </div>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-[1.2fr_1fr] xl:items-start">
-        <article className="app-card flex min-h-0 flex-col overflow-hidden p-5 xl:h-[42rem]">
+      <MatchedHeightColumns
+        left={
+          <article className="app-card flex h-full min-h-0 flex-col overflow-hidden p-5">
             <SectionHeader
               label="Show / event ranking"
               title="Members who appear most often"
               titleClassName="text-2xl sm:text-2xl"
               description="Only members with 2+ appearances are shown. Ties keep the same rank number and are ordered by the latest show/event assignment."
             />
-            <div className="mt-5 grid gap-3">
+            <div className="mt-5 min-h-0 flex-1 grid gap-3 overflow-y-auto pr-2">
               {snapshot.leaderboard.length ? (
                 snapshot.leaderboard.map((row) => (
                   <div key={row.member_id} className="app-card-strong motion-list-item flex items-center gap-4 p-4" style={buildStaggerStyle(row.rank - 1)}>
@@ -111,6 +113,8 @@ export default async function Page() {
               )}
             </div>
           </article>
+        }
+        right={
         <div className="xl:sticky xl:top-6">
           <article className="app-card flex flex-col p-5">
             <SectionHeader
@@ -150,7 +154,8 @@ export default async function Page() {
             </div>
           </article>
         </div>
-      </section>
+        }
+      />
 
       <section className="app-card p-5 sm:p-6">
         <SectionHeader

@@ -105,7 +105,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
         sections.map(([monthLabel, monthRows]) => (
           <section key={monthLabel} className="app-card space-y-5 p-5 sm:p-6">
             <div className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--muted-strong)] md:text-base">{monthLabel}</div>
-            <div className="grid gap-4 min-[520px]:grid-cols-2">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {monthRows.map((row) => {
                 const card = buildTimelineCardState(row);
 

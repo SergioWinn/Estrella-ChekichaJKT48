@@ -112,16 +112,25 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
 
       {selectedMember ? (
         <div
-          className="fixed inset-0 z-[var(--z-modal-backdrop)] flex items-start justify-center overflow-y-auto bg-black/55 px-4 py-6 backdrop-blur-sm"
+          className="fixed inset-0 z-[var(--z-modal-backdrop)] flex items-end justify-center overflow-y-auto bg-black/55 px-3 py-3 backdrop-blur-sm sm:items-start sm:px-4 sm:py-6"
           onClick={() => setSelectedMemberId(null)}
         >
           <div
-            className="w-full max-w-4xl rounded-xl border border-[var(--border)] bg-[var(--panel)] p-4 shadow-[0_20px_64px_rgba(0,0,0,0.32)] sm:p-5"
+            className="relative w-full max-w-4xl overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-3 shadow-[0_20px_64px_rgba(0,0,0,0.32)] max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)] sm:p-5"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-start justify-between gap-4">
-              <div className="grid flex-1 items-start gap-4 md:grid-cols-[14rem_1fr]">
-                <div className="flex aspect-square w-full items-center justify-center self-start overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)]">
+            <button
+              type="button"
+              onClick={() => setSelectedMemberId(null)}
+              className="absolute right-3 top-3 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
+              aria-label="Close member history"
+            >
+              <CloseIcon className="size-4" />
+            </button>
+
+            <div className="flex items-start justify-between gap-4 pr-12 sm:pr-14">
+              <div className="grid flex-1 items-start gap-4 sm:grid-cols-[11rem_1fr] lg:grid-cols-[14rem_1fr]">
+                <div className="mx-auto flex aspect-[3/4] w-full max-w-[14rem] items-center justify-center self-start overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:mx-0 sm:max-w-none sm:aspect-square">
                   {selectedMember.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={selectedMember.avatar_url} alt={selectedMember.nickname || "Member avatar"} className="h-full w-full object-cover" />
@@ -131,7 +140,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <h2 className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-[2.2rem]">{selectedMember.nickname || "Unknown member"}</h2>
+                    <h2 className="text-2xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-[2.2rem]">{selectedMember.nickname || "Unknown member"}</h2>
                     <p className="mt-1 text-base text-[var(--muted-strong)]">{selectedMember.full_name || "No full name"}</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -150,14 +159,6 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                   </p>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setSelectedMemberId(null)}
-                className="inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
-                aria-label="Close member history"
-              >
-                <CloseIcon className="size-4" />
-              </button>
             </div>
 
             <div className="mt-5">

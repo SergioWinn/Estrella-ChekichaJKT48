@@ -141,8 +141,8 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                     <div className="min-w-0 space-y-2">
                       <div className="min-w-0 pr-20 md:pr-24">
                         <div className="min-w-0">
-                          <h2 className="text-balance text-xl font-bold tracking-[-0.04em] text-[var(--foreground)] md:truncate md:text-2xl">{row.event_name || "Untitled event"}</h2>
-                          <p className="mt-1 text-sm text-[var(--muted-strong)] md:truncate md:text-[0.95rem]">
+                          <h2 className="truncate text-xl font-bold tracking-[-0.04em] text-[var(--foreground)] md:text-2xl">{row.event_name || "Untitled event"}</h2>
+                          <p className="mt-1 truncate text-sm text-[var(--muted-strong)] md:text-[0.95rem]">
                             {formatEventTime(row.start_time, row.end_time)} WIB
                           </p>
                         </div>

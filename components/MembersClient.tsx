@@ -129,8 +129,8 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
             </button>
 
             <div className="flex items-start justify-between gap-4 pr-12 sm:pr-14">
-              <div className="grid flex-1 items-start gap-4 sm:grid-cols-[11rem_1fr] lg:grid-cols-[14rem_1fr]">
-                <div className="mx-auto flex aspect-[3/4] w-full max-w-[14rem] items-center justify-center self-start overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:mx-0 sm:max-w-none sm:aspect-square">
+              <div className="grid flex-1 items-start gap-3 sm:grid-cols-[11rem_1fr] sm:gap-4 lg:grid-cols-[14rem_1fr]">
+                <div className="mx-auto flex aspect-[3/4] w-full max-w-[10rem] items-center justify-center self-start overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:mx-0 sm:max-w-none sm:aspect-square">
                   {selectedMember.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={selectedMember.avatar_url} alt={selectedMember.nickname || "Member avatar"} className="h-full w-full object-cover" />

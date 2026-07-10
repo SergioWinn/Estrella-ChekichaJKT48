@@ -129,8 +129,8 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
             </button>
 
             <div className="flex items-start justify-between gap-4 pr-12 sm:pr-14">
-              <div className="grid flex-1 items-start gap-3 sm:grid-cols-[11rem_1fr] sm:gap-4 lg:grid-cols-[14rem_1fr]">
-                <div className="mx-auto flex aspect-[3/4] w-full max-w-[10rem] items-center justify-center self-start overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:mx-0 sm:max-w-none sm:aspect-square">
+              <div className="grid flex-1 grid-cols-[5.75rem_1fr] items-start gap-3 sm:grid-cols-[11rem_1fr] sm:gap-4 lg:grid-cols-[14rem_1fr]">
+                <div className="flex aspect-[3/4] w-[5.75rem] items-center justify-center self-start overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:w-full sm:max-w-none sm:aspect-square">
                   {selectedMember.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={selectedMember.avatar_url} alt={selectedMember.nickname || "Member avatar"} className="h-full w-full object-cover" />
@@ -140,21 +140,21 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <h2 className="text-2xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-[2.2rem]">{selectedMember.nickname || "Unknown member"}</h2>
-                    <p className="mt-1 text-base text-[var(--muted-strong)]">{selectedMember.full_name || "No full name"}</p>
+                    <h2 className="text-xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-[2.2rem]">{selectedMember.nickname || "Unknown member"}</h2>
+                    <p className="mt-1 text-sm text-[var(--muted-strong)] sm:text-base">{selectedMember.full_name || "No full name"}</p>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)]">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:py-1.5 sm:text-xs">
                       {selectedMember.status || "Unknown team"}
                     </span>
-                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)]">
+                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:py-1.5 sm:text-xs">
                       Generation {selectedMember.generasi || "?"}
                     </span>
-                    <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
+                    <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--accent)] sm:px-3 sm:py-1.5 sm:text-xs">
                       Total entries {selectedMember.totalCheki}
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--muted-strong)]">
+                  <p className="text-xs leading-6 text-[var(--muted-strong)] sm:text-sm">
                     Most recent assigned event: {selectedMember.history[0] ? formatEventDate(selectedMember.history[0].start_time) : "No history yet"}
                   </p>
                 </div>

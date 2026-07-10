@@ -13,6 +13,10 @@ import { getSessionContext } from "@/lib/v2-server.ts";
 export const metadata: Metadata = {
   title: "Chekicha Archive Monitor",
   description: "See which draws are still open, who has been assigned, and which members appear most often.",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/apple-icon.png",
+  },
 };
 
 const themeInitScript = `(() => {

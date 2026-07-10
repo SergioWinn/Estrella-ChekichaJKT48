@@ -10,7 +10,10 @@ import { eventCollectionUsageCount, getSessionContext, memberUsageCount, require
 import { buildEventPayload, duplicateMemberLabels, getAuthRedirectPath, normalizeUsername, usernameToEmail, validateUsername } from "./v2-helpers.ts";
 
 function withMessage(path: string, message: string, type: "error" | "success" = "error") {
-  return `${path}?${type}=${encodeURIComponent(message)}`;
+  const url = new URL(path, "http://local.test");
+  url.searchParams.set(type, message);
+  url.searchParams.set("r", String(Date.now()));
+  return `${url.pathname}?${url.searchParams.toString()}`;
 }
 
 export async function loginAction(formData: FormData) {

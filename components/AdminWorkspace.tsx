@@ -201,6 +201,8 @@ export function AdminWorkspace({
   const [createSlotMode, setCreateSlotMode] = useState("1");
   const [createMemberA, setCreateMemberA] = useState("");
   const [createMemberB, setCreateMemberB] = useState("");
+  const [editEventType, setEditEventType] = useState(events[0]?.event_type || "Roulette");
+  const [editSlotMode, setEditSlotMode] = useState(String(events[0]?.slot_mode || 1));
   const [newNickname, setNewNickname] = useState("");
   const [newFullName, setNewFullName] = useState("");
   const [newStatus, setNewStatus] = useState<string>(STATUS_OPTIONS[0] || "LOVE");
@@ -250,6 +252,11 @@ export function AdminWorkspace({
   }, [events, selectedEventId]);
 
   useEffect(() => {
+    setEditEventType(selectedEvent?.event_type || "Roulette");
+    setEditSlotMode(String(selectedEvent?.slot_mode || 1));
+  }, [selectedEvent?.event_type, selectedEvent?.id, selectedEvent?.slot_mode]);
+
+  useEffect(() => {
     const nextMemberId = members[0]?.id || "";
     if (!members.length) {
       if (selectedMemberId) {
@@ -265,6 +272,8 @@ export function AdminWorkspace({
 
   const createEventType = selectedCreatePreset?.event_type || "Roulette";
   const createSingleMember = singleMemberEvent(createEventType);
+  const editSingleMember = singleMemberEvent(editEventType);
+  const showEditSlotB = !editSingleMember && editSlotMode === "2";
   const createEventDateText = `${createDate || "No date"} | ${createTimeValue} WIB`;
   const memberOptions = useMemo(() => members.map((m) => ({ label: memberOptionLabel(m), value: m.id })), [members]);
 
@@ -563,7 +572,13 @@ export function AdminWorkspace({
                         </div>
                         <div className="space-y-2">
                           <label className="block text-sm font-semibold text-[var(--muted)]">Event type</label>
-                          <input name="event_type" defaultValue={selectedEvent.event_type || "Roulette"} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
+                          <input name="event_type" value={editEventType} onChange={(event) => {
+                            const nextType = event.target.value;
+                            setEditEventType(nextType);
+                            if (singleMemberEvent(nextType)) {
+                              setEditSlotMode("1");
+                            }
+                          }} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
                         </div>
                       </div>
                       <div className="space-y-2">
@@ -573,10 +588,12 @@ export function AdminWorkspace({
                       </div>
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Slot mode</label>
-                        <select name="slot_mode" defaultValue={String(selectedEvent.slot_mode || 1)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
-                          <option value="1">1 slot</option>
-                          <option value="2">2 slots</option>
-                        </select>
+                        {editSingleMember ? <input type="hidden" name="slot_mode" value="1" /> : (
+                          <select name="slot_mode" value={editSlotMode} onChange={(event) => setEditSlotMode(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
+                            <option value="1">1 slot</option>
+                            <option value="2">2 slots</option>
+                          </select>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot A</label>
@@ -587,21 +604,25 @@ export function AdminWorkspace({
                           placeholder="None (Waiting for roulette)"
                         />
                       </div>
-                      <div className="space-y-2">
-                        <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot B</label>
-                        <SearchableSelect
-                          name="member_id_b"
-                          defaultValue={selectedEvent.member_id_b || ""}
-                          options={memberOptions}
-                          placeholder="None (Waiting for roulette)"
-                        />
-                      </div>
+                      {showEditSlotB ? (
+                        <div className="space-y-2">
+                          <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot B</label>
+                          <SearchableSelect
+                            name="member_id_b"
+                            defaultValue={selectedEvent.member_id_b || ""}
+                            options={memberOptions}
+                            placeholder="None (Waiting for roulette)"
+                          />
+                        </div>
+                      ) : (
+                        <input type="hidden" name="member_id_b" value="" />
+                      )}
                       <EventPreviewCard
                         eventName={selectedEvent.event_name || "Untitled event"}
                         eventType={selectedEvent.event_type || "Roulette"}
                         eventImageUrl={selectedEvent.event_image_url}
                         dateText={`${formatEventDate(selectedEvent.start_time)} | ${formatEventTime(selectedEvent.start_time, selectedEvent.end_time)} WIB`}
-                        footer={`Current mode: ${selectedEvent.slot_mode || 1} slot`}
+                        footer={editSingleMember ? "Single-member event" : `Current mode: ${editSlotMode} slot`}
                       />
                       <button className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
                         Save event changes

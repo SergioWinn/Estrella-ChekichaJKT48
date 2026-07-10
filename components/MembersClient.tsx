@@ -163,7 +163,8 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
 
             <div className="mt-5">
               <h3 className="text-lg font-bold text-[var(--foreground)]">Recent event history</h3>
-              <div className="mt-3 grid gap-2.5 md:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-3 max-h-[26rem] overflow-y-auto pr-1 sm:max-h-[28rem]">
+                <div className="grid grid-cols-2 gap-2.5">
                 {selectedMember.history.length ? (
                   selectedMember.history.map((row) => {
                     let slotLabel = "Slot A";
@@ -176,7 +177,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                     }
 
                     return (
-                      <article key={row.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2.5">
+                      <article key={row.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2">
                         <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface-strong)]">
                           {row.event_image_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -185,15 +186,15 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                             <MediaPlaceholder />
                           )}
                         </div>
-                        <div className="mt-2.5">
-                          <h4 className="truncate text-base font-bold text-[var(--foreground)]">{row.event_name || "Untitled event"}</h4>
-                          <p className="mt-1 text-sm text-[var(--muted-strong)]">{formatEventDate(row.start_time)}</p>
+                        <div className="mt-2">
+                          <h4 className="truncate text-sm font-bold text-[var(--foreground)] sm:text-base">{row.event_name || "Untitled event"}</h4>
+                          <p className="mt-1 text-xs text-[var(--muted-strong)] sm:text-sm">{formatEventDate(row.start_time)}</p>
                         </div>
-                        <div className="mt-2.5 flex flex-wrap gap-1.5">
-                          <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
+                        <div className="mt-2 flex flex-wrap gap-1.5">
+                          <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--accent)] sm:px-2.5 sm:text-[11px]">
                             {row.event_type || "Roulette"}
                           </span>
-                          <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)]">
+                          <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)] sm:px-2.5 sm:text-[11px]">
                             {slotLabel}
                           </span>
                         </div>
@@ -203,6 +204,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                 ) : (
                   <div className="text-sm text-[var(--muted)]">No completed entries yet.</div>
                 )}
+                </div>
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
+import type { CSSProperties } from "react";
 import { buildOverviewSnapshot, loadOverviewRows } from "@/lib/archive-data.ts";
 import { formatEventDate } from "@/lib/format.ts";
 import { buildHomepageCopy } from "@/lib/homepage-copy.ts";
-import { MatchedHeightColumns } from "@/components/MatchedHeightColumns";
 import { SectionHeader } from "@/components/SectionHeader";
 
 export const dynamic = "force-dynamic";
@@ -18,12 +18,16 @@ function QuickCountCard({
   value: string | number;
 }) {
   return (
-    <article className="app-card p-5">
+    <article className="app-card motion-surface p-5">
       <div className={`text-4xl font-extrabold tracking-[-0.03em] ${tone}`}>{value}</div>
       <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">{label}</p>
       <p className="mt-1 text-sm text-[var(--muted)]">{copy}</p>
     </article>
   );
+}
+
+function buildStaggerStyle(index: number): CSSProperties {
+  return { "--i": Math.min(index, 5) } as CSSProperties;
 }
 
 export default async function Page() {
@@ -69,19 +73,18 @@ export default async function Page() {
         </div>
       </section>
 
-      <MatchedHeightColumns
-        left={
-          <article className="app-card flex h-full min-h-0 flex-col overflow-hidden p-5">
+      <section className="grid gap-4 xl:grid-cols-[1.2fr_1fr] xl:items-start">
+        <article className="app-card flex min-h-0 flex-col overflow-hidden p-5 xl:h-[42rem]">
             <SectionHeader
               label="Show / event ranking"
               title="Members who appear most often"
               titleClassName="text-2xl sm:text-2xl"
               description="Only members with 2+ appearances are shown. Ties keep the same rank number and are ordered by the latest show/event assignment."
             />
-            <div className="mt-5 min-h-0 flex-1 grid gap-3 overflow-y-auto pr-2">
+            <div className="mt-5 grid gap-3">
               {snapshot.leaderboard.length ? (
                 snapshot.leaderboard.map((row) => (
-                  <div key={row.member_id} className="app-card-strong flex items-center gap-4 p-4">
+                  <div key={row.member_id} className="app-card-strong motion-list-item flex items-center gap-4 p-4" style={buildStaggerStyle(row.rank - 1)}>
                     <div className="text-2xl font-extrabold text-[var(--accent)]">#{row.rank}</div>
                     <div className="flex size-14 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)]">
                       {row.avatar_url ? (
@@ -108,8 +111,7 @@ export default async function Page() {
               )}
             </div>
           </article>
-        }
-        right={
+        <div className="xl:sticky xl:top-6">
           <article className="app-card flex flex-col p-5">
             <SectionHeader
               label="Recent 6"
@@ -120,7 +122,7 @@ export default async function Page() {
             <div className="mt-5 space-y-3">
               {snapshot.recent_assignments.length ? (
                 snapshot.recent_assignments.map((row, index) => (
-                  <div key={`${row.member_id}-${row.start_time}-${index}`} className="app-card-strong p-4">
+                  <div key={`${row.member_id}-${row.start_time}-${index}`} className="app-card-strong motion-list-item p-4" style={buildStaggerStyle(index)}>
                     <div className="flex items-center justify-between gap-3">
                       <div className="flex min-w-0 items-center gap-3">
                         <div className="flex size-12 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)]">
@@ -147,8 +149,8 @@ export default async function Page() {
               )}
             </div>
           </article>
-        }
-      />
+        </div>
+      </section>
 
       <section className="app-card p-5 sm:p-6">
         <SectionHeader

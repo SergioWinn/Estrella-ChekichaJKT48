@@ -17,7 +17,7 @@ export default function Loading() {
         {Array.from({ length: 3 }).map((_, i) => (
           <div key={i} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6">
             <div className="mb-5 h-5 w-32 animate-pulse rounded bg-[var(--surface-strong)]" />
-            <div className="grid gap-6 xl:grid-cols-2">
+            <div className="grid gap-4 min-[520px]:grid-cols-2">
               {Array.from({ length: 2 }).map((_, j) => (
                 <div key={j} className="flex gap-4 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] p-5">
                   <div className="h-20 w-16 animate-pulse rounded bg-[var(--surface-hover)]" />

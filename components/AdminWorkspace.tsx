@@ -246,8 +246,8 @@ export function AdminWorkspace({
         </div>
       </section>
 
-      {success ? <div className="rounded-xl border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm text-[var(--accent)]">{success}</div> : null}
-      {error ? <div className="rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
+      {success ? <div role="status" aria-live="polite" className="rounded-xl border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm text-[var(--accent)]">{success}</div> : null}
+      {error ? <div role="alert" className="rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
 
       <div className="rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-5 py-4 text-lg font-bold text-[var(--accent)]">
         Admin role active
@@ -265,6 +265,7 @@ export function AdminWorkspace({
             key={tab.key}
             type="button"
             onClick={() => setActiveTab(tab.key)}
+            aria-pressed={activeTab === tab.key}
             className={`border-b-[3px] px-0 py-3 text-[1.05rem] font-semibold transition ${
               activeTab === tab.key
                 ? "border-[var(--accent)] text-[var(--foreground)]"
@@ -287,6 +288,9 @@ export function AdminWorkspace({
             <p className="mt-3 text-sm leading-6 text-[var(--muted-strong)]">
               <strong className="font-semibold text-[var(--foreground)]">Roulette</strong> — a standard show/event session where which members attend is determined by lottery. Archive entries are logged after the result is known.
             </p>
+            <div className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-4 text-sm text-[var(--muted)]">
+              <strong className="text-[var(--foreground)]">How to fill results:</strong> choose the member for each waiting slot, then save that row. The row leaves this queue after every required slot is filled.
+            </div>
           </div>
 
           <section className="grid gap-4 md:grid-cols-3">
@@ -306,6 +310,10 @@ export function AdminWorkspace({
                     <input type="hidden" name="event_id" value={event.id || ""} />
                     <input type="hidden" name="event_name" value={event.event_name || "Event"} />
                     <input type="hidden" name="slot_mode" value={event.slot_mode || 1} />
+                    <div className="flex items-center justify-between gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-sm text-[var(--muted)]">
+                      <span>Complete this row now.</span>
+                      <span className="font-semibold text-[var(--foreground)]">{waitingB ? "2 members needed" : "1 member needed"}</span>
+                    </div>
                     <div className="grid gap-4 md:grid-cols-[1fr_8rem] md:items-start">
                       <div>
                         <div className="text-xs font-semibold text-[var(--accent)]">Waiting draw</div>
@@ -327,31 +335,33 @@ export function AdminWorkspace({
                     </div>
 
                     <div className="space-y-3">
-                      <label className="block text-sm font-semibold text-[var(--muted)]">Assign result</label>
+                      <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot A</label>
                       <SearchableSelect
                         name="member_id_a"
                         defaultValue={event.member_id_a || ""}
                         options={memberOptions}
                         placeholder={singleMemberEvent(event.event_type) ? "None (Member waiting)" : "None (Waiting for roulette)"}
                       />
+                      <p className="text-sm text-[var(--muted)]">Pick the member shown in the roulette result for the first slot.</p>
                     </div>
 
                     {waitingB ? (
                       <div className="space-y-3">
-                        <label className="block text-sm font-semibold text-[var(--muted)]">Assign slot B</label>
+                        <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot B</label>
                         <SearchableSelect
                           name="member_id_b"
                           defaultValue={event.member_id_b || ""}
                           options={memberOptions}
                           placeholder="None (Waiting for roulette)"
                         />
+                        <p className="text-sm text-[var(--muted)]">Only fill slot B when this event has two winning members.</p>
                       </div>
                     ) : (
                       <input type="hidden" name="member_id_b" value={event.member_id_b || ""} />
                     )}
 
                     <button className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
-                      Save result
+                      Save roulette result
                     </button>
                   </form>
                 );
@@ -375,6 +385,9 @@ export function AdminWorkspace({
             <p className="mt-5 max-w-4xl text-lg leading-9 text-[var(--muted)]">
               Use the event tools below to schedule a new row or correct an existing one without losing context.
             </p>
+            <div className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-4 text-sm text-[var(--muted)]">
+              <strong className="text-[var(--foreground)]">Create before you fill:</strong> add a row when an event is missing, then use <strong>Fill Results</strong> to assign the roulette members after the draw is known.
+            </div>
           </div>
 
           <div className="grid gap-6 xl:grid-cols-2">
@@ -396,9 +409,10 @@ export function AdminWorkspace({
                   <input type="hidden" name="start_minute" value={createTimeValue.slice(3, 5)} />
                 </div>
                 <p className="text-sm text-[var(--muted)]">Scheduled for {createDate || "no date yet"} at {createTimeValue}</p>
+                <p className="text-sm text-[var(--muted)]">Leave slot fields empty if the roulette draw has not happened yet.</p>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-[var(--muted)]">Event / Setlist</label>
+                    <label className="block text-sm font-semibold text-[var(--muted)]">Preset event name</label>
                     <select
                       name="event_name"
                       value={selectedCreatePreset?.event_name || ""}
@@ -432,7 +446,7 @@ export function AdminWorkspace({
                   </div>
                 )}
                 <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-[var(--muted)]">Assign slot A now</label>
+                  <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot A</label>
                   <SearchableSelect
                     name="member_id_a"
                     options={memberOptions}
@@ -443,7 +457,7 @@ export function AdminWorkspace({
                 </div>
                 {!createSingleMember && createSlotMode === "2" ? (
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-[var(--muted)]">Assign slot B now</label>
+                    <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot B</label>
                     <SearchableSelect
                       name="member_id_b"
                       options={memberOptions}
@@ -463,7 +477,7 @@ export function AdminWorkspace({
                   footer={createSingleMember ? "Single-member event" : `${createSlotMode} slot mode`}
                 />
                 <button className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
-                  Save event row
+                  Create event row
                 </button>
               </form>
             </section>
@@ -474,6 +488,7 @@ export function AdminWorkspace({
                 <>
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Saved event row</label>
+                    <p className="text-sm text-[var(--muted)]">Search the timeline details in the dropdown label if several rows use the same event name.</p>
                     <select value={selectedEventId} onChange={(event) => setSelectedEventId(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
                       {events.map((event) => (
                         <option key={String(event.id || event.start_time)} value={String(event.id || "")}>{eventOptionLabel(event)}</option>
@@ -481,6 +496,7 @@ export function AdminWorkspace({
                     </select>
                   </div>
                   <div key={String(selectedEvent.id || "no-event")} className="space-y-4">
+                    <p className="text-sm text-[var(--muted)]">Choose the saved row first, then update its schedule, artwork, or assigned members.</p>
                     <form action={updateEventAction} className="space-y-4">
                       <input type="hidden" name="event_id" value={selectedEvent.id || ""} />
                       <div className="space-y-2">
@@ -500,7 +516,7 @@ export function AdminWorkspace({
                       <p className="text-sm text-[var(--muted)]">Scheduled for {eventDateValue(selectedEvent.start_time)} at {eventTimeValue(selectedEvent.start_time)} WIB</p>
                       <div className="grid gap-3 sm:grid-cols-2">
                         <div className="space-y-2">
-                          <label className="block text-sm font-semibold text-[var(--muted)]">Event / Setlist</label>
+                          <label className="block text-sm font-semibold text-[var(--muted)]">Event name</label>
                           <input name="event_name" defaultValue={selectedEvent.event_name || ""} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
                         </div>
                         <div className="space-y-2">
@@ -511,6 +527,7 @@ export function AdminWorkspace({
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Event image URL</label>
                         <input name="event_image_url" defaultValue={selectedEvent.event_image_url || ""} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-base text-[var(--foreground)] outline-none" />
+                        <p className="text-sm text-[var(--muted)]">Optional. Keep it empty if this archive row does not need artwork.</p>
                       </div>
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Slot mode</label>
@@ -520,7 +537,7 @@ export function AdminWorkspace({
                         </select>
                       </div>
                       <div className="space-y-2">
-                        <label className="block text-sm font-semibold text-[var(--muted)]">Member slot A</label>
+                        <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot A</label>
                         <SearchableSelect
                           name="member_id_a"
                           defaultValue={selectedEvent.member_id_a || ""}
@@ -529,7 +546,7 @@ export function AdminWorkspace({
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="block text-sm font-semibold text-[var(--muted)]">Member slot B</label>
+                        <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot B</label>
                         <SearchableSelect
                           name="member_id_b"
                           defaultValue={selectedEvent.member_id_b || ""}
@@ -553,9 +570,9 @@ export function AdminWorkspace({
                       <input type="hidden" name="event_name" value={selectedEvent.event_name || "Event"} />
                       <label className="flex items-center gap-3 text-sm text-[var(--danger-foreground)]">
                         <input type="checkbox" name="confirm_delete" />
-                        Confirm delete for this event row
+                        I understand this event row will be deleted permanently
                       </label>
-                      <button className="mt-4 rounded-xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)]">Delete event row</button>
+                      <button className="mt-4 rounded-xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)]">Delete this event row</button>
                     </form>
                   </div>
                 </>
@@ -575,6 +592,9 @@ export function AdminWorkspace({
             <p className="mt-5 max-w-4xl text-lg leading-9 text-[var(--muted)]">
               Add a new member quickly or open the edit tool only when you need to change existing records.
             </p>
+            <div className="mt-5 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-4 text-sm text-[var(--muted)]">
+              <strong className="text-[var(--foreground)]">Member records drive both admin and collection screens:</strong> keep nickname, full name, generation, and avatar accurate so users can find the right cheki slot.
+            </div>
           </div>
 
           <div className="grid gap-6 xl:grid-cols-2">
@@ -612,6 +632,7 @@ export function AdminWorkspace({
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-[var(--muted)]">Avatar URL</label>
                   <input name="avatar_url" value={newAvatarUrl} onChange={(event) => setNewAvatarUrl(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-base text-[var(--foreground)] outline-none" />
+                  <p className="text-sm text-[var(--muted)]">Optional. Add an image URL so this member is easier to recognize in collection cards.</p>
                 </div>
                 <MemberPreviewCard
                   title="Preview"
@@ -622,7 +643,7 @@ export function AdminWorkspace({
                   avatarUrl={newAvatarUrl}
                 />
                 <button className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]">
-                  Save member
+                  Create member
                 </button>
               </form>
             </section>
@@ -637,10 +658,11 @@ export function AdminWorkspace({
                         options={memberOptions}
                         value={selectedMemberId}
                         onChange={setSelectedMemberId}
-                        placeholder="Select a member..."
+                        placeholder="Search nickname or full name"
                       />
                     </div>
                   <div key={selectedMember.id} className="space-y-4">
+                    <p className="text-sm text-[var(--muted)]">Pick a member first, then save edits below. Deleting is permanent unless you recreate the record.</p>
                     <form action={updateMemberAction} className="space-y-4">
                       <input type="hidden" name="member_id" value={selectedMember.id} />
                       <div className="grid gap-3 sm:grid-cols-2">
@@ -674,6 +696,7 @@ export function AdminWorkspace({
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Edit avatar URL</label>
                         <input name="avatar_url" defaultValue={selectedMember.avatar_url || ""} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-base text-[var(--foreground)] outline-none" />
+                        <p className="text-sm text-[var(--muted)]">Optional. Update this when the member photo changes or remove it if the link is no longer valid.</p>
                       </div>
                       <MemberPreviewCard
                         title="Edit preview"
@@ -692,9 +715,9 @@ export function AdminWorkspace({
                       <input type="hidden" name="nickname" value={selectedMember.nickname || "Member"} />
                       <label className="flex items-center gap-3 text-sm text-[var(--danger-foreground)]">
                         <input type="checkbox" name="confirm_delete" />
-                        Confirm delete for this member record
+                        I understand this member record will be deleted permanently
                       </label>
-                      <button className="mt-4 rounded-xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)]">Delete member</button>
+                      <button className="mt-4 rounded-xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)]">Delete this member</button>
                     </form>
                   </div>
                 </>

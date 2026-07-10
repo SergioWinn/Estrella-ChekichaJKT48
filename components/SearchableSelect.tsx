@@ -29,6 +29,7 @@ export function SearchableSelect({
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [internalValue, setInternalValue] = useState(value ?? defaultValue ?? "");
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const hiddenInputRef = useRef<HTMLInputElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
 
@@ -68,12 +69,19 @@ export function SearchableSelect({
   useEffect(() => {
     if (value !== undefined) {
       setInternalValue(value);
+      if (hiddenInputRef.current) {
+        hiddenInputRef.current.value = value;
+      }
     }
   }, [value]);
 
   useEffect(() => {
     if (value === undefined) {
-      setInternalValue(defaultValue ?? "");
+      const nextValue = defaultValue ?? "";
+      setInternalValue(nextValue);
+      if (hiddenInputRef.current) {
+        hiddenInputRef.current.value = nextValue;
+      }
     }
   }, [defaultValue, value]);
 
@@ -112,6 +120,9 @@ export function SearchableSelect({
 
   function handleSelect(option: Option) {
     setInternalValue(option.value);
+    if (hiddenInputRef.current) {
+      hiddenInputRef.current.value = option.value;
+    }
     setQuery("");
     setOpen(false);
     onChange?.(option.value);
@@ -121,7 +132,7 @@ export function SearchableSelect({
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
-      {name ? <input type="hidden" name={name} value={selected?.value ?? ""} /> : null}
+      {name ? <input ref={hiddenInputRef} type="hidden" name={name} value={selected?.value ?? ""} /> : null}
       <button
         type="button"
         onClick={() => setOpen(!open)}

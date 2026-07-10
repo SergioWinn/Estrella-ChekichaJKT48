@@ -18,7 +18,11 @@ export function MatchedHeightColumns({
       return undefined;
     }
 
+<<<<<<< HEAD
     const mediaQuery = window.matchMedia("(min-width: 1280px)");
+=======
+    const mediaQuery = window.matchMedia("(min-width: 1536px)");
+>>>>>>> 80d023c7e156f6238cb6cba986aa4975af194bc4
 
     const syncHeight = () => {
       if (!mediaQuery.matches) {

@@ -114,12 +114,22 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                       key={row.id || `${row.event_name}-${row.start_time}`}
                       className="app-card-strong relative grid gap-4 p-4 md:grid-cols-[4rem_7.5rem_1fr] md:items-center md:p-5"
                     >
-                    <div className="absolute right-5 top-5 md:right-6 md:top-6">
+                    <div className="flex justify-center md:hidden">
                       <span className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
                         {card.eventType}
                       </span>
                     </div>
-                    <DateRail value={row.start_time} />
+                    <div className="hidden md:block absolute right-5 top-5 md:right-6 md:top-6">
+                      <span className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
+                        {card.eventType}
+                      </span>
+                    </div>
+                    <div className="md:hidden">
+                      <DateRail value={row.start_time} />
+                    </div>
+                    <div className="hidden md:block">
+                      <DateRail value={row.start_time} />
+                    </div>
                     <div className="app-card-strong aspect-[4/3] w-full overflow-hidden">
                       {row.event_image_url ? (
                         // eslint-disable-next-line @next/next/no-img-element

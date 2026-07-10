@@ -76,7 +76,7 @@ export default async function Page() {
 
       <MatchedHeightColumns
         left={
-          <article className="app-card flex h-full min-h-0 flex-col overflow-hidden p-5">
+          <article className="app-card flex h-[34rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem] xl:h-full">
             <SectionHeader
               label="Show / event ranking"
               title="Members who appear most often"

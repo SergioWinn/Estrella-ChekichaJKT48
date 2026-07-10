@@ -164,7 +164,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
             <div className="mt-5">
               <h3 className="text-lg font-bold text-[var(--foreground)]">Recent event history</h3>
               <div className="mt-3 max-h-[26rem] overflow-y-auto pr-1 sm:max-h-[28rem]">
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
                 {selectedMember.history.length ? (
                   selectedMember.history.map((row) => {
                     let slotLabel = "Slot A";

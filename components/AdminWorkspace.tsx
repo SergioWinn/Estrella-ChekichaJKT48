@@ -434,6 +434,7 @@ export function AdminWorkspace({
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-[var(--muted)]">Assign slot A now</label>
                   <SearchableSelect
+                    name="member_id_a"
                     options={memberOptions}
                     value={createMemberA}
                     onChange={setCreateMemberA}
@@ -444,6 +445,7 @@ export function AdminWorkspace({
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Assign slot B now</label>
                     <SearchableSelect
+                      name="member_id_b"
                       options={memberOptions}
                       value={createMemberB}
                       onChange={setCreateMemberB}

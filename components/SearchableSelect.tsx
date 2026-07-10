@@ -27,9 +27,7 @@ export function SearchableSelect({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState(0);
-  const [selectedLabel, setSelectedLabel] = useState(
-    options.find((o) => o.value === (value ?? defaultValue ?? ""))?.label ?? "",
-  );
+  const [internalValue, setInternalValue] = useState(value ?? defaultValue ?? "");
   const containerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -67,6 +65,18 @@ export function SearchableSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    if (value !== undefined) {
+      setInternalValue(value);
+    }
+  }, [value]);
+
+  useEffect(() => {
+    if (value === undefined) {
+      setInternalValue(defaultValue ?? "");
+    }
+  }, [defaultValue, value]);
+
   function handleKeyDown(event: React.KeyboardEvent) {
     if (!open) {
       if (event.key === "ArrowDown" || event.key === "Enter") {
@@ -101,17 +111,17 @@ export function SearchableSelect({
   }
 
   function handleSelect(option: Option) {
-    setSelectedLabel(option.label);
+    setInternalValue(option.value);
     setQuery("");
     setOpen(false);
     onChange?.(option.value);
   }
 
-  const selected = options.find((o) => o.value === (value ?? defaultValue ?? ""));
+  const selected = options.find((o) => o.value === internalValue);
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
-      <input type="hidden" name={name} value={selected?.value ?? ""} />
+      {name ? <input type="hidden" name={name} value={selected?.value ?? ""} /> : null}
       <button
         type="button"
         onClick={() => setOpen(!open)}

@@ -1,4 +1,4 @@
-:root {
+﻿:root {
   --font-display: "Space Grotesk", "Segoe UI", sans-serif;
   --font-body: "Source Sans 3", "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", "Cascadia Mono", monospace;
@@ -99,3 +99,4 @@
   --hero-gradient: linear-gradient(135deg, oklch(0.985 0.005 248) 0%, oklch(0.95 0.008 246) 50%, oklch(0.91 0.02 236) 100%);
   --hero-gradient-soft: linear-gradient(180deg, oklch(0.98 0.004 248), oklch(0.94 0.01 246));
 }
+

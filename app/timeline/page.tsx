@@ -1,4 +1,4 @@
-import { TimelineClient } from "@/components/TimelineClient";
+﻿import { TimelineClient } from "@/components/TimelineClient";
 import { SectionHeader } from "@/components/SectionHeader";
 import { loadTimelineRows } from "@/lib/archive-data.ts";
 
@@ -29,3 +29,4 @@ export default async function TimelinePage() {
     </div>
   );
 }
+

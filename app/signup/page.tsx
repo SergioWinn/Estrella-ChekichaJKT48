@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 
 import { SectionHeader } from "@/components/SectionHeader";
 import { signupAction } from "@/lib/v2-actions.ts";
@@ -47,3 +47,4 @@ export default async function SignupPage({
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import { MembersClient } from "@/components/MembersClient";
+﻿import { MembersClient } from "@/components/MembersClient";
 import { SectionHeader } from "@/components/SectionHeader";
 import { buildMemberArchive, loadMemberArchiveRows, loadMembers } from "@/lib/archive-data.ts";
 
@@ -35,3 +35,4 @@ export default async function MembersPage() {
     </div>
   );
 }
+

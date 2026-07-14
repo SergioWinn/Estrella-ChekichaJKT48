@@ -1,9 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Source+Sans+3:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+﻿@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Source+Sans+3:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
 @import "../tokens.css";
 @import "tailwindcss";
 
-/* Hallmark � pre-emit critique: P4 H4 E4 S4 R4 V4 */
-/* Hallmark � genre: modern-minimal � macrostructure: Stat-Led / Workbench / Letter � design-system: design.md � designed-as-app */
+/* Hallmark ï¿½ pre-emit critique: P4 H4 E4 S4 R4 V4 */
+/* Hallmark ï¿½ genre: modern-minimal ï¿½ macrostructure: Stat-Led / Workbench / Letter ï¿½ design-system: design.md ï¿½ designed-as-app */
 
 :root {
   color-scheme: dark;
@@ -289,3 +289,4 @@ button {
     will-change: auto;
   }
 }
+

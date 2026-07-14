@@ -1,4 +1,4 @@
-# Design - Chekicha Archive Monitor
+﻿# Design - Chekicha Archive Monitor
 
 A locked design system for this app. Every page redesign reads this file before
 emitting code. Do not regenerate per page - extend or amend this file when the
@@ -78,3 +78,4 @@ tokens (`var(--space-md)`), never raw values.
 ### tokens.css
 
 See [tokens.css](/abs/path/E:/itadaki/estrella-chekijkt48/tokens.css:1).
+

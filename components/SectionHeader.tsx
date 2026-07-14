@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+﻿import type { ReactNode } from "react";
 
 export function SectionHeader({
   label,
@@ -34,3 +34,4 @@ export function SectionHeader({
     </div>
   );
 }
+

@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+﻿import type { CSSProperties } from "react";
 import { buildOverviewSnapshot, loadOverviewRows } from "@/lib/archive-data.ts";
 import { formatEventDate } from "@/lib/format.ts";
 import { buildHomepageCopy } from "@/lib/homepage-copy.ts";
@@ -184,3 +184,4 @@ export default async function Page() {
     </div>
   );
 }
+

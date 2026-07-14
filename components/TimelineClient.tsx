@@ -6,7 +6,7 @@ import { FilterPill } from "@/components/FilterPill";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { countPendingSlots, groupTimelineByMonth } from "@/lib/archive-data.ts";
 import { formatEventTime } from "@/lib/format.ts";
-import { buildTimelineCardState, buildTimelineFilterNote, filterTimelineEvents, getRouletteShowOptions } from "@/lib/timeline-view.ts";
+import { buildTimelineCardState, buildTimelineFilterNote, filterTimelineEvents, getRouletteSeriesOptions } from "@/lib/timeline-view.ts";
 import type { TimelineEvent } from "@/lib/types.ts";
 
 const FILTERS = ["All", "Roulette", "Birthday", "Graduation"] as const;
@@ -64,13 +64,13 @@ function MemberPill({
 
 export function TimelineClient({ events }: { events: TimelineEvent[] }) {
   const [filterType, setFilterType] = useState<(typeof FILTERS)[number]>("All");
-  const [rouletteShow, setRouletteShow] = useState("All");
+  const [rouletteSeries, setRouletteSeries] = useState("All");
 
-  const rouletteShows = useMemo(() => getRouletteShowOptions(events), [events]);
-  const filtered = useMemo(() => filterTimelineEvents(events, filterType, rouletteShow), [events, filterType, rouletteShow]);
+  const rouletteSeriesOptions = useMemo(() => getRouletteSeriesOptions(events), [events]);
+  const filtered = useMemo(() => filterTimelineEvents(events, filterType, rouletteSeries), [events, filterType, rouletteSeries]);
   const pendingCount = useMemo(() => countPendingSlots(events), [events]);
   const sections = useMemo(() => groupTimelineByMonth(filtered), [filtered]);
-  const filterNote = useMemo(() => buildTimelineFilterNote(filterType, rouletteShow), [filterType, rouletteShow]);
+  const filterNote = useMemo(() => buildTimelineFilterNote(filterType, rouletteSeries), [filterType, rouletteSeries]);
 
   return (
     <div className="space-y-6">
@@ -98,15 +98,15 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
           </div>
           {filterType === "Roulette" ? (
             <label className="mt-4 block">
-              <span className="text-xs font-semibold text-[var(--muted-strong)]">Roulette show</span>
+              <span className="text-xs font-semibold text-[var(--muted-strong)]">Roulette series</span>
               <select
-                value={rouletteShow}
-                onChange={(event) => setRouletteShow(event.target.value)}
+                value={rouletteSeries}
+                onChange={(event) => setRouletteSeries(event.target.value)}
                 className="app-input mt-2 min-h-11 w-full truncate px-3 py-2.5 text-sm outline-none"
               >
-                <option value="All">All roulette shows</option>
-                {rouletteShows.map((show) => (
-                  <option key={show} value={show}>{show}</option>
+                <option value="All">All roulette series</option>
+                {rouletteSeriesOptions.map((series) => (
+                  <option key={series} value={series}>{series}</option>
                 ))}
               </select>
             </label>

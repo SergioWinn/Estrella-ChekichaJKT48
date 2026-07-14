@@ -45,7 +45,7 @@ export async function loadEventPresets(supabase: Awaited<ReturnType<typeof creat
   void supabase;
   return supabaseSelect<EventPreset>(
     "event_presets",
-    "id,event_name,event_type,event_image_url,sort_order,is_active",
+    "id,event_name,event_series,event_type,event_image_url,sort_order,is_active",
     { filters: { is_active: "eq.true" }, orderBy: "sort_order", orderDirection: "asc" },
   );
 }
@@ -54,7 +54,7 @@ export async function loadAdminEventRows(supabase: Awaited<ReturnType<typeof cre
   void supabase;
   return supabaseSelect<ChekichaRow>(
     "chekicha",
-    "id,event_name,event_type,start_time,end_time,event_image_url,slot_mode,member_id_a,member_id_b",
+    "id,event_name,event_series,event_type,start_time,end_time,event_image_url,slot_mode,member_id_a,member_id_b",
     { orderBy: "start_time", orderDirection: "desc" },
   );
 }

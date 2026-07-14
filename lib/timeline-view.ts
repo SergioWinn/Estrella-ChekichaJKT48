@@ -1,29 +1,33 @@
 import { relationToMember } from "./archive-data.ts";
 import type { TimelineEvent } from "./types.ts";
 
-export function getRouletteShowOptions(events: TimelineEvent[]): string[] {
-  const shows = new Map<string, string>();
+function getEventSeries(event: TimelineEvent): string {
+  return (event.event_series || event.event_name || "").trim();
+}
+
+export function getRouletteSeriesOptions(events: TimelineEvent[]): string[] {
+  const series = new Map<string, string>();
 
   for (const event of events) {
     if ((event.event_type || "Roulette") !== "Roulette") continue;
-    const name = (event.event_name || "").trim();
-    if (name) shows.set(name.toLocaleLowerCase(), name);
+    const name = getEventSeries(event);
+    if (name) series.set(name.toLocaleLowerCase(), name);
   }
 
-  return Array.from(shows.values()).sort((a, b) => a.localeCompare(b));
+  return Array.from(series.values()).sort((a, b) => a.localeCompare(b));
 }
 
-export function filterTimelineEvents(events: TimelineEvent[], filterType: string, rouletteShow = "All"): TimelineEvent[] {
+export function filterTimelineEvents(events: TimelineEvent[], filterType: string, rouletteSeries = "All"): TimelineEvent[] {
   return events.filter((event) => {
     const eventType = event.event_type || "Roulette";
     if (filterType !== "All" && eventType !== filterType) return false;
-    return filterType !== "Roulette" || rouletteShow === "All" || event.event_name === rouletteShow;
+    return filterType !== "Roulette" || rouletteSeries === "All" || getEventSeries(event) === rouletteSeries;
   });
 }
 
-export function buildTimelineFilterNote(filterType: string, rouletteShow = "All"): string {
+export function buildTimelineFilterNote(filterType: string, rouletteSeries = "All"): string {
   if (filterType === "All") return "Showing every event type across all months";
-  if (filterType === "Roulette" && rouletteShow !== "All") return `Showing only ${rouletteShow} roulette sessions`;
+  if (filterType === "Roulette" && rouletteSeries !== "All") return `Showing only ${rouletteSeries} roulette sessions`;
   if (filterType === "Roulette") return "Showing every roulette show across all months";
   return `Showing only ${filterType} events`;
 }

@@ -16,6 +16,7 @@ export interface AuthProfile {
 export interface EventPreset {
   event_image_url?: string | null;
   event_name: string;
+  event_series?: string | null;
   event_type: string;
   id?: string;
   is_active?: boolean;
@@ -109,6 +110,7 @@ export function buildEventPayload(args: {
     start_time: start.toISOString(),
     end_time: end.toISOString(),
     event_name: args.preset.event_name,
+    event_series: args.eventType === "Roulette" ? args.preset.event_series?.trim() || args.preset.event_name : null,
     event_type: args.preset.event_type,
     event_image_url: args.preset.event_image_url || null,
     slot_mode: isSingle ? 1 : args.slotMode,

@@ -142,7 +142,7 @@ test("admin helpers block duplicate member names and coerce birthday events to o
   const eventPayload = buildEventPayload({
     eventDate: "2026-07-10",
     eventType: "Birthday",
-    preset: { event_name: "Birthday Live", event_type: "Birthday", event_image_url: "" },
+    preset: { event_name: "Birthday Live", event_series: "Ramadhan", event_type: "Birthday", event_image_url: "" },
     slotMode: 2,
     startTimeValue: "10:15",
     startHour: 10,
@@ -153,5 +153,18 @@ test("admin helpers block duplicate member names and coerce birthday events to o
 
   assert.equal(eventPayload.slot_mode, 1);
   assert.equal(eventPayload.member_id_b, null);
+  assert.equal(eventPayload.event_series, null);
   assert.equal(eventPayload.end_time, "2026-07-10T04:15:00.000Z");
+
+  const roulettePayload = buildEventPayload({
+    eventDate: "2026-07-10",
+    eventType: "Roulette",
+    preset: { event_name: "Sahur Bareng", event_series: "Ramadhan", event_type: "Roulette" },
+    slotMode: 1,
+    startTimeValue: "10:15",
+    startHour: 10,
+    startMinute: 15,
+  });
+
+  assert.equal(roulettePayload.event_series, "Ramadhan");
 });

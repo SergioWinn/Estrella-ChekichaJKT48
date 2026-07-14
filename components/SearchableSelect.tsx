@@ -27,11 +27,11 @@ export function SearchableSelect({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState(0);
-  const [internalValue, setInternalValue] = useState(value ?? defaultValue ?? "");
+  const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue ?? "");
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const hiddenInputRef = useRef<HTMLInputElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
+  const selectedValue = value ?? uncontrolledValue;
 
   const filtered = query.trim()
     ? options.filter((o) => o.label.toLowerCase().includes(query.toLowerCase()))
@@ -40,9 +40,6 @@ export function SearchableSelect({
   useEffect(() => {
     if (open && inputRef.current) {
       inputRef.current.focus();
-    }
-    if (open) {
-      setHighlightedIndex(0);
     }
   }, [open]);
 
@@ -66,28 +63,10 @@ export function SearchableSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    if (value !== undefined) {
-      setInternalValue(value);
-      if (hiddenInputRef.current) {
-        hiddenInputRef.current.value = value;
-      }
-    }
-  }, [value]);
-
-  useEffect(() => {
-    if (value === undefined) {
-      const nextValue = defaultValue ?? "";
-      setInternalValue(nextValue);
-      if (hiddenInputRef.current) {
-        hiddenInputRef.current.value = nextValue;
-      }
-    }
-  }, [defaultValue, value]);
-
   function handleKeyDown(event: React.KeyboardEvent) {
     if (!open) {
       if (event.key === "ArrowDown" || event.key === "Enter") {
+        setHighlightedIndex(0);
         setOpen(true);
         event.preventDefault();
       }
@@ -119,23 +98,23 @@ export function SearchableSelect({
   }
 
   function handleSelect(option: Option) {
-    setInternalValue(option.value);
-    if (hiddenInputRef.current) {
-      hiddenInputRef.current.value = option.value;
-    }
+    if (value === undefined) setUncontrolledValue(option.value);
     setQuery("");
     setOpen(false);
     onChange?.(option.value);
   }
 
-  const selected = options.find((o) => o.value === internalValue);
+  const selected = options.find((o) => o.value === selectedValue);
 
   return (
     <div ref={containerRef} className={`relative ${className}`}>
-      {name ? <input ref={hiddenInputRef} type="hidden" name={name} value={selected?.value ?? ""} /> : null}
+      {name ? <input type="hidden" name={name} value={selected?.value ?? ""} /> : null}
       <button
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          if (!open) setHighlightedIndex(0);
+          setOpen(!open);
+        }}
         className="flex min-h-12 w-full items-center rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-left text-lg text-[var(--foreground)] transition hover:border-[var(--border-strong)]"
       >
         <span className={selected ? "text-[var(--foreground)]" : "text-[var(--muted)]"}>

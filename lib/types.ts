@@ -10,6 +10,7 @@ export interface ChekichaRow {
   end_time?: string | null;
   event_image_url?: string | null;
   event_name?: string | null;
+  event_series?: string | null;
   event_type?: string | null;
   id?: string | null;
   member_a?: MemberRelation | MemberRelation[] | null;
@@ -81,6 +82,7 @@ export interface AuthProfile {
 export interface EventPreset {
   event_image_url?: string | null;
   event_name: string;
+  event_series?: string | null;
   event_type: string;
   id: string;
   is_active?: boolean;

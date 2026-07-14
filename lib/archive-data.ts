@@ -223,7 +223,7 @@ export async function loadOverviewRows(): Promise<ChekichaRow[]> {
 export async function loadTimelineRows(): Promise<TimelineEvent[]> {
   return supabaseSelect<TimelineEvent>(
     "chekicha",
-    "id,start_time,end_time,event_name,event_type,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(full_name,nickname,avatar_url),member_b:member_id_b(full_name,nickname,avatar_url)",
+    "id,start_time,end_time,event_name,event_series,event_type,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(full_name,nickname,avatar_url),member_b:member_id_b(full_name,nickname,avatar_url)",
     { orderBy: "start_time", orderDirection: "desc" },
   );
 }

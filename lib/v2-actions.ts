@@ -180,6 +180,7 @@ export async function createEventAction(formData: FormData) {
     eventType,
     preset: {
       event_name: String(formData.get("event_name") || ""),
+      event_series: String(formData.get("event_series") || "") || null,
       event_type: eventType,
       event_image_url: String(formData.get("event_image_url") || ""),
     },
@@ -209,6 +210,7 @@ export async function updateEventAction(formData: FormData) {
     eventType,
     preset: {
       event_name: String(formData.get("event_name") || ""),
+      event_series: String(formData.get("event_series") || "") || null,
       event_type: eventType,
       event_image_url: String(formData.get("event_image_url") || ""),
     },

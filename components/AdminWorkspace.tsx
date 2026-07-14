@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { SearchableSelect } from "@/components/SearchableSelect";
@@ -201,8 +201,7 @@ export function AdminWorkspace({
   const [createSlotMode, setCreateSlotMode] = useState("1");
   const [createMemberA, setCreateMemberA] = useState("");
   const [createMemberB, setCreateMemberB] = useState("");
-  const [editEventType, setEditEventType] = useState(events[0]?.event_type || "Roulette");
-  const [editSlotMode, setEditSlotMode] = useState(String(events[0]?.slot_mode || 1));
+  const [editState, setEditState] = useState<{ eventId: string; eventType: string; slotMode: string } | null>(null);
   const [newNickname, setNewNickname] = useState("");
   const [newFullName, setNewFullName] = useState("");
   const [newStatus, setNewStatus] = useState<string>(STATUS_OPTIONS[0] || "LOVE");
@@ -214,6 +213,10 @@ export function AdminWorkspace({
   const selectedCreatePreset = useMemo(() => presets.find((preset) => preset.id === createPresetId) ?? presets[0] ?? null, [createPresetId, presets]);
   const selectedEvent = useMemo(() => events.find((event) => String(event.id || "") === selectedEventId) ?? events[0] ?? null, [events, selectedEventId]);
   const selectedMember = useMemo(() => members.find((member) => member.id === selectedMemberId) ?? members[0] ?? null, [members, selectedMemberId]);
+  const selectedEventKey = String(selectedEvent?.id || "");
+  const selectedEditState = editState?.eventId === selectedEventKey ? editState : null;
+  const editEventType = selectedEditState?.eventType || selectedEvent?.event_type || "Roulette";
+  const editSlotMode = selectedEditState?.slotMode || String(selectedEvent?.slot_mode || 1);
   const queueRows = useMemo(
     () =>
       [...events]
@@ -224,58 +227,20 @@ export function AdminWorkspace({
   const waitingSlotACount = queueRows.filter((event) => hasPendingSlotA(event)).length;
   const waitingSlotBCount = queueRows.filter((event) => hasPendingSlotB(event)).length;
 
-  useEffect(() => {
-    if (!presets.length) {
-      if (createPresetId) {
-        setCreatePresetId("");
-      }
-      return;
-    }
-
-    if (!presets.some((preset) => preset.id === createPresetId)) {
-      setCreatePresetId(presets[0]?.id ?? "");
-    }
-  }, [createPresetId, presets]);
-
-  useEffect(() => {
-    const nextEventId = String(events[0]?.id || "");
-    if (!events.length) {
-      if (selectedEventId) {
-        setSelectedEventId("");
-      }
-      return;
-    }
-
-    if (!events.some((event) => String(event.id || "") === selectedEventId)) {
-      setSelectedEventId(nextEventId);
-    }
-  }, [events, selectedEventId]);
-
-  useEffect(() => {
-    setEditEventType(selectedEvent?.event_type || "Roulette");
-    setEditSlotMode(String(selectedEvent?.slot_mode || 1));
-  }, [selectedEvent?.event_type, selectedEvent?.id, selectedEvent?.slot_mode]);
-
-  useEffect(() => {
-    const nextMemberId = members[0]?.id || "";
-    if (!members.length) {
-      if (selectedMemberId) {
-        setSelectedMemberId("");
-      }
-      return;
-    }
-
-    if (!members.some((member) => member.id === selectedMemberId)) {
-      setSelectedMemberId(nextMemberId);
-    }
-  }, [members, selectedMemberId]);
-
   const createEventType = selectedCreatePreset?.event_type || "Roulette";
   const createSingleMember = singleMemberEvent(createEventType);
   const editSingleMember = singleMemberEvent(editEventType);
   const showEditSlotB = !editSingleMember && editSlotMode === "2";
   const createEventDateText = `${createDate || "No date"} | ${createTimeValue} WIB`;
   const memberOptions = useMemo(() => members.map((m) => ({ label: memberOptionLabel(m), value: m.id })), [members]);
+
+  function setEditEventType(nextValue: string) {
+    setEditState({ eventId: selectedEventKey, eventType: nextValue, slotMode: editSlotMode });
+  }
+
+  function setEditSlotMode(nextValue: string) {
+    setEditState({ eventId: selectedEventKey, eventType: editEventType, slotMode: nextValue });
+  }
 
   return (
     <div className="space-y-6">
@@ -484,6 +449,7 @@ export function AdminWorkspace({
                       ))}
                     </select>
                     <input type="hidden" name="event_type" value={createEventType} />
+                    <input type="hidden" name="event_series" value={selectedCreatePreset?.event_series || ""} />
                     <input type="hidden" name="event_image_url" value={selectedCreatePreset?.event_image_url || ""} />
                   </div>
                 </div>
@@ -540,7 +506,7 @@ export function AdminWorkspace({
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Saved event row</label>
                     <p className="text-sm text-[var(--muted)]">Search the timeline details in the dropdown label if several rows use the same event name.</p>
-                    <select value={selectedEventId} onChange={(event) => setSelectedEventId(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
+                    <select value={selectedEventKey} onChange={(event) => setSelectedEventId(event.target.value)} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none">
                       {events.map((event) => (
                         <option key={String(event.id || event.start_time)} value={String(event.id || "")}>{eventOptionLabel(event)}</option>
                       ))}
@@ -579,6 +545,11 @@ export function AdminWorkspace({
                               setEditSlotMode("1");
                             }
                           }} className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
+                        </div>
+                        <div className="space-y-2 sm:col-span-2">
+                          <label className="block text-sm font-semibold text-[var(--muted)]">Timeline series</label>
+                          <input name="event_series" defaultValue={selectedEvent.event_series || ""} placeholder="Example: Ramadhan" className="min-h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-lg text-[var(--foreground)] outline-none" />
+                          <p className="text-sm text-[var(--muted)]">Roulette rows with the same series appear as one Timeline filter option.</p>
                         </div>
                       </div>
                       <div className="space-y-2">
@@ -719,7 +690,7 @@ export function AdminWorkspace({
                       <label className="block text-sm font-semibold text-[var(--muted)]">Member record</label>
                       <SearchableSelect
                         options={memberOptions}
-                        value={selectedMemberId}
+                        value={selectedMember?.id || ""}
                         onChange={setSelectedMemberId}
                         placeholder="Search nickname or full name"
                       />

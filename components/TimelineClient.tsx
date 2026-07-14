@@ -6,7 +6,7 @@ import { FilterPill } from "@/components/FilterPill";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { countPendingSlots, groupTimelineByMonth } from "@/lib/archive-data.ts";
 import { formatEventTime } from "@/lib/format.ts";
-import { buildTimelineCardState, buildTimelineFilterNote } from "@/lib/timeline-view.ts";
+import { buildTimelineCardState, buildTimelineFilterNote, filterTimelineEvents, getRouletteShowOptions } from "@/lib/timeline-view.ts";
 import type { TimelineEvent } from "@/lib/types.ts";
 
 const FILTERS = ["All", "Roulette", "Birthday", "Graduation"] as const;
@@ -64,14 +64,13 @@ function MemberPill({
 
 export function TimelineClient({ events }: { events: TimelineEvent[] }) {
   const [filterType, setFilterType] = useState<(typeof FILTERS)[number]>("All");
+  const [rouletteShow, setRouletteShow] = useState("All");
 
-  const filtered = useMemo(
-    () => (filterType === "All" ? events : events.filter((row) => (row.event_type || "Roulette") === filterType)),
-    [events, filterType],
-  );
+  const rouletteShows = useMemo(() => getRouletteShowOptions(events), [events]);
+  const filtered = useMemo(() => filterTimelineEvents(events, filterType, rouletteShow), [events, filterType, rouletteShow]);
   const pendingCount = useMemo(() => countPendingSlots(events), [events]);
   const sections = useMemo(() => groupTimelineByMonth(filtered), [filtered]);
-  const filterNote = useMemo(() => buildTimelineFilterNote(filterType), [filterType]);
+  const filterNote = useMemo(() => buildTimelineFilterNote(filterType, rouletteShow), [filterType, rouletteShow]);
 
   return (
     <div className="space-y-6">
@@ -97,6 +96,21 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
               </FilterPill>
             ))}
           </div>
+          {filterType === "Roulette" ? (
+            <label className="mt-4 block">
+              <span className="text-xs font-semibold text-[var(--muted-strong)]">Roulette show</span>
+              <select
+                value={rouletteShow}
+                onChange={(event) => setRouletteShow(event.target.value)}
+                className="app-input mt-2 min-h-11 w-full truncate px-3 py-2.5 text-sm outline-none"
+              >
+                <option value="All">All roulette shows</option>
+                {rouletteShows.map((show) => (
+                  <option key={show} value={show}>{show}</option>
+                ))}
+              </select>
+            </label>
+          ) : null}
           <div className="mt-3 text-xs text-[var(--muted)] md:text-sm">{filterNote}</div>
         </div>
       </section>

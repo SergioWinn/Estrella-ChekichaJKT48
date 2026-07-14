@@ -1,9 +1,30 @@
 import { relationToMember } from "./archive-data.ts";
 import type { TimelineEvent } from "./types.ts";
 
-export function buildTimelineFilterNote(filterType: string): string {
+export function getRouletteShowOptions(events: TimelineEvent[]): string[] {
+  const shows = new Map<string, string>();
+
+  for (const event of events) {
+    if ((event.event_type || "Roulette") !== "Roulette") continue;
+    const name = (event.event_name || "").trim();
+    if (name) shows.set(name.toLocaleLowerCase(), name);
+  }
+
+  return Array.from(shows.values()).sort((a, b) => a.localeCompare(b));
+}
+
+export function filterTimelineEvents(events: TimelineEvent[], filterType: string, rouletteShow = "All"): TimelineEvent[] {
+  return events.filter((event) => {
+    const eventType = event.event_type || "Roulette";
+    if (filterType !== "All" && eventType !== filterType) return false;
+    return filterType !== "Roulette" || rouletteShow === "All" || event.event_name === rouletteShow;
+  });
+}
+
+export function buildTimelineFilterNote(filterType: string, rouletteShow = "All"): string {
   if (filterType === "All") return "Showing every event type across all months";
-  if (filterType === "Roulette") return "Roulette = lottery-drawn show/event sessions. Only these shown.";
+  if (filterType === "Roulette" && rouletteShow !== "All") return `Showing only ${rouletteShow} roulette sessions`;
+  if (filterType === "Roulette") return "Showing every roulette show across all months";
   return `Showing only ${filterType} events`;
 }
 

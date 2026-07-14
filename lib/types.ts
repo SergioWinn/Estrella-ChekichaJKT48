@@ -96,6 +96,7 @@ export interface CollectionEntry {
   event_type: string;
   id: string;
   member_avatar_url?: string | null;
+  member_full_name?: string | null;
   member_generasi?: number | null;
   member_id: string;
   member_name: string;

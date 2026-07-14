@@ -10,6 +10,7 @@ export interface CollectibleSlot {
   event_name: string;
   event_type: string;
   member_avatar_url?: string | null;
+  member_full_name?: string | null;
   member_generasi?: number | null;
   member_id: string;
   member_name: string;
@@ -52,6 +53,7 @@ export function buildCollectibleSlots(rows: ChekichaRow[]): CollectibleSlot[] {
         end_time: row.end_time,
         event_image_url: row.event_image_url,
         member_id: row.member_id_a,
+        member_full_name: memberA.full_name,
         member_name: memberA.nickname || "Unknown member",
         member_status: memberA.status,
         member_avatar_url: memberA.avatar_url,
@@ -72,6 +74,7 @@ export function buildCollectibleSlots(rows: ChekichaRow[]): CollectibleSlot[] {
         end_time: row.end_time,
         event_image_url: row.event_image_url,
         member_id: row.member_id_b,
+        member_full_name: memberB.full_name,
         member_name: memberB.nickname || "Unknown member",
         member_status: memberB.status,
         member_avatar_url: memberB.avatar_url,
@@ -112,7 +115,7 @@ export function hydrateCollectionEntries(
   rows: Array<Pick<CollectionEntry, "created_at" | "event_id" | "id" | "member_id" | "quantity" | "slot_key" | "updated_at" | "user_id">>,
   slots: CollectibleSlot[],
   fallbackEvents: Array<Pick<CollectionEntry, "end_time" | "event_id" | "event_image_url" | "event_name" | "event_type" | "start_time">>,
-  fallbackMembers: Array<Pick<CollectionEntry, "member_avatar_url" | "member_generasi" | "member_id" | "member_name" | "member_status">>,
+  fallbackMembers: Array<Pick<CollectionEntry, "member_avatar_url" | "member_full_name" | "member_generasi" | "member_id" | "member_name" | "member_status">>,
 ): CollectionEntry[] {
   const slotsByKey = new Map(slots.map((slot) => [`${slot.event_id}:${slot.slot_key}`, slot]));
   const eventsById = new Map(fallbackEvents.map((event) => [event.event_id, event]));
@@ -132,6 +135,7 @@ export function hydrateCollectionEntries(
       start_time: slot?.start_time || event?.start_time,
       end_time: slot?.end_time || event?.end_time,
       event_image_url: slot?.event_image_url || event?.event_image_url,
+      member_full_name: slot?.member_full_name || member?.member_full_name,
       member_name: slot?.member_name || member?.member_name || "Unknown member",
       member_status: slot?.member_status || member?.member_status,
       member_avatar_url: slot?.member_avatar_url || member?.member_avatar_url,

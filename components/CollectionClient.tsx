@@ -26,6 +26,7 @@ type MemberCollection = {
   generation?: number | null;
   id: string;
   name: string;
+  sortName: string;
   status?: string | null;
   totalQuantity: number;
 };
@@ -195,6 +196,7 @@ export function CollectionClient({
           generation: entry.member_generasi,
           id: entry.member_id,
           name: entry.member_name,
+          sortName: entry.member_full_name || entry.member_name,
           status: entry.member_status,
           totalQuantity: Number(entry.quantity || 0),
         });
@@ -206,7 +208,7 @@ export function CollectionClient({
         ...member,
         entries: member.entries.toSorted((a, b) => new Date(b.start_time || 0).getTime() - new Date(a.start_time || 0).getTime()),
       }))
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => a.sortName.localeCompare(b.sortName));
   }, [visibleEntries]);
   const selectedMember = memberCollections.find((member) => member.id === selectedMemberId) ?? null;
   const visibleQuantity = memberCollections.reduce((sum, member) => sum + member.totalQuantity, 0);

@@ -112,11 +112,11 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
 
       {selectedMember ? (
         <div
-          className="fixed inset-0 z-[var(--z-modal-backdrop)] flex items-end justify-center overflow-y-auto bg-black/55 px-3 py-3 backdrop-blur-sm sm:items-start sm:px-4 sm:py-6"
+          className="fixed inset-0 z-[var(--z-modal-backdrop)] flex items-center justify-center overflow-y-auto bg-black/55 p-3 backdrop-blur-sm sm:p-6"
           onClick={() => setSelectedMemberId(null)}
         >
           <div
-            className="relative w-full max-w-4xl overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-3 shadow-[0_20px_64px_rgba(0,0,0,0.32)] max-h-[calc(100vh-1.5rem)] sm:max-h-[calc(100vh-3rem)] sm:p-5"
+            className="relative max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-3 shadow-[0_20px_64px_rgba(0,0,0,0.32)] sm:max-h-[calc(100dvh-3rem)] sm:p-5"
             onClick={(event) => event.stopPropagation()}
           >
             <button
@@ -163,8 +163,8 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
 
             <div className="mt-5">
               <h3 className="text-lg font-bold text-[var(--foreground)]">Recent event history</h3>
-              <div className="mt-3 max-h-[26rem] overflow-y-auto pr-1 sm:max-h-[28rem]">
-                <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
+              <div className="mt-3 overflow-x-auto pb-2">
+                <div className="grid grid-flow-col grid-rows-1 auto-cols-[minmax(9rem,42vw)] gap-2.5 sm:auto-cols-[11rem] lg:auto-cols-[12rem]">
                 {selectedMember.history.length ? (
                   selectedMember.history.map((row) => {
                     let slotLabel: string | null = "Slot A";

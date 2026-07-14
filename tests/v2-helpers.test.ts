@@ -53,7 +53,7 @@ test("collectible slot helper emits member and slot labels like the Streamlit co
       slot_mode: 1,
       member_id_a: "m1",
       member_id_b: null,
-      member_a: { nickname: "Michie", avatar_url: null, generasi: 10, status: "LOVE" },
+      member_a: { nickname: "Michie", full_name: "Michella Adlen", avatar_url: null, generasi: 10, status: "LOVE" },
       member_b: null,
     },
     {
@@ -65,8 +65,8 @@ test("collectible slot helper emits member and slot labels like the Streamlit co
       slot_mode: 2,
       member_id_a: "m1",
       member_id_b: "m2",
-      member_a: { nickname: "Michie", avatar_url: null, generasi: 10, status: "LOVE" },
-      member_b: { nickname: "Gracie", avatar_url: null, generasi: 11, status: "DREAM" },
+      member_a: { nickname: "Michie", full_name: "Michella Adlen", avatar_url: null, generasi: 10, status: "LOVE" },
+      member_b: { nickname: "Gracie", full_name: "Gracie Octaviani", avatar_url: null, generasi: 11, status: "DREAM" },
     },
   ]);
 
@@ -76,6 +76,8 @@ test("collectible slot helper emits member and slot labels like the Streamlit co
   assert.equal(slots[2].slot_label, "Slot B");
   assert.equal(slots[0].member_status, "LOVE");
   assert.equal(slots[2].member_status, "DREAM");
+  assert.equal(slots[0].member_full_name, "Michella Adlen");
+  assert.equal(slots[2].member_full_name, "Gracie Octaviani");
 });
 
 test("collection hydration prefers resolved slot data over stale entry ids", () => {
@@ -104,6 +106,7 @@ test("collection hydration prefers resolved slot data over stale entry ids", () 
         end_time: "2026-07-10T10:15:00+07:00",
         event_image_url: null,
         member_id: "m1",
+        member_full_name: "Michella Adlen",
         member_name: "Michie",
         member_status: "LOVE",
         member_avatar_url: null,
@@ -118,6 +121,7 @@ test("collection hydration prefers resolved slot data over stale entry ids", () 
   assert.equal(hydrated[0]?.slot_key, "A");
   assert.equal(hydrated[0]?.event_name, "Pajama Drive");
   assert.equal(hydrated[0]?.member_name, "Michie");
+  assert.equal(hydrated[0]?.member_full_name, "Michella Adlen");
   assert.equal(hydrated[0]?.member_status, "LOVE");
 });
 

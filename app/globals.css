@@ -2,8 +2,8 @@
 @import "../tokens.css";
 @import "tailwindcss";
 
-/* Hallmark ï¿½ pre-emit critique: P4 H4 E4 S4 R4 V4 */
-/* Hallmark ï¿½ genre: modern-minimal ï¿½ macrostructure: Stat-Led / Workbench / Letter ï¿½ design-system: design.md ï¿½ designed-as-app */
+/* Hallmark · pre-emit critique: P5 H5 E4 S5 R5 V4 */
+/* Hallmark · genre: modern-minimal · macrostructure-family: Stat-Led / Workbench / Letter · design-system: design.md · designed-as-app */
 
 :root {
   color-scheme: dark;
@@ -62,6 +62,15 @@ input,
 select,
 textarea {
   font: inherit;
+}
+
+button:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 input,
@@ -168,10 +177,6 @@ button {
     transform var(--dur-short) var(--ease-out);
 }
 
-.app-shell:hover {
-  border-color: var(--border-strong);
-}
-
 .app-card {
   border: 1px solid var(--card-border);
   border-radius: var(--radius-md);
@@ -180,10 +185,6 @@ button {
     border-color var(--dur-short) var(--ease-out),
     background-color var(--dur-short) var(--ease-out),
     transform var(--dur-short) var(--ease-out);
-}
-
-.app-card:hover {
-  border-color: var(--border-strong);
 }
 
 .app-card-strong {
@@ -196,7 +197,7 @@ button {
     transform var(--dur-short) var(--ease-out);
 }
 
-.app-card-strong:hover {
+.interactive-surface:hover {
   border-color: var(--border-strong);
 }
 
@@ -207,7 +208,6 @@ button {
   color: var(--foreground);
   transition:
     border-color var(--dur-short) var(--ease-out),
-    box-shadow var(--dur-short) var(--ease-out),
     background-color var(--dur-short) var(--ease-out);
 }
 
@@ -282,7 +282,8 @@ button {
   .app-card-strong,
   .app-input,
   .motion-surface,
-  .motion-list-item {
+  .motion-list-item,
+  button {
     animation: none !important;
     transition-duration: 0.01ms !important;
     transform: none !important;

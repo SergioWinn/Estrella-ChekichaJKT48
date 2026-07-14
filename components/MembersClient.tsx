@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { FilterPill } from "@/components/FilterPill";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
@@ -22,6 +22,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<(typeof STATUS_OPTIONS)[number]>("All");
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const debouncedQuery = useDebouncedValue(query);
 
   const visibleMembers = useMemo(
@@ -39,6 +40,11 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
     () => visibleMembers.find((member) => member.id === selectedMemberId) ?? members.find((member) => member.id === selectedMemberId) ?? null,
     [members, selectedMemberId, visibleMembers],
   );
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (selectedMember && dialog && !dialog.open) dialog.showModal();
+  }, [selectedMember]);
 
   return (
     <div className="space-y-6">
@@ -111,17 +117,22 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
       )}
 
       {selectedMember ? (
-        <div
-          className="fixed inset-0 z-[var(--z-modal-backdrop)] flex items-center justify-center overflow-y-auto bg-black/55 p-3 backdrop-blur-sm sm:p-6"
-          onClick={() => setSelectedMemberId(null)}
+        <dialog
+          ref={dialogRef}
+          aria-labelledby="member-detail-title"
+          className="m-auto max-h-[100dvh] w-full max-w-none overflow-visible bg-transparent p-3 text-[var(--foreground)] backdrop:bg-[var(--overlay)] backdrop:backdrop-blur-sm sm:p-6"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) event.currentTarget.close();
+          }}
+          onClose={() => setSelectedMemberId(null)}
         >
           <div
-            className="relative max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-3 shadow-[0_20px_64px_rgba(0,0,0,0.32)] sm:max-h-[calc(100dvh-3rem)] sm:p-5"
+            className="relative mx-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-3 shadow-[var(--shadow-modal)] sm:max-h-[calc(100dvh-3rem)] sm:p-5"
             onClick={(event) => event.stopPropagation()}
           >
             <button
               type="button"
-              onClick={() => setSelectedMemberId(null)}
+              onClick={() => dialogRef.current?.close()}
               className="absolute right-3 top-3 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
               aria-label="Close member history"
             >
@@ -140,7 +151,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <h2 className="text-xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-[2.2rem]">{selectedMember.nickname || "Unknown member"}</h2>
+                    <h2 id="member-detail-title" className="text-xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-[2.2rem]">{selectedMember.nickname || "Unknown member"}</h2>
                     <p className="mt-1 text-sm text-[var(--muted-strong)] sm:text-base">{selectedMember.full_name || "No full name"}</p>
                   </div>
                   <div className="flex flex-wrap gap-1.5 sm:gap-2">
@@ -210,7 +221,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
               </div>
             </div>
           </div>
-        </div>
+        </dialog>
       ) : null}
     </div>
   );

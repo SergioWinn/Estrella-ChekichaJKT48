@@ -33,8 +33,8 @@ modern-minimal
 
 ## Spacing
 
-4-point named scale. The values are in `tokens.css`. Pages must use named
-tokens (`var(--space-md)`), never raw values.
+4-point scale. Reusable CSS uses named values from `tokens.css`; JSX may use
+Tailwind spacing utilities only when they resolve to multiples of 4 px.
 
 ## Motion
 

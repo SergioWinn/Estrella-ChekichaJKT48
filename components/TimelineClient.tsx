@@ -117,9 +117,9 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
 
       {sections.length ? (
         sections.map(([monthLabel, monthRows]) => (
-          <section key={monthLabel} className="app-card space-y-5 p-5 sm:p-6">
+          <section key={monthLabel} className="space-y-5 border-t border-[var(--border)] pt-5 sm:pt-6">
             <div className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--muted-strong)] md:text-base">{monthLabel}</div>
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               {monthRows.map((row) => {
                 const card = buildTimelineCardState(row);
 
@@ -144,7 +144,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                     <div className="hidden md:block">
                       <DateRail value={row.start_time} />
                     </div>
-                    <div className="app-card-strong aspect-[4/3] w-full overflow-hidden">
+                    <div className="aspect-[4/3] w-full overflow-hidden rounded-[var(--radius-sm)] bg-[var(--surface)]">
                       {row.event_image_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={row.event_image_url} alt={row.event_name || "Event banner"} className="h-full w-full object-cover" />
@@ -161,7 +161,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                           </p>
                         </div>
                       </div>
-                      <div className="flex flex-nowrap gap-2 overflow-hidden">
+                      <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1">
                         {card.members.map((member, index) => (
                           <MemberPill
                             key={`${row.id}-${index}-${member.name}`}

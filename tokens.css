@@ -35,6 +35,9 @@
   --radius-lg: 1.5rem;
   --radius-pill: 999px;
 
+  --shadow-modal: 0 20px 64px oklch(0.05 0.01 252 / 0.42);
+  --shadow-dropdown: 0 8px 24px oklch(0.05 0.01 252 / 0.24);
+
   --background: oklch(0.21 0.03 252);
   --background-alt: oklch(0.18 0.024 252);
   --foreground: oklch(0.95 0.01 250);
@@ -68,6 +71,8 @@
 }
 
 [data-theme="light"] {
+  --shadow-modal: 0 20px 64px oklch(0.18 0.015 250 / 0.2);
+  --shadow-dropdown: 0 8px 24px oklch(0.18 0.015 250 / 0.14);
   --background: oklch(0.965 0.008 248);
   --background-alt: oklch(0.94 0.01 246);
   --foreground: oklch(0.25 0.026 250);

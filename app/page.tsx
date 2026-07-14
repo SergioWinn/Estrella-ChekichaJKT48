@@ -19,7 +19,7 @@ function QuickCountCard({
   value: string | number;
 }) {
   return (
-    <article className="app-card p-5">
+    <article className="border-t border-[var(--border)] pt-4">
       <div className={`text-4xl font-semibold tracking-[-0.04em] ${tone}`}>{value}</div>
       <p className="mt-2 text-sm font-semibold text-[var(--muted-strong)]">{label}</p>
       <p className="mt-2 text-sm text-[var(--muted)]">{copy}</p>
@@ -80,7 +80,6 @@ export default async function Page() {
         left={
           <article className="app-shell flex h-[34rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem] xl:h-full">
             <SectionHeader
-              label="Ranking"
               title="Members who appear most often"
               titleClassName="text-2xl sm:text-3xl"
               description="Only members with two or more appearances are shown. Ties keep the same rank number and are ordered by the latest show or event assignment."
@@ -109,7 +108,7 @@ export default async function Page() {
                   </div>
                 ))
               ) : (
-                <div className="app-card p-4 text-sm text-[var(--muted)]">No members with 2+ show/event appearances yet.</div>
+                <div className="border-t border-[var(--border)] py-4 text-sm text-[var(--muted)]">No members with 2+ show/event appearances yet.</div>
               )}
             </div>
           </article>
@@ -118,7 +117,6 @@ export default async function Page() {
           <div className="xl:sticky xl:top-24">
             <article className="app-shell p-5">
               <SectionHeader
-                label="Recent six"
                 title="Latest assigned members"
                 titleClassName="text-2xl sm:text-3xl"
                 description="Both slots from the same event can appear if both were filled."
@@ -126,7 +124,7 @@ export default async function Page() {
               <div className="mt-5 space-y-3">
                 {snapshot.recent_assignments.length ? (
                   snapshot.recent_assignments.map((row, index) => (
-                    <div key={`${row.member_id}-${row.start_time}-${index}`} className="app-card motion-list-item p-4" style={buildStaggerStyle(index)}>
+                    <div key={`${row.member_id}-${row.start_time}-${index}`} className="motion-list-item border-t border-[var(--border)] py-4" style={buildStaggerStyle(index)}>
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex min-w-0 items-center gap-3">
                           <div className="flex size-12 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)]">
@@ -147,7 +145,7 @@ export default async function Page() {
                     </div>
                   ))
                 ) : (
-                  <div className="app-card p-4 text-sm text-[var(--muted)]">Recent show and event assignments will appear here.</div>
+                  <div className="border-t border-[var(--border)] py-4 text-sm text-[var(--muted)]">Recent show and event assignments will appear here.</div>
                 )}
               </div>
             </article>
@@ -157,7 +155,6 @@ export default async function Page() {
 
       <section className="app-shell p-5 sm:p-6">
         <SectionHeader
-          label="Split"
           title="How the archive is divided right now"
           titleClassName="text-2xl sm:text-3xl"
           description="Small numbers only. No extra chart noise."
@@ -172,7 +169,6 @@ export default async function Page() {
 
       <section className="app-shell p-5 sm:p-6">
         <SectionHeader
-          label="Pending"
           title="Open draws still waiting in the archive"
           titleClassName="text-2xl sm:text-3xl"
           description="Operational detail stays visible, but secondary."

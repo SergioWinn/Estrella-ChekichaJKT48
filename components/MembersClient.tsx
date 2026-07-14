@@ -27,11 +27,13 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
 
   const visibleMembers = useMemo(
     () =>
-      members.filter(
-        (member) =>
-          (status === "All" || (member.status || "").toUpperCase() === status) &&
-          (!debouncedQuery.trim() || memberMatchesQuery(member, debouncedQuery)),
-      ),
+      members
+        .filter(
+          (member) =>
+            (status === "All" || (member.status || "").toUpperCase() === status) &&
+            (!debouncedQuery.trim() || memberMatchesQuery(member, debouncedQuery)),
+        )
+        .toSorted((a, b) => (a.full_name || a.nickname || "").localeCompare(b.full_name || b.nickname || "")),
     [debouncedQuery, members, status],
   );
 

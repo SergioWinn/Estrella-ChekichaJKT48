@@ -12,9 +12,11 @@ import { useDebouncedValue } from "@/components/useDebouncedValue";
 import { addCollectionAction, deleteCollectionEntryAction, updateCollectionQuantityAction } from "@/lib/v2-actions.ts";
 import { formatEventDate, formatEventTime } from "@/lib/format.ts";
 import type { CollectibleSlot } from "@/lib/v2-collection.ts";
+import { STATUS_OPTIONS as MEMBER_STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
 import type { CollectionEntry } from "@/lib/types.ts";
 
 const FILTER_OPTIONS = ["All", "Roulette", "Birthday", "Graduation"] as const;
+const STATUS_FILTER_OPTIONS = ["All", ...MEMBER_STATUS_OPTIONS] as const;
 const DESK_MODES = ["Add", "Manage"] as const;
 const SLOT_PAGE_SIZE = 6;
 
@@ -24,6 +26,7 @@ type MemberCollection = {
   generation?: number | null;
   id: string;
   name: string;
+  status?: string | null;
   totalQuantity: number;
 };
 
@@ -128,6 +131,7 @@ export function CollectionClient({
 }) {
   const searchParams = useSearchParams();
   const [filter, setFilter] = useState<(typeof FILTER_OPTIONS)[number]>("All");
+  const [statusFilter, setStatusFilter] = useState<(typeof STATUS_FILTER_OPTIONS)[number]>("All");
   const [deskMode, setDeskMode] = useState<(typeof DESK_MODES)[number]>(() => {
     const modeParam = searchParams.get("mode");
     if (modeParam === "add" || modeParam === "manage") return modeParam === "add" ? "Add" : "Manage";
@@ -168,8 +172,13 @@ export function CollectionClient({
   }, [deskOpen, deskMode]);
 
   const visibleEntries = useMemo(
-    () => (filter === "All" ? entries : entries.filter((entry) => entry.event_type === filter)),
-    [entries, filter],
+    () =>
+      entries.filter(
+        (entry) =>
+          (filter === "All" || entry.event_type === filter) &&
+          (statusFilter === "All" || (entry.member_status || "").toUpperCase() === statusFilter),
+      ),
+    [entries, filter, statusFilter],
   );
   const memberCollections = useMemo(() => {
     const members = new Map<string, MemberCollection>();
@@ -186,6 +195,7 @@ export function CollectionClient({
           generation: entry.member_generasi,
           id: entry.member_id,
           name: entry.member_name,
+          status: entry.member_status,
           totalQuantity: Number(entry.quantity || 0),
         });
       }
@@ -239,18 +249,34 @@ export function CollectionClient({
           <span>{visibleQuantity} cheki in this view</span>
         </div>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="space-y-3">
-            <div className="text-sm font-semibold text-[var(--muted-strong)]">Collection type</div>
-            <div className="flex flex-wrap gap-2">
-              {FILTER_OPTIONS.map((option) => (
-                <FilterPill
-                  key={option}
-                  onClick={() => setFilter(option)}
-                  active={filter === option}
-                >
-                  {option}
-                </FilterPill>
-              ))}
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <div className="text-sm font-semibold text-[var(--muted-strong)]">Event type</div>
+              <div className="flex flex-wrap gap-2">
+                {FILTER_OPTIONS.map((option) => (
+                  <FilterPill
+                    key={option}
+                    onClick={() => setFilter(option)}
+                    active={filter === option}
+                  >
+                    {option}
+                  </FilterPill>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-sm font-semibold text-[var(--muted-strong)]">Member status</div>
+              <div className="flex flex-wrap gap-2">
+                {STATUS_FILTER_OPTIONS.map((option) => (
+                  <FilterPill
+                    key={option}
+                    onClick={() => setStatusFilter(option)}
+                    active={statusFilter === option}
+                  >
+                    {option}
+                  </FilterPill>
+                ))}
+              </div>
             </div>
           </div>
           <button
@@ -285,7 +311,7 @@ export function CollectionClient({
               <div className="min-w-0 flex-1">
                 <div className="truncate text-base font-semibold tracking-[-0.025em] text-[var(--foreground)] sm:text-lg">{member.name}</div>
                 <div className="mt-0.5 text-xs text-[var(--muted)] sm:text-sm">
-                  {member.generation ? `Gen ${member.generation}` : "Generation unknown"}
+                  {[member.status, member.generation ? `Gen ${member.generation}` : null].filter(Boolean).join(" · ") || "Member details unavailable"}
                 </div>
                 <div className="mt-1 truncate text-xs text-[var(--muted-strong)]">
                   {member.entries.length} saved {member.entries.length === 1 ? "session" : "sessions"}
@@ -299,7 +325,7 @@ export function CollectionClient({
         </section>
       ) : (
         <div className="app-card p-6 text-sm text-[var(--muted)]">
-          {entries.length ? `No members have saved cheki in the ${filter} filter yet.` : "No collection entries yet. Open the collection desk to add your first saved slot."}
+          {entries.length ? "No members match the selected event type and member status." : "No collection entries yet. Open the collection desk to add your first saved slot."}
         </div>
       )}
 

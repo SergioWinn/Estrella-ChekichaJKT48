@@ -99,6 +99,7 @@ export interface CollectionEntry {
   member_generasi?: number | null;
   member_id: string;
   member_name: string;
+  member_status?: string | null;
   quantity: number;
   start_time?: string | null;
   slot_key: string;

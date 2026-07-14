@@ -60,7 +60,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <div className="mx-auto min-h-screen max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-          <header className="app-shell sticky top-4 z-[var(--z-sticky-nav)] mb-6 overflow-hidden px-5 py-4 backdrop-blur-sm sm:px-6">
+          <header className="app-shell mb-6 overflow-hidden px-5 py-4 backdrop-blur-sm sm:px-6 lg:sticky lg:top-4 lg:z-[var(--z-sticky-nav)]">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div className="space-y-3">
                 <div className="kicker">Estrella archive desk</div>

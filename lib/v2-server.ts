@@ -83,7 +83,7 @@ export async function loadCollectibleSlotsForUser(supabase: Awaited<ReturnType<t
   return buildCollectibleSlots(
     await supabaseSelect<ChekichaRow>(
       "chekicha",
-      "id,event_name,event_type,start_time,end_time,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(nickname,avatar_url,generasi),member_b:member_id_b(nickname,avatar_url,generasi)",
+      "id,event_name,event_type,start_time,end_time,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(nickname,avatar_url,generasi,status),member_b:member_id_b(nickname,avatar_url,generasi,status)",
       { orderBy: "start_time", orderDirection: "desc" },
     ),
   );
@@ -111,14 +111,14 @@ export async function loadCollectionEntriesForUser(
       "id,event_name,event_type,start_time,end_time,event_image_url",
       { filters: { id: `in.(${eventIds.join(",")})` } },
     ),
-    supabaseSelect<Pick<MemberRecord, "avatar_url" | "generasi" | "id" | "nickname">>(
+    supabaseSelect<Pick<MemberRecord, "avatar_url" | "generasi" | "id" | "nickname" | "status">>(
       "members",
-      "id,nickname,avatar_url,generasi",
+      "id,nickname,avatar_url,generasi,status",
       { filters: { id: `in.(${memberIds.join(",")})` } },
     ),
     supabaseSelect<ChekichaRow>(
       "chekicha",
-      "id,event_name,event_type,start_time,end_time,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(nickname,avatar_url,generasi),member_b:member_id_b(nickname,avatar_url,generasi)",
+      "id,event_name,event_type,start_time,end_time,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(nickname,avatar_url,generasi,status),member_b:member_id_b(nickname,avatar_url,generasi,status)",
       { filters: { id: `in.(${eventIds.join(",")})` } },
     ),
   ]);
@@ -137,6 +137,7 @@ export async function loadCollectionEntriesForUser(
     members.map((member) => ({
       member_id: member.id,
       member_name: member.nickname || "Unknown member",
+      member_status: member.status,
       member_avatar_url: member.avatar_url,
       member_generasi: member.generasi,
     })),

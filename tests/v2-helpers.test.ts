@@ -53,7 +53,7 @@ test("collectible slot helper emits member and slot labels like the Streamlit co
       slot_mode: 1,
       member_id_a: "m1",
       member_id_b: null,
-      member_a: { nickname: "Michie", avatar_url: null, generasi: 10 },
+      member_a: { nickname: "Michie", avatar_url: null, generasi: 10, status: "LOVE" },
       member_b: null,
     },
     {
@@ -65,8 +65,8 @@ test("collectible slot helper emits member and slot labels like the Streamlit co
       slot_mode: 2,
       member_id_a: "m1",
       member_id_b: "m2",
-      member_a: { nickname: "Michie", avatar_url: null, generasi: 10 },
-      member_b: { nickname: "Gracie", avatar_url: null, generasi: 11 },
+      member_a: { nickname: "Michie", avatar_url: null, generasi: 10, status: "LOVE" },
+      member_b: { nickname: "Gracie", avatar_url: null, generasi: 11, status: "DREAM" },
     },
   ]);
 
@@ -74,6 +74,8 @@ test("collectible slot helper emits member and slot labels like the Streamlit co
   assert.equal(slots[0].slot_label, "Member");
   assert.equal(slots[1].slot_label, "Slot A");
   assert.equal(slots[2].slot_label, "Slot B");
+  assert.equal(slots[0].member_status, "LOVE");
+  assert.equal(slots[2].member_status, "DREAM");
 });
 
 test("collection hydration prefers resolved slot data over stale entry ids", () => {
@@ -103,6 +105,7 @@ test("collection hydration prefers resolved slot data over stale entry ids", () 
         event_image_url: null,
         member_id: "m1",
         member_name: "Michie",
+        member_status: "LOVE",
         member_avatar_url: null,
         member_generasi: 10,
         display_label: "Pajama Drive | Slot A | Michie",
@@ -115,6 +118,7 @@ test("collection hydration prefers resolved slot data over stale entry ids", () 
   assert.equal(hydrated[0]?.slot_key, "A");
   assert.equal(hydrated[0]?.event_name, "Pajama Drive");
   assert.equal(hydrated[0]?.member_name, "Michie");
+  assert.equal(hydrated[0]?.member_status, "LOVE");
 });
 
 test("admin helpers block duplicate member names and coerce birthday events to one slot and one hour", () => {

@@ -14,13 +14,22 @@ export default async function MembersPage() {
   }));
 
   return (
-    <div className="space-y-6">
-      <section className="app-shell p-5 sm:p-6">
-        <SectionHeader
-          label="Members"
-          title="Find a member, then open their recent history."
-          description="Search by nickname, full name, team, or generation. Open a card to browse the same recent archive history the Streamlit page showed."
-        />
+    <div className="page-wrap">
+      <section className="page-hero">
+        <div className="page-hero-grid">
+          <SectionHeader
+            label="Members"
+            title="Find a member, then open their recent history."
+            description="Search by nickname, full name, team, or generation. Open a card to check the same archive trail the older Streamlit view exposed."
+            titleClassName="text-[clamp(2.5rem,4vw,4rem)]"
+          />
+          <aside className="page-rail">
+            <div className="kicker">Browse</div>
+            <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
+              This route favors quick scanning first. The modal history stays secondary until a member is actually selected.
+            </p>
+          </aside>
+        </div>
       </section>
       <MembersClient members={browserItems} />
     </div>

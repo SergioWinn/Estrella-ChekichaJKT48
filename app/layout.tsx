@@ -59,18 +59,15 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="en" suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        <div className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <header className="mb-6 rounded-xl border border-[var(--border)] bg-[var(--panel)] p-5 backdrop-blur-sm">
+        <div className="mx-auto min-h-screen max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+          <header className="app-shell sticky top-4 z-[var(--z-sticky-nav)] mb-6 overflow-hidden px-5 py-4 backdrop-blur-sm sm:px-6">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div className="space-y-2">
-                <div className="inline-flex items-center gap-3 text-sm font-semibold text-[var(--accent)]">
-                  <span className="inline-block size-2 rounded-full bg-[var(--accent)]" />
-                  JKT48 Cheki Tracker
-                </div>
+              <div className="space-y-3">
+                <div className="kicker">Estrella archive desk</div>
                 <div>
-                  <h1 className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-4xl text-balance">Chekicha Archive Monitor</h1>
+                  <h1 className="max-w-3xl text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-4xl">Chekicha Archive Monitor</h1>
                   <p className="mt-2 max-w-2xl text-sm text-[var(--muted)] sm:text-base">
-                    See which draws are still open, who has been assigned, and which members appear most often.
+                    Track resolved sessions, check which members appear most often, and keep collector records in one quiet workspace.
                   </p>
                 </div>
               </div>
@@ -98,30 +95,30 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 )}
               </div>
             </div>
-            <div className="mt-5">
+            <div className="mt-5 flex flex-col gap-4 border-t border-[var(--border)] pt-4 lg:flex-row lg:items-center lg:justify-between">
               <SiteNav links={links} />
-            </div>
-            <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-[var(--border)] pt-4 text-sm text-[var(--muted)]">
-              <p>
-                Developed by{" "}
+              <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--muted)]">
+                <p>
+                  Developed by{" "}
+                  <a
+                    href="https://x.com/estrellawin19"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold text-[var(--foreground)] transition hover:text-[var(--accent)]"
+                  >
+                    @estrellawin19
+                  </a>
+                </p>
                 <a
-                  href="https://x.com/estrellawin19"
+                  href="https://tako.id/Sportagame19Win"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-semibold text-[var(--foreground)] transition hover:text-[var(--accent)]"
+                  className="inline-flex min-h-9 items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 font-medium text-[var(--foreground-soft)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
                 >
-                  @estrellawin19
+                  <SupportIcon className="size-3.5 text-[var(--accent)]" />
+                  Support via Tako
                 </a>
-              </p>
-              <a
-                href="https://tako.id/Sportagame19Win"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-9 items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 font-medium text-[var(--foreground-soft)] transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
-              >
-                <SupportIcon className="size-3.5 text-[var(--accent)]" />
-                Support via Tako
-              </a>
+              </div>
             </div>
           </header>
           <main>{children}</main>

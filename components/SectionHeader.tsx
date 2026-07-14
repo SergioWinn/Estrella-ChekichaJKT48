@@ -18,15 +18,19 @@ export function SectionHeader({
   titleClassName?: string;
 }) {
   return (
-    <div className={`flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between ${className}`.trim()}>
-      <div>
-        <div className="text-xs font-semibold text-[var(--accent)]">{label}</div>
-        <h2 className={`mt-3 text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-4xl ${titleClassName}`.trim()}>{title}</h2>
+    <div className={["flex flex-col gap-4", className].filter(Boolean).join(" ")}>
+      <div className="space-y-3">
+        <div className="kicker">{label}</div>
+        <h2 className={["max-w-4xl text-3xl font-semibold tracking-[-0.045em] text-[var(--foreground)] sm:text-4xl", titleClassName].filter(Boolean).join(" ")}>
+          {title}
+        </h2>
         {description ? (
-          <p className={`mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)] sm:text-base ${descriptionClassName}`.trim()}>{description}</p>
+          <p className={["max-w-3xl text-sm leading-7 text-[var(--muted)] sm:text-base", descriptionClassName].filter(Boolean).join(" ")}>
+            {description}
+          </p>
         ) : null}
       </div>
-      {actions ? <div className="shrink-0">{actions}</div> : null}
+      {actions ? <div className="flex items-center">{actions}</div> : null}
     </div>
   );
 }

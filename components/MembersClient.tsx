@@ -167,9 +167,9 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                 <div className="grid grid-cols-2 gap-2.5 lg:grid-cols-4">
                 {selectedMember.history.length ? (
                   selectedMember.history.map((row) => {
-                    let slotLabel = "Slot A";
+                    let slotLabel: string | null = "Slot A";
                     if (row.event_type === "Birthday" || row.event_type === "Graduation") {
-                      slotLabel = "Member";
+                      slotLabel = null;
                     } else if (row.member_id_b === selectedMember.id && row.member_id_a !== selectedMember.id) {
                       slotLabel = "Slot B";
                     } else if ((row.slot_mode || 1) === 2 && row.member_id_a === selectedMember.id && row.member_id_b === selectedMember.id) {
@@ -194,9 +194,11 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                           <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--accent)] sm:px-2.5 sm:text-[11px]">
                             {row.event_type || "Roulette"}
                           </span>
-                          <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)] sm:px-2.5 sm:text-[11px]">
-                            {slotLabel}
-                          </span>
+                          {slotLabel ? (
+                            <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)] sm:px-2.5 sm:text-[11px]">
+                              {slotLabel}
+                            </span>
+                          ) : null}
                         </div>
                       </article>
                     );

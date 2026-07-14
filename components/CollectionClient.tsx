@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+/* Hallmark · pre-emit critique: P4 H5 E4 S5 R5 V4 */
+
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { FilterPill } from "@/components/FilterPill";
@@ -15,6 +17,101 @@ import type { CollectionEntry } from "@/lib/types.ts";
 const FILTER_OPTIONS = ["All", "Roulette", "Birthday", "Graduation"] as const;
 const DESK_MODES = ["Add", "Manage"] as const;
 const SLOT_PAGE_SIZE = 6;
+
+type MemberCollection = {
+  avatarUrl?: string | null;
+  entries: CollectionEntry[];
+  generation?: number | null;
+  id: string;
+  name: string;
+  totalQuantity: number;
+};
+
+function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; onClose: () => void }) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) dialog.showModal();
+  }, []);
+
+  return (
+    <dialog
+      ref={dialogRef}
+      aria-labelledby="member-history-title"
+      className="m-auto max-h-[min(80dvh,42rem)] w-[calc(100%_-_2rem)] max-w-2xl overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--panel)] p-0 text-[var(--foreground)] shadow-2xl backdrop:bg-[var(--overlay)] backdrop:backdrop-blur-sm"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) event.currentTarget.close();
+      }}
+      onClose={onClose}
+    >
+      <div className="flex max-h-[min(80dvh,42rem)] flex-col">
+        <div className="flex items-start justify-between gap-4 border-b border-[var(--border)] p-4 sm:p-5">
+          <div className="flex min-w-0 items-center gap-3" tabIndex={-1} autoFocus>
+            <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:size-16">
+              {member.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={member.avatarUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                <span className="text-lg font-bold text-[var(--foreground)]">{(member.name || "?").slice(0, 1).toUpperCase()}</span>
+              )}
+            </div>
+            <div className="min-w-0">
+              <h3 id="member-history-title" className="truncate text-lg font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-xl">
+                {member.name}
+              </h3>
+              <p className="mt-1 text-sm text-[var(--muted)]">
+                {member.entries.length} saved {member.entries.length === 1 ? "session" : "sessions"} · {member.totalQuantity} total cheki
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => dialogRef.current?.close()}
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label={`Close ${member.name} cheki history`}
+          >
+            <CloseIcon className="size-4" />
+          </button>
+        </div>
+
+        <div className="overflow-y-auto p-3 sm:p-4">
+          <div className="grid gap-2">
+            {member.entries.map((entry) => {
+              const showSlot = entry.event_type !== "Birthday" && entry.event_type !== "Graduation";
+
+              return (
+                <article key={entry.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 sm:p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h4 className="truncate text-sm font-semibold text-[var(--foreground)] sm:text-base">{entry.event_name}</h4>
+                      <p className="mt-1 text-xs text-[var(--muted)] sm:text-sm">
+                        {formatEventDate(entry.start_time)} · {formatEventTime(entry.start_time, entry.end_time)} WIB
+                      </p>
+                    </div>
+                    <span className="shrink-0 rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-xs font-bold tabular-nums text-[var(--foreground)]">
+                      x{entry.quantity}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--accent)]">
+                      {entry.event_type}
+                    </span>
+                    {showSlot ? (
+                      <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)]">
+                        Slot {entry.slot_key}
+                      </span>
+                    ) : null}
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </dialog>
+  );
+}
 
 export function CollectionClient({
   entries,
@@ -43,8 +140,10 @@ export function CollectionClient({
   const [addFilter, setAddFilter] = useState<(typeof FILTER_OPTIONS)[number]>("All");
   const [addQuery, setAddQuery] = useState("");
   const [visibleSlotCount, setVisibleSlotCount] = useState(SLOT_PAGE_SIZE);
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const debouncedAddQuery = useDebouncedValue(addQuery);
 
+  /* eslint-disable react-hooks/set-state-in-effect -- URL parameters intentionally synchronize the collection desk. */
   useEffect(() => {
     const modeParam = searchParams.get("mode");
     if (modeParam === "add" || modeParam === "manage") {
@@ -55,6 +154,7 @@ export function CollectionClient({
 
     setDeskOpen(false);
   }, [searchParams]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     const mode = deskOpen ? (deskMode === "Add" ? "add" : "manage") : null;
@@ -71,6 +171,35 @@ export function CollectionClient({
     () => (filter === "All" ? entries : entries.filter((entry) => entry.event_type === filter)),
     [entries, filter],
   );
+  const memberCollections = useMemo(() => {
+    const members = new Map<string, MemberCollection>();
+
+    for (const entry of visibleEntries) {
+      const member = members.get(entry.member_id);
+      if (member) {
+        member.entries.push(entry);
+        member.totalQuantity += Number(entry.quantity || 0);
+      } else {
+        members.set(entry.member_id, {
+          avatarUrl: entry.member_avatar_url,
+          entries: [entry],
+          generation: entry.member_generasi,
+          id: entry.member_id,
+          name: entry.member_name,
+          totalQuantity: Number(entry.quantity || 0),
+        });
+      }
+    }
+
+    return Array.from(members.values())
+      .map((member) => ({
+        ...member,
+        entries: member.entries.toSorted((a, b) => new Date(b.start_time || 0).getTime() - new Date(a.start_time || 0).getTime()),
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [visibleEntries]);
+  const selectedMember = memberCollections.find((member) => member.id === selectedMemberId) ?? null;
+  const visibleQuantity = memberCollections.reduce((sum, member) => sum + member.totalQuantity, 0);
   const filteredCollectibleSlots = useMemo(() => {
     const normalizedQuery = debouncedAddQuery.trim().toLowerCase();
 
@@ -104,25 +233,10 @@ export function CollectionClient({
       {success ? <div role="status" aria-live="polite" className="rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm text-[var(--accent)]">{success}</div> : null}
       {error ? <div role="alert" className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
 
-      <section className="grid gap-4 md:grid-cols-3">
-        <div className="app-card p-4">
-          <div className="truncate text-2xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-3xl">@{username}</div>
-          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Signed in</p>
-        </div>
-        <div className="app-card p-4">
-          <div className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{totalQuantity}</div>
-          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Total cheki</p>
-        </div>
-        <div className="app-card p-4">
-          <div className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{uniqueMembers}</div>
-          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Tracked members</p>
-        </div>
-      </section>
-
       <section className="app-card p-4 md:p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--muted)]">
-          <span>Showing {visibleEntries.length} saved entries.</span>
-          <span>{filter === "All" ? "All event types" : `${filter} only`}</span>
+          <span>{memberCollections.length} members with saved cheki.</span>
+          <span>{visibleQuantity} cheki in this view</span>
         </div>
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="space-y-3">
@@ -149,49 +263,47 @@ export function CollectionClient({
         </div>
       </section>
 
-      {visibleEntries.length ? (
-        <section className="grid gap-4 lg:grid-cols-2 xl:grid-cols-4">
-          {visibleEntries.map((entry) => (
-            <article key={entry.id} className="app-card p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)]">
-                    {entry.member_avatar_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={entry.member_avatar_url} alt={entry.member_name} className="h-full w-full object-cover" />
-                    ) : (
-                      <span className="text-xl font-bold text-[var(--foreground)]">{(entry.member_name || "?").slice(0, 1).toUpperCase()}</span>
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="truncate text-xl font-bold tracking-[-0.04em] text-[var(--foreground)] md:text-2xl">{entry.member_name}</div>
-                    <div className="text-sm text-[var(--muted)] md:text-[0.95rem]">{entry.member_generasi ? `Gen ${entry.member_generasi}` : "Generation unknown"}</div>
-                  </div>
+      {memberCollections.length ? (
+        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {memberCollections.map((member) => (
+            <button
+              key={member.id}
+              type="button"
+              aria-expanded={selectedMemberId === member.id}
+              aria-haspopup="dialog"
+              onClick={() => setSelectedMemberId(member.id)}
+              className="app-card flex min-h-24 w-full items-center gap-3 p-3 text-left hover:bg-[var(--surface-hover)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 sm:p-4"
+            >
+              <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:size-16">
+                {member.avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={member.avatarUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="text-lg font-bold text-[var(--foreground)]">{(member.name || "?").slice(0, 1).toUpperCase()}</span>
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-base font-semibold tracking-[-0.025em] text-[var(--foreground)] sm:text-lg">{member.name}</div>
+                <div className="mt-0.5 text-xs text-[var(--muted)] sm:text-sm">
+                  {member.generation ? `Gen ${member.generation}` : "Generation unknown"}
                 </div>
-                <div className="flex min-w-[3.5rem] shrink-0 items-center justify-center rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1.5 text-sm font-bold tracking-[-0.02em] text-[var(--foreground)]">
-                  <span className="tabular-nums">x{entry.quantity}</span>
+                <div className="mt-1 truncate text-xs text-[var(--muted-strong)]">
+                  {member.entries.length} saved {member.entries.length === 1 ? "session" : "sessions"}
                 </div>
               </div>
-              <h3 className="mt-3 truncate text-xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-2xl">{entry.event_name}</h3>
-              <div className="mt-4 text-sm text-[var(--muted)] md:text-[0.95rem]">
-                {formatEventDate(entry.start_time)} | {formatEventTime(entry.start_time, entry.end_time)} WIB
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] md:text-xs">
-                  Slot {entry.slot_key}
-                </span>
-                <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-4 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--accent)] md:text-xs">
-                  {entry.event_type}
-                </span>
-              </div>
-            </article>
+              <span className="shrink-0 rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-xs font-bold tabular-nums text-[var(--foreground)]">
+                x{member.totalQuantity}
+              </span>
+            </button>
           ))}
         </section>
       ) : (
         <div className="app-card p-6 text-sm text-[var(--muted)]">
-          {entries.length ? `No saved entries match the ${filter} filter yet.` : "No collection entries yet. Open the collection desk to add your first saved slot."}
+          {entries.length ? `No members have saved cheki in the ${filter} filter yet.` : "No collection entries yet. Open the collection desk to add your first saved slot."}
         </div>
       )}
+
+      {selectedMember ? <MemberHistoryDialog member={selectedMember} onClose={() => setSelectedMemberId(null)} /> : null}
 
       {deskOpen ? (
         <div className="collection-desk-overlay fixed inset-0 z-[var(--z-modal-backdrop)] flex items-start justify-center overflow-y-auto px-4 py-6 backdrop-blur-sm" onClick={() => setDeskOpen(false)}>

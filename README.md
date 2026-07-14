@@ -13,11 +13,12 @@ This project was built as a focused monitoring and archive layer on top of that 
 ## Highlights
 
 - Overview dashboard with archive counts, ranking, and recent member assignments.
-- Timeline page for browsing completed and still-pending event rows in date order.
-- Member browser with search and recent history per member.
-- Authenticated collection page for storing personal collectible slot ownership.
+- Timeline page with event-type filters and Roulette series grouping, including a shared Ramadhan series.
+- Member browser with search, status filters, full-name ordering, and recent history per member.
+- Authenticated collection page with event/status filters and quantity management for collectible slots.
 - Admin workspace for managing members, event presets, and archive rows.
 - Supabase-backed auth with route protection for collection and admin pages.
+- Shared responsive design system documented in `design.md` and implemented through `tokens.css`.
 
 ## Tech Stack
 
@@ -35,15 +36,19 @@ The application is intentionally kept small and split by responsibility inside o
 - `components/` contains interactive client components and reusable UI pieces.
 - `lib/` contains Supabase clients, archive transforms, server-side loaders, and server actions.
 - `proxy.ts` protects authenticated and role-gated routes.
+- `design.md` defines the locked visual system and page-family rules.
+- `tokens.css` contains shared typography, spacing, color, motion, radius, and shadow tokens.
 
 This keeps the browser-facing UI simple while centralizing data access, auth checks, and mutation logic in a small set of server-side helpers.
 
 ## Core Features
 
 - Archive overview with leaderboard and recent assignments
-- Event timeline browsing across show, birthday, and graduation rows
-- Member-centric browsing with searchable archive history
-- Personal collection tracking for signed-in users
+- Event timeline browsing across Roulette, birthday, and graduation rows
+- Roulette timeline filtering by `event_series`, allowing multiple Ramadhan events to share one option
+- Member-centric browsing with status filters, full-name ordering, and searchable archive history
+- Personal collection tracking with event-type and member-status filters
+- Collection desk for adding slots, updating quantities, and removing saved entries
 - Admin-only member and event management flows
 - Server-side auth and role checks for protected routes
 
@@ -55,6 +60,8 @@ This keeps the browser-facing UI simple while centralizing data access, auth che
 |-- components/   # Client and shared UI components
 |-- lib/          # Data loaders, Supabase clients, server actions
 |-- tests/        # Node-based tests
+|-- design.md     # Locked design-system documentation
+|-- tokens.css    # Shared visual design tokens
 |-- proxy.ts      # Route protection
 `-- README.md
 ```
@@ -82,6 +89,30 @@ Notes:
 - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are used by browser-safe and SSR flows.
 - `SUPABASE_SERVICE_ROLE_KEY` is server-only and must never be exposed in client code.
 
+### Supabase Requirements
+
+The application currently reads and writes these primary tables:
+
+- `profiles` for usernames and role-based access.
+- `members` for nickname, full name, status, generation, and avatar data.
+- `event_presets` for reusable event definitions.
+- `chekicha` for archived event rows and resolved member slots.
+- `user_collection_entries` for per-user collection quantities.
+
+Roulette grouping requires an optional `event_series` text column on both event tables:
+
+```sql
+alter table public.event_presets
+add column if not exists event_series text;
+
+alter table public.chekicha
+add column if not exists event_series text;
+```
+
+For regular shows, `event_series` should normally match the show name. Events that belong to the same seasonal group should share one value. For example, different Ramadhan event names use `event_series = 'Ramadhan'`. The Timeline dropdown groups by this field while each card continues to display its original `event_name`.
+
+Existing Roulette rows should be backfilled before deploying the application. Rows without `event_series` remain compatible and fall back to `event_name`, but newly created event presets should always define the intended series.
+
 ### Local Development
 
 ```bash
@@ -98,14 +129,27 @@ npm run build
 npm start
 ```
 
+### Verification
+
+```bash
+npm run lint
+npm test
+npx tsc --noEmit
+npm run build
+```
+
+The Node.js test suite covers archive aggregation, timeline series filtering, collection hydration, authentication helpers, and admin event payload behavior.
+
 ## Deployment
 
 This project is designed to deploy cleanly on Vercel.
 
 1. Push the repository to GitHub.
 2. Import the repository into Vercel.
-3. Add the three environment variables from `.env.local` to the Vercel project.
-4. Deploy.
+3. Apply the required Supabase schema, including both `event_series` columns.
+4. Backfill `event_series` for existing Roulette rows and presets.
+5. Add the three environment variables from `.env.local` to the Vercel project.
+6. Deploy.
 
 For production, keep `SUPABASE_SERVICE_ROLE_KEY` only in Vercel environment settings and never commit it into the repository.
 
@@ -120,7 +164,6 @@ For production, keep `SUPABASE_SERVICE_ROLE_KEY` only in Vercel environment sett
 ## Potential Improvements
 
 - Add more test coverage for server actions and archive transforms
-- Document the expected Supabase schema in detail
 - Add seed data or migration scripts for faster onboarding
 - Add screenshots and deployment notes for public presentation
 

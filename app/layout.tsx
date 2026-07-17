@@ -12,7 +12,7 @@ import { getSessionContext } from "@/lib/v2-server.ts";
 
 export const metadata: Metadata = {
   title: "Chekicha Archive Monitor",
-  description: "See which draws are still open, who has been assigned, and which members appear most often.",
+  description: "Monitor JKT48 cheki records collected from January 2026 onward.",
   icons: {
     icon: "/icon.svg",
     apple: "/apple-icon.png",
@@ -67,7 +67,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 <div>
                   <h1 className="max-w-3xl text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-4xl">Chekicha Archive Monitor</h1>
                   <p className="mt-2 max-w-2xl text-sm text-[var(--muted)] sm:text-base">
-                    Track resolved sessions, check which members appear most often, and keep collector records in one quiet workspace.
+                    Track resolved sessions, member appearances, and collector records from January 2026 onward.
                   </p>
                 </div>
               </div>

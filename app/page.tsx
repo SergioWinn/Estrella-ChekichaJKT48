@@ -43,8 +43,8 @@ export default async function Page() {
           <div className="space-y-6">
             <SectionHeader
               label="Archive overview"
-              title="See who shows up most in show and event cheki."
-              description="The front page now reads like an archive desk: one ranking, one recent assignment feed, and small operational checks instead of stacked promo cards."
+              title="Cheki records, tracked from 2026."
+              description="See who appears most often in show and event cheki recorded since January 2026."
               titleClassName="max-w-4xl text-[clamp(2.8rem,5vw,5rem)]"
               descriptionClassName="max-w-3xl text-base leading-8"
             />
@@ -70,7 +70,7 @@ export default async function Page() {
           <aside className="page-rail">
             <div className="kicker">Archive rule</div>
             <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
-              Birthday and graduation rows stay in the small counts below, but the main ranking and recent list only read from show and event archive rows.
+              This archive starts in January 2026. Birthday and graduation rows stay in the small counts below, while the main ranking and recent list use show and event rows.
             </p>
           </aside>
         </div>

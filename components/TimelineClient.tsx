@@ -1,3 +1,4 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V4 */
 "use client";
 
 import { useMemo, useState } from "react";
@@ -30,6 +31,19 @@ function DateRail({ value }: { value: string }) {
   );
 }
 
+function CompactDate({ value }: { value: string }) {
+  const dt = new Date(value);
+  const day = Number.isNaN(dt.getTime())
+    ? "--"
+    : new Intl.DateTimeFormat("en-GB", { day: "numeric", timeZone: "Asia/Jakarta" }).format(dt);
+
+  return (
+    <div className="shrink-0 tabular-nums">
+      <span className="text-xl font-bold tracking-[-0.04em] text-[var(--foreground)]">{day}</span>
+    </div>
+  );
+}
+
 function MemberPill({
   avatarUrl,
   name,
@@ -41,14 +55,14 @@ function MemberPill({
 }) {
   return (
     <span
-      className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium md:text-sm ${
+      className={`inline-flex min-w-0 max-w-full shrink-0 items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-medium md:gap-2 md:px-3 md:py-1.5 md:text-sm ${
         waiting
           ? "border-[var(--warning-border)] bg-[var(--warning-soft)] text-[var(--warning)]"
           : "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]"
       }`}
     >
       {!waiting ? (
-        <span className="flex size-6 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)] md:size-7">
+        <span className="flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)] md:size-7">
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={avatarUrl} alt={name} className="h-full w-full object-cover" />
@@ -57,7 +71,7 @@ function MemberPill({
           )}
         </span>
       ) : null}
-      <span>{name}</span>
+      <span className="truncate">{name}</span>
     </span>
   );
 }
@@ -119,35 +133,40 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
         sections.map(([monthLabel, monthRows]) => (
           <section key={monthLabel} className="space-y-5 border-t border-[var(--border)] pt-5 sm:pt-6">
             <div className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--muted-strong)] md:text-base">{monthLabel}</div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
               {monthRows.map((row) => {
                 const card = buildTimelineCardState(row);
 
                 return (
                     <article
                       key={row.id || `${row.event_name}-${row.start_time}`}
-                      className="app-card-strong relative grid gap-3 p-3 md:grid-cols-[4rem_7.5rem_1fr] md:items-center md:gap-4 md:p-5"
+                      className="app-card-strong relative grid min-w-0 gap-2 p-2 md:grid-cols-[4rem_7.5rem_1fr] md:items-center md:gap-4 md:p-5"
                     >
                     <div className="hidden md:block absolute right-5 top-5 md:right-6 md:top-6">
                       <span className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
                         {card.eventType}
                       </span>
                     </div>
-                    <div className="md:hidden">
-                      <DateRail value={row.start_time} />
-                    </div>
-                    <div className="flex justify-center md:hidden">
-                      <span className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
+                    <div className="flex min-w-0 items-center justify-between gap-1 md:hidden">
+                      <CompactDate value={row.start_time} />
+                      <span className="inline-flex min-w-0 truncate rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--accent)]">
                         {card.eventType}
                       </span>
                     </div>
                     <div className="hidden md:block">
                       <DateRail value={row.start_time} />
                     </div>
-                    <div className="aspect-[4/3] w-full overflow-hidden rounded-[var(--radius-sm)] bg-[var(--surface)]">
+                    <div className="aspect-video min-w-0 w-full overflow-hidden rounded-[var(--radius-sm)] bg-[var(--surface)] md:aspect-[4/3]">
                       {row.event_image_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={row.event_image_url} alt={row.event_name || "Event banner"} className="h-full w-full object-cover" />
+                        <img
+                          src={row.event_image_url}
+                          alt={row.event_name || "Event banner"}
+                          width="480"
+                          height="360"
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
                       ) : (
                         <MediaPlaceholder />
                       )}
@@ -155,13 +174,13 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                     <div className="min-w-0 space-y-2">
                       <div className="min-w-0 md:pr-24">
                         <div className="min-w-0">
-                          <h2 className="truncate text-lg font-bold tracking-[-0.04em] text-[var(--foreground)] md:text-2xl">{row.event_name || "Untitled event"}</h2>
-                          <p className="mt-1 truncate text-xs text-[var(--muted-strong)] md:text-[0.95rem]">
+                          <h2 className="truncate text-sm font-bold tracking-[-0.03em] text-[var(--foreground)] sm:text-base md:text-2xl">{row.event_name || "Untitled event"}</h2>
+                          <p className="mt-0.5 truncate text-[11px] text-[var(--muted-strong)] md:mt-1 md:text-[0.95rem]">
                             {formatEventTime(row.start_time, row.end_time)} WIB
                           </p>
                         </div>
                       </div>
-                      <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1">
+                      <div className="flex min-w-0 flex-wrap gap-1 md:flex-nowrap md:gap-2 md:overflow-x-auto md:pb-1">
                         {card.members.map((member, index) => (
                           <MemberPill
                             key={`${row.id}-${index}-${member.name}`}

@@ -72,7 +72,7 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
           <button
             type="button"
             onClick={() => dialogRef.current?.close()}
-            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
             aria-label={`Close ${member.name} cheki history`}
           >
             <CloseIcon className="size-4" />
@@ -236,13 +236,12 @@ export function CollectionClient({
     <div className="space-y-6">
       <section className="app-shell p-5 sm:p-6">
         <SectionHeader
-          label="My collection"
           title="Your cheki shelf comes first."
           description={`Signed in as @${username} with ${totalQuantity} total cheki across ${uniqueMembers} tracked members.`}
         />
       </section>
 
-      {success ? <div role="status" aria-live="polite" className="rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm text-[var(--accent)]">{success}</div> : null}
+      {success ? <div role="status" aria-live="polite" className="sr-only">{success}</div> : null}
       {error ? <div role="alert" className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
 
       <section className="app-card p-4 md:p-5">
@@ -352,7 +351,7 @@ export function CollectionClient({
               <button
                 type="button"
                 onClick={() => setDeskOpen(false)}
-                className="inline-flex size-10 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
+                className="inline-flex size-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)]"
                 aria-label="Close collection desk"
               >
                 <CloseIcon className="size-4" />
@@ -373,7 +372,7 @@ export function CollectionClient({
 
             {deskMode === "Add" ? (
               <div className="mt-5 space-y-5">
-                <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">
+                <div className="border-t border-[var(--border)] pt-4 text-sm text-[var(--muted)]">
                   <strong className="text-[var(--foreground)]">How to add cheki:</strong> search the resolved slot, set how many copies you have, then save it to your shelf.
                 </div>
                 {collectibleSlots.length ? (
@@ -389,7 +388,7 @@ export function CollectionClient({
                         </div>
                       </div>
 
-                        <div className="grid gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-4">
+                        <div className="grid gap-3 border-t border-[var(--border)] pt-4">
                         <input
                           value={addQuery}
                           onChange={(event) => {
@@ -398,7 +397,7 @@ export function CollectionClient({
                           }}
                           aria-label="Search collection slots by member or event"
                           placeholder="Search member or event"
-                            className="app-input min-h-11 w-full px-4 py-3 text-sm outline-none placeholder:text-[var(--muted)] md:text-base"
+                            className="app-input min-h-11 w-full px-4 py-3 text-sm placeholder:text-[var(--muted)] md:text-base"
                         />
 
                         <div className="flex flex-wrap gap-2">
@@ -421,7 +420,7 @@ export function CollectionClient({
                       {visibleCollectibleSlots.length ? (
                         <div className="grid gap-3">
                           {visibleCollectibleSlots.map((slot) => (
-                              <form key={slot.slot_uid} action={addCollectionAction} className="grid gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 lg:grid-cols-[minmax(0,1fr)_7rem_auto] lg:items-center">
+                              <form key={slot.slot_uid} action={addCollectionAction} className="grid gap-3 border-t border-[var(--border)] pt-4 lg:grid-cols-[minmax(0,1fr)_7rem_auto] lg:items-center">
                               <div className="min-w-0">
                                 <div className="truncate text-sm font-semibold text-[var(--foreground)] md:text-[0.95rem]">{slot.member_name}</div>
                                 <div className="truncate text-sm text-[var(--muted)] md:text-[0.95rem]">{slot.event_name}</div>
@@ -442,7 +441,7 @@ export function CollectionClient({
                                     aria-label={`Quantity for ${slot.member_name} ${slot.slot_label}`}
                                     name="quantity"
                                     defaultValue="1"
-                                     className="app-input min-h-11 w-full px-4 py-3 text-sm outline-none md:text-[0.95rem]"
+                                     className="app-input min-h-11 w-full px-4 py-3 text-sm md:text-[0.95rem]"
                                   />
                                 </div>
                               </div>
@@ -462,7 +461,7 @@ export function CollectionClient({
                         <button
                           type="button"
                           onClick={() => setVisibleSlotCount((count) => count + SLOT_PAGE_SIZE)}
-                          className="min-h-11 self-start rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-5 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--accent-soft)]"
+                          className="min-h-11 self-start whitespace-nowrap rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-5 text-sm font-semibold text-[var(--foreground)] transition-colors hover:bg-[var(--accent-soft)]"
                         >
                           Load more slots
                         </button>
@@ -482,7 +481,7 @@ export function CollectionClient({
                 </div>
                 {entries.length ? (
                   entries.map((entry) => (
-                    <article key={entry.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
+                    <article key={entry.id} className="border-t border-[var(--border)] pt-4">
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <div className="text-sm font-semibold text-[var(--foreground)] md:text-[0.95rem]">{entry.member_name}</div>
@@ -510,14 +509,14 @@ export function CollectionClient({
                               aria-label={`Saved quantity for ${entry.member_name} ${entry.event_name}`}
                               name="quantity"
                               defaultValue={entry.quantity}
-                               className="app-input min-h-11 w-full px-4 py-3 text-sm outline-none md:text-[0.95rem]"
+                               className="app-input min-h-11 w-full px-4 py-3 text-sm md:text-[0.95rem]"
                             />
                           </div>
-                          <button className="self-end rounded-xl border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] transition hover:border-[var(--border-strong)] hover:bg-[var(--accent-soft)] md:text-[0.95rem]">Save quantity</button>
+                          <button className="self-end whitespace-nowrap rounded-xl border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] transition-colors hover:bg-[var(--accent-soft)] md:text-[0.95rem]">Save quantity</button>
                         </form>
                         <form action={deleteCollectionEntryAction}>
                           <input type="hidden" name="entry_id" value={entry.id} />
-                          <button className="rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--danger)] transition hover:border-[var(--danger)] hover:bg-[var(--danger-soft)] md:text-[0.95rem]">Remove entry</button>
+                          <button className="whitespace-nowrap rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--danger)] transition-colors hover:bg-[var(--surface-hover)] md:text-[0.95rem]">Remove entry</button>
                         </form>
                       </div>
                     </article>

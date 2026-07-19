@@ -19,8 +19,8 @@ export function FilterPill({
 }) {
   const inactiveClass =
     inactiveTone === "soft"
-      ? "border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
-      : "border-[var(--border)] bg-[var(--surface-strong)] text-[var(--muted)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]";
+      ? "border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:bg-[var(--surface-hover)]"
+      : "border-[var(--border)] bg-[var(--surface-strong)] text-[var(--muted)] hover:bg-[var(--surface-hover)]";
 
   return (
     <button

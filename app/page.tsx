@@ -20,7 +20,7 @@ function QuickCountCard({
 }) {
   return (
     <article className="border-t border-[var(--border)] pt-4">
-      <div className={`text-4xl font-semibold tracking-[-0.04em] ${tone}`}>{value}</div>
+      <div className={`tabular-nums text-4xl font-semibold tracking-[-0.04em] ${tone}`}>{value}</div>
       <p className="mt-2 text-sm font-semibold text-[var(--muted-strong)]">{label}</p>
       <p className="mt-2 text-sm text-[var(--muted)]">{copy}</p>
     </article>
@@ -42,7 +42,6 @@ export default async function Page() {
         <div className="page-hero-grid">
           <div className="space-y-6">
             <SectionHeader
-              label="Archive overview"
               title="Cheki records, tracked from 2026."
               description="See who appears most often in show and event cheki recorded since January 2026."
               titleClassName="max-w-4xl text-[clamp(2.8rem,5vw,5rem)]"
@@ -50,11 +49,11 @@ export default async function Page() {
             />
             <div className="stat-ribbon">
               <div className="stat-ribbon-item">
-                <div className="text-2xl font-semibold tracking-[-0.03em] text-[var(--foreground)]">{snapshot.show_event_sessions}</div>
+                <div className="tabular-nums text-2xl font-semibold tracking-[-0.03em] text-[var(--foreground)]">{snapshot.show_event_sessions}</div>
                 <p className="mt-1 text-sm text-[var(--muted-strong)]">Show and event sessions</p>
               </div>
               <div className="stat-ribbon-item">
-                <div className="text-2xl font-semibold tracking-[-0.03em] text-[var(--foreground)]">{copy.latestShowEventCopy}</div>
+                <div className="tabular-nums text-2xl font-semibold tracking-[-0.03em] text-[var(--foreground)]">{copy.latestShowEventCopy}</div>
                 <p className="mt-1 text-sm text-[var(--muted-strong)]">Latest session</p>
               </div>
               <div className="stat-ribbon-item">
@@ -62,13 +61,13 @@ export default async function Page() {
                 <p className="mt-1 text-sm text-[var(--muted-strong)]">Top member</p>
               </div>
               <div className="stat-ribbon-item">
-                <div className="text-2xl font-semibold tracking-[-0.03em] text-[var(--accent)]">{copy.waitingCopy}</div>
+                <div className="tabular-nums text-2xl font-semibold tracking-[-0.03em] text-[var(--accent)]">{copy.waitingCopy}</div>
                 <p className="mt-1 text-sm text-[var(--muted-strong)]">Open draws</p>
               </div>
             </div>
           </div>
           <aside className="page-rail">
-            <div className="kicker">Archive rule</div>
+            <h2 className="text-sm font-semibold text-[var(--foreground)]">Archive scope</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
               This archive starts in January 2026. Birthday and graduation rows stay in the small counts below, while the main ranking and recent list use show and event rows.
             </p>
@@ -102,7 +101,7 @@ export default async function Page() {
                       <div className="text-sm text-[var(--muted)]">{row.generasi ? `Gen ${row.generasi}` : "Generation unknown"}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-semibold text-[var(--foreground)]">{row.count}</div>
+                      <div className="tabular-nums text-2xl font-semibold text-[var(--foreground)]">{row.count}</div>
                       <div className="text-xs uppercase tracking-[0.16em] text-[var(--muted)]">times</div>
                     </div>
                   </div>

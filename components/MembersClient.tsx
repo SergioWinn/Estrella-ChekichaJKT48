@@ -52,20 +52,23 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
     <div className="space-y-6">
       <section className="app-shell grid gap-4 p-4 md:grid-cols-[0.9fr_0.9fr_1.3fr] md:p-5">
         <div>
-          <div className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{visibleMembers.length}</div>
+          <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{visibleMembers.length}</div>
           <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Members shown</p>
         </div>
         <div>
-          <div className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{membersWithHistory}</div>
+          <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{membersWithHistory}</div>
           <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">With history</p>
         </div>
         <div className="space-y-3">
-          <input
+          <label className="block space-y-2">
+            <span className="text-sm font-semibold text-[var(--muted-strong)]">Search members</span>
+            <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search nickname, full name, team, or generation"
-            className="app-input min-h-11 w-full px-4 py-3 text-sm outline-none placeholder:text-[var(--muted)] md:text-base"
-          />
+              className="app-input min-h-11 w-full px-4 py-3 text-sm placeholder:text-[var(--muted)] md:text-base"
+            />
+          </label>
           <div className="flex flex-wrap gap-2.5 md:flex-nowrap">
             {STATUS_OPTIONS.map((option) => (
               <FilterPill
@@ -87,7 +90,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
               key={member.id}
               type="button"
               onClick={() => setSelectedMemberId(member.id)}
-                className="app-card p-4 text-left transition hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)]"
+                className="app-card p-4 text-left transition-colors hover:bg-[var(--surface-hover)]"
             >
               <div className="flex items-center gap-4">
                 <div className="flex size-16 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-strong)]">
@@ -135,7 +138,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
             <button
               type="button"
               onClick={() => dialogRef.current?.close()}
-              className="absolute right-3 top-3 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
+              className="absolute right-3 top-3 inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)]"
               aria-label="Close member history"
             >
               <CloseIcon className="size-4" />
@@ -190,7 +193,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                     }
 
                     return (
-                      <article key={row.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2">
+                      <article key={row.id} className="border-t border-[var(--border)] pt-2">
                         <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface-strong)]">
                           {row.event_image_url ? (
                             // eslint-disable-next-line @next/next/no-img-element

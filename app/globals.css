@@ -2,8 +2,8 @@
 @import "../tokens.css";
 @import "tailwindcss";
 
-/* Hallmark · pre-emit critique: P5 H5 E4 S5 R5 V4 */
-/* Hallmark · genre: modern-minimal · macrostructure-family: Stat-Led / Workbench / Letter · design-system: design.md · designed-as-app */
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 */
+/* Hallmark · genre: modern-minimal · macrostructure: Stat-Led / Workbench / Letter · design-system: design.md · designed-as-app · contrast: pass (40–41) */
 
 :root {
   color-scheme: dark;
@@ -85,7 +85,7 @@ textarea {
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
@@ -123,6 +123,7 @@ button {
   border-radius: var(--radius-lg);
   background: var(--hero-gradient);
   padding: clamp(1.5rem, 3vw, 2.5rem);
+  padding-bottom: clamp(2rem, 4vw, 3.5rem);
 }
 
 .page-hero::after {
@@ -139,6 +140,23 @@ button {
   z-index: 1;
   display: grid;
   gap: var(--space-md);
+}
+
+.workbench-intro,
+.letter-intro {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-md);
+  border-top: 1px solid var(--border);
+  padding: var(--space-lg) 0 var(--space-xl);
+}
+
+.workbench-note {
+  align-self: end;
+  max-width: 65ch;
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-sm);
+  color: var(--foreground-soft);
 }
 
 .page-rail {
@@ -203,17 +221,36 @@ button {
 
 .app-input {
   border: 1px solid var(--border);
+  outline: 2px solid transparent;
+  outline-offset: 1px;
   border-radius: var(--radius-sm);
   background: var(--surface-strong);
   color: var(--foreground);
   transition:
-    border-color var(--dur-short) var(--ease-out),
     background-color var(--dur-short) var(--ease-out);
 }
 
-.app-input:focus {
+.app-input:focus-visible {
+  outline-color: var(--color-focus);
+}
+
+.app-input:disabled,
+.app-input[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.app-input[aria-invalid="true"],
+.app-input[data-state="error"] {
+  border-color: var(--danger);
+}
+
+.app-input[data-state="success"] {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.app-input[data-state="loading"] {
+  cursor: progress;
 }
 
 .collection-desk-overlay {
@@ -273,6 +310,17 @@ button {
 
   .stat-ribbon {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .workbench-intro {
+    grid-template-columns: minmax(0, 1.7fr) minmax(16rem, 0.9fr);
+    align-items: end;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-input:hover {
+    background: var(--surface-hover);
   }
 }
 

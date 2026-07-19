@@ -22,7 +22,7 @@ export function SiteNav({ links }: { links: NavLink[] }) {
             className={`inline-flex min-h-11 items-center justify-center rounded-full border px-4 py-2 text-sm font-semibold whitespace-nowrap transition ${
               isActive
                 ? "border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] text-[var(--foreground)]"
-                : "border-[var(--border)] bg-transparent text-[var(--muted)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
+                : "border-[var(--border)] bg-transparent text-[var(--muted)] hover:bg-[var(--surface-hover)]"
             }`}
           >
             {link.label}

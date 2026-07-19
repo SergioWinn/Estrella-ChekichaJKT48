@@ -24,7 +24,7 @@ function DateRail({ value }: { value: string }) {
   return (
     <div className="flex min-h-full items-center justify-center border-b border-[var(--border)] pb-3 md:justify-start md:border-b-0 md:border-r md:pb-0 md:pr-4">
       <div className="text-center md:min-w-14">
-        <div className="text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-[3.1rem]">{day}</div>
+        <div className="tabular-nums text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-[3.1rem]">{day}</div>
         <div className="mt-1 text-base font-bold text-[var(--muted-strong)] md:text-lg">{month}</div>
       </div>
     </div>
@@ -90,11 +90,11 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
     <div className="space-y-6">
       <section className="app-shell grid gap-4 p-4 md:grid-cols-[0.9fr_0.9fr_1.3fr] md:p-5">
         <div>
-          <div className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{filtered.length}</div>
+          <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{filtered.length}</div>
           <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Events shown</p>
         </div>
         <div>
-          <div className={`text-3xl font-extrabold tracking-[-0.04em] md:text-4xl ${pendingCount ? "text-[var(--accent)]" : "text-[var(--foreground)]"}`}>{pendingCount}</div>
+          <div className={`tabular-nums text-3xl font-extrabold tracking-[-0.04em] md:text-4xl ${pendingCount ? "text-[var(--accent)]" : "text-[var(--foreground)]"}`}>{pendingCount}</div>
           <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Open slots</p>
         </div>
         <div>
@@ -116,7 +116,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
               <select
                 value={rouletteSeries}
                 onChange={(event) => setRouletteSeries(event.target.value)}
-                className="app-input mt-2 min-h-11 w-full truncate px-3 py-2.5 text-sm outline-none"
+                className="app-input mt-2 min-h-11 w-full truncate px-3 py-2.5 text-sm"
               >
                 <option value="All">All roulette series</option>
                 {rouletteSeriesOptions.map((series) => (

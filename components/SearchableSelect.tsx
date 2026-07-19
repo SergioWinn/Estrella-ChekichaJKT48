@@ -14,9 +14,11 @@ export function SearchableSelect({
   defaultValue,
   onChange,
   placeholder = "Search...",
+  ariaLabel,
   className = "",
 }: {
   className?: string;
+  ariaLabel?: string;
   defaultValue?: string;
   name?: string;
   onChange?: (value: string) => void;
@@ -115,6 +117,7 @@ export function SearchableSelect({
         id={controlId}
         type="button"
         aria-controls={listboxId}
+        aria-label={ariaLabel ?? placeholder}
         aria-expanded={open}
         aria-haspopup="listbox"
         onKeyDown={handleKeyDown}
@@ -142,6 +145,7 @@ export function SearchableSelect({
               type="text"
               role="combobox"
               aria-autocomplete="list"
+              aria-label={`Filter ${ariaLabel ?? placeholder}`}
               aria-controls={listboxId}
               aria-expanded={open}
               aria-activedescendant={filtered[highlightedIndex] ? `${listboxId}-${highlightedIndex}` : undefined}
@@ -149,7 +153,7 @@ export function SearchableSelect({
               onChange={(e) => { setQuery(e.target.value); setHighlightedIndex(0); }}
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
-              className="min-h-10 w-full rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-2 text-sm outline-none placeholder:text-[var(--muted)]"
+              className="app-input min-h-11 w-full px-3 py-2 text-sm placeholder:text-[var(--muted)]"
             />
           </div>
           <div id={listboxId} ref={listRef} className="overflow-y-auto" role="listbox">

@@ -9,22 +9,19 @@ export default async function TimelinePage() {
 
   return (
     <div className="page-wrap">
-      <section className="page-hero">
-        <div className="page-hero-grid">
+      <header className="workbench-intro">
           <SectionHeader
-            label="Timeline"
             title="Browse every archived event in date order."
             description="Start with sessions that still have waiting slots, then move backward through completed roulette, birthday, and graduation rows."
             titleClassName="text-[clamp(2.5rem,4vw,4rem)]"
           />
-          <aside className="page-rail">
-            <div className="kicker">Use</div>
+          <aside className="workbench-note">
+            <h2 className="text-sm font-semibold text-[var(--foreground)]">Audit unresolved rows</h2>
             <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
               This route is the fast audit trail for unresolved rows. The filters stay light so the list itself does the work.
             </p>
           </aside>
-        </div>
-      </section>
+      </header>
       <TimelineClient events={events} />
     </div>
   );

@@ -77,5 +77,79 @@ Tailwind spacing utilities only when they resolve to multiples of 4 px.
 
 ### tokens.css
 
-See [tokens.css](/abs/path/E:/itadaki/estrella-chekijkt48/tokens.css:1).
+The live source is [`tokens.css`](tokens.css). Core portable roles:
+
+```css
+:root {
+  --color-paper: oklch(0.21 0.03 252);
+  --color-paper-2: oklch(0.26 0.025 252);
+  --color-ink: oklch(0.95 0.01 250);
+  --color-ink-2: oklch(0.78 0.02 248);
+  --color-rule: oklch(0.42 0.03 247 / 0.34);
+  --color-accent: oklch(0.72 0.11 235);
+  --color-accent-ink: oklch(0.2 0.03 252);
+  --color-focus: oklch(0.78 0.09 228);
+  --font-display: "Space Grotesk", "Segoe UI", sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", sans-serif;
+  --font-outlier: "IBM Plex Mono", "Cascadia Mono", monospace;
+}
+```
+
+### Tailwind v4 `@theme`
+
+```css
+@theme {
+  --color-paper: oklch(0.21 0.03 252);
+  --color-paper-2: oklch(0.26 0.025 252);
+  --color-ink: oklch(0.95 0.01 250);
+  --color-ink-2: oklch(0.78 0.02 248);
+  --color-rule: oklch(0.42 0.03 247 / 0.34);
+  --color-accent: oklch(0.72 0.11 235);
+  --color-focus: oklch(0.78 0.09 228);
+  --font-display: "Space Grotesk", "Segoe UI", sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", sans-serif;
+  --font-outlier: "IBM Plex Mono", "Cascadia Mono", monospace;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --radius-card: 1.1rem;
+  --radius-input: 0.75rem;
+  --radius-pill: 999px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+```
+
+### DTCG `tokens.json`
+
+The same portable roles are available in [`tokens.json`](tokens.json).
+
+```json
+{
+  "color": {
+    "paper": { "$value": "oklch(0.21 0.03 252)", "$type": "color" },
+    "ink": { "$value": "oklch(0.95 0.01 250)", "$type": "color" },
+    "accent": { "$value": "oklch(0.72 0.11 235)", "$type": "color" },
+    "focus": { "$value": "oklch(0.78 0.09 228)", "$type": "color" }
+  }
+}
+```
+
+### shadcn/ui CSS variables
+
+```css
+:root {
+  --background: 21% 0.03 252;
+  --foreground: 95% 0.01 250;
+  --card: 26% 0.025 252;
+  --card-foreground: 95% 0.01 250;
+  --primary: 72% 0.11 235;
+  --primary-foreground: 20% 0.03 252;
+  --muted: 42% 0.03 247;
+  --muted-foreground: 78% 0.02 248;
+  --border: 42% 0.03 247;
+  --input: 42% 0.03 247;
+  --ring: 78% 0.09 228;
+  --radius: 1.1rem;
+}
+```
 

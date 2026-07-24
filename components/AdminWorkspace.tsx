@@ -511,7 +511,7 @@ export function AdminWorkspace({
                     </select>
                   </div>
                   <div key={String(selectedEvent.id || "no-event")} className="space-y-4">
-                    <p className="text-sm text-[var(--muted)]">Choose the saved row first, then update its schedule, artwork, or assigned members.</p>
+                    <p className="text-sm text-[var(--muted)]">Choose the saved row first, then update its schedule or assigned members.</p>
                     <form action={updateEventAction} className="space-y-4">
                       <input type="hidden" name="event_id" value={selectedEvent.id || ""} />
                       <div className="space-y-2">
@@ -550,11 +550,7 @@ export function AdminWorkspace({
                           <p className="text-sm text-[var(--muted)]">Roulette rows with the same series appear as one Timeline filter option.</p>
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <label className="block text-sm font-semibold text-[var(--muted)]">Event image URL</label>
-                        <input aria-label="Event image URL" name="event_image_url" defaultValue={selectedEvent.event_image_url || ""} className="app-input min-h-12 w-full px-4 py-3 text-base" />
-                        <p className="text-sm text-[var(--muted)]">Optional. Keep it empty if this archive row does not need artwork.</p>
-                      </div>
+                      <input type="hidden" name="event_image_url" value={selectedEvent.event_image_url || ""} />
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Slot mode</label>
                         {editSingleMember ? <input type="hidden" name="slot_mode" value="1" /> : (

@@ -123,7 +123,7 @@ export default async function Page() {
                 titleClassName="text-2xl sm:text-3xl"
                 description="Both slots from the same event can appear if both were filled."
               />
-              <div className="mt-5 min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
+              <div className="mt-5 space-y-3">
                 {snapshot.recent_assignments.length ? (
                   snapshot.recent_assignments.map((row, index) => (
                     <div key={`${row.member_id}-${row.start_time}-${index}`} className="motion-list-item border-t border-[var(--border)] py-4" style={buildStaggerStyle(index)}>

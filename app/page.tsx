@@ -176,10 +176,13 @@ export default async function Page() {
         />
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {EVENT_TEAM_OPTIONS.map((team) => (
-            <article key={team} className="border-t border-[var(--border)] pt-4">
-              <div className="flex items-center justify-between gap-3">
+            <article key={team} className="flex min-h-32 flex-col justify-between rounded-[8px] border border-[var(--border)] bg-[var(--surface)] p-4">
+              <div>
+                <div className="tabular-nums text-4xl font-semibold leading-none tracking-[-0.04em] text-[var(--foreground)]">{snapshot.team_counts[team] || 0}</div>
+                <div className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">sessions</div>
+              </div>
+              <div className="mt-5 flex justify-start">
                 <EventTeamBadge team={team} eventType="Roulette" compact />
-                <div className="tabular-nums text-3xl font-semibold tracking-[-0.04em] text-[var(--foreground)]">{snapshot.team_counts[team] || 0}</div>
               </div>
             </article>
           ))}

@@ -60,12 +60,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <div className="site-frame mx-auto min-h-screen max-w-[110rem] px-4 py-4 sm:px-6 lg:px-8">
-          <header className="site-header app-shell mb-8 overflow-hidden px-4 py-4 sm:px-6 lg:sticky lg:top-4 lg:z-[var(--z-sticky-nav)]">
-            <div className="site-header-top flex flex-col gap-6">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div className="space-y-4">
+          <header className="site-header app-shell mb-6 overflow-hidden px-4 py-3 sm:px-5 lg:sticky lg:top-4 lg:z-[var(--z-sticky-nav)]">
+            <div className="site-header-top flex flex-col gap-4">
+              <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                <div className="space-y-3">
                   <div className="kicker">Estrella archive desk</div>
-                  <div className="site-meta-strip flex flex-wrap items-center gap-3 text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--muted-strong)]">
+                  <div className="site-meta-strip flex flex-wrap items-center gap-2.5 text-[10px] font-medium uppercase tracking-[0.18em] text-[var(--muted-strong)]">
                     <span>Archive monitor</span>
                     <span className="hidden h-1 w-1 rounded-full bg-[var(--border-strong)] sm:block" />
                     <span>Since January 2026</span>
@@ -73,7 +73,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                     <span>JKT48 cheki records</span>
                   </div>
                 </div>
-                <div className="site-actions flex items-center gap-3 self-start lg:self-auto">
+                <div className="site-actions flex items-center gap-2 self-start lg:self-auto">
                   <ThemeToggle />
                   {user ? (
                     <form action={logoutAction}>
@@ -97,24 +97,24 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                   )}
                 </div>
               </div>
-              <div className="site-header-bar grid gap-5 border-t border-[var(--border)] pt-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)] lg:items-end">
+              <div className="site-header-bar grid gap-3 border-t border-[var(--border)] pt-4 lg:grid-cols-[minmax(0,1.5fr)_minmax(15rem,0.5fr)] lg:items-start">
                 <div>
-                  <h1 className="max-w-4xl text-[clamp(2.6rem,4vw,5rem)] font-semibold tracking-[-0.06em] text-[var(--foreground)]">
+                  <h1 className="max-w-4xl text-[clamp(2rem,3vw,3.6rem)] font-semibold tracking-[-0.06em] text-[var(--foreground)]">
                     Chekicha Archive Monitor
                   </h1>
-                  <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)] sm:text-base">
+                  <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--muted)] sm:text-[0.95rem]">
                     Track resolved sessions, member appearances, and collector records from January 2026 onward.
                   </p>
                 </div>
-                <div className="site-summary-panel border border-[var(--border)] bg-[var(--surface)] px-4 py-4">
+                <div className="site-summary-panel border border-[var(--border)] bg-[var(--surface)] px-4 py-3">
                   <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted-strong)]">System</div>
-                  <div className="mt-2 text-sm leading-6 text-[var(--foreground-soft)]">
+                  <div className="mt-1.5 text-sm leading-6 text-[var(--foreground-soft)]">
                     Overview, audit timeline, member browser, collector shelf, and admin workspace in one archive shell.
                   </div>
                 </div>
               </div>
             </div>
-            <div className="mt-5 flex flex-col gap-4 border-t border-[var(--border)] pt-4 xl:flex-row xl:items-center xl:justify-between">
+            <div className="mt-4 flex flex-col gap-3 border-t border-[var(--border)] pt-3 xl:flex-row xl:items-center xl:justify-between">
               <SiteNav links={links} />
               <div className="site-credits flex flex-wrap items-center gap-3 text-sm text-[var(--muted)]">
                 <p>

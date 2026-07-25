@@ -146,12 +146,16 @@ button {
   border-radius: 1rem;
 }
 
+.site-summary-panel {
+  align-self: start;
+}
+
 .site-nav-grid {
   align-items: center;
 }
 
 .site-nav-link {
-  min-width: 8rem;
+  min-width: 7.25rem;
 }
 
 .section-header {
@@ -443,6 +447,10 @@ button {
 }
 
 @media (max-width: 767px) {
+  .site-summary-panel {
+    display: none;
+  }
+
   .page-rail {
     border-left: 0;
     border-top: 1px solid var(--border);
@@ -476,6 +484,12 @@ button {
   .letter-intro {
     grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
     align-items: start;
+  }
+}
+
+@media (min-width: 1280px) {
+  .site-header-bar {
+    grid-template-columns: minmax(0, 1.65fr) minmax(14rem, 0.45fr);
   }
 }
 

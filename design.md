@@ -9,9 +9,9 @@ modern-minimal
 
 ## Macrostructure family
 
-- Marketing pages: Stat-Led with an off-axis overview lead, a narrow context rail, and denser data sections below.
-- App pages: Workbench with a slim command header, one primary work surface, and compact supporting cards.
-- Content pages: Letter with a split intro and restrained form panels.
+- Marketing pages: Ledger Hero with a masthead strip, one dominant metric deck, and alternating dense archive bands.
+- App pages: Command Deck with a compressed top rail, one dominant tool surface, and secondary slabs for filters or summaries.
+- Content pages: Quiet Letter with a tall intro column, one restrained form slab, and generous negative space.
 
 ## Theme
 
@@ -50,28 +50,28 @@ Tailwind spacing utilities only when they resolve to multiples of 4 px.
 
 ## CTA voice
 
-- Primary CTA: soft-fill capsule, sentence-case labels, compact horizontal padding
-- Secondary CTA: hairline outline capsule, tinted hover fill
+- Primary CTA: dense accent block with sentence-case labels and firm rectangular corners
+- Secondary CTA: thin-outline block with soft fill on hover, never oversized pill chrome
 
 ## Per-page allowances
 
-- Marketing pages MAY use restrained gradient bands and summary rails.
-- App pages MUST NOT use decorative enrichment.
-- Content pages stay typography-first with one supporting panel.
+- Marketing pages MAY use restrained gradient bands, archive rails, and one oversized data slab.
+- App pages MUST NOT use decorative enrichment and should rely on hierarchy, not ornament.
+- Content pages stay typography-first with one supporting panel and one narrow evidence rail.
 
 ## What pages MUST share
 
 - The wordmark and archive-monitor framing
 - The accent colour and its small footprint
 - The display and body fonts
-- The button shape and border language
-- The section heading rhythm
+- The tighter rectangular border language
+- The section heading rhythm with stacked kicker above the title
 
 ## What pages MAY differ on
 
 - Macrostructure inside each page-type family
-- Intro composition
-- Density of cards and rails based on task complexity
+- Intro composition and rail placement
+- Density of slabs and archive bands based on task complexity
 
 ## Exports
 

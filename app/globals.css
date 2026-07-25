@@ -3,7 +3,7 @@
 @import "tailwindcss";
 
 /* Hallmark - pre-emit critique: P5 H5 E5 S5 R5 V5 */
-/* Hallmark - genre: modern-minimal - tone: archive workbench - anchor hue: blue - structure: Stat-Led / Workbench / Letter */
+/* Hallmark - genre: modern-minimal - tone: editorial operations - anchor hue: blue - structure: Ledger Hero / Command Deck / Quiet Letter */
 
 :root {
   color-scheme: dark;
@@ -40,7 +40,9 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background: linear-gradient(180deg, var(--background-alt), var(--background));
+  background:
+    linear-gradient(180deg, oklch(from var(--background-alt) l c h / 0.96), var(--background)),
+    linear-gradient(90deg, transparent 0, transparent calc(100% - 1px), oklch(from var(--border) l c h / 0.1) calc(100% - 1px), oklch(from var(--border) l c h / 0.1) 100%);
   color: var(--foreground);
   font-family: var(--font-body);
   text-rendering: geometricPrecision;
@@ -111,21 +113,74 @@ button {
 .page-wrap {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: clamp(1.5rem, 3vw, 2.75rem);
+}
+
+.site-frame {
+  position: relative;
+}
+
+.site-header {
+  border-radius: 1.75rem;
+  background:
+    linear-gradient(180deg, oklch(from var(--panel) l c h / 0.96), oklch(from var(--surface) l c h / 0.94)),
+    linear-gradient(135deg, oklch(from var(--accent) l c h / 0.03), transparent 45%);
+}
+
+.site-header-top {
+  position: relative;
+}
+
+.site-header-bar {
+  position: relative;
+}
+
+.site-meta-strip {
+  color: var(--muted-strong);
+}
+
+.site-summary-panel,
+.site-icon-button,
+.site-support-link,
+.site-nav-link {
+  border-radius: 1rem;
+}
+
+.site-nav-grid {
+  align-items: center;
+}
+
+.site-nav-link {
+  min-width: 8rem;
+}
+
+.section-header {
+  position: relative;
+}
+
+.section-header .kicker {
+  margin-bottom: 0.15rem;
 }
 
 .page-hero {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--hero-gradient);
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  padding-bottom: clamp(2rem, 4vw, 3.5rem);
+  border-radius: 1.8rem;
+  background:
+    linear-gradient(135deg, oklch(from var(--accent) l c h / 0.08), transparent 42%),
+    linear-gradient(180deg, oklch(from var(--panel) l c h / 0.98), oklch(from var(--surface) l c h / 0.95));
+  padding: clamp(1.5rem, 3vw, 3rem);
+  padding-bottom: clamp(2rem, 4vw, 4rem);
 }
 
 .page-hero::after {
-  content: none;
+  content: "";
+  position: absolute;
+  inset: 1.1rem 1.1rem auto auto;
+  width: 8rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-soft-strong));
 }
 
 .page-hero-grid {
@@ -140,15 +195,14 @@ button {
   display: grid;
   min-width: 0;
   gap: var(--space-md);
-  border-top: 1px solid var(--border);
-  padding: var(--space-lg) 0 var(--space-xl);
+  padding: 0 0 var(--space-lg);
 }
 
 .workbench-note {
   align-self: end;
   max-width: 65ch;
-  border-top: 1px solid var(--border);
-  padding-top: var(--space-sm);
+  border-left: 1px solid var(--border);
+  padding-left: var(--space-md);
   color: var(--foreground-soft);
 }
 
@@ -180,8 +234,10 @@ button {
 
 .app-shell {
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: linear-gradient(180deg, var(--panel), var(--surface));
+  border-radius: 1.45rem;
+  background:
+    linear-gradient(180deg, oklch(from var(--panel) l c h / 0.96), oklch(from var(--surface) l c h / 0.95)),
+    linear-gradient(135deg, oklch(from var(--accent) l c h / 0.025), transparent 40%);
   transition:
     border-color var(--dur-short) var(--ease-out),
     background-color var(--dur-short) var(--ease-out),
@@ -190,8 +246,8 @@ button {
 
 .app-card {
   border: 1px solid var(--card-border);
-  border-radius: var(--radius-md);
-  background: var(--card);
+  border-radius: 1.2rem;
+  background: linear-gradient(180deg, oklch(from var(--card) l c h / 0.98), oklch(from var(--surface) l c h / 0.94));
   transition:
     border-color var(--dur-short) var(--ease-out),
     background-color var(--dur-short) var(--ease-out),
@@ -200,8 +256,8 @@ button {
 
 .app-card-strong {
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--surface-strong);
+  border-radius: 1.3rem;
+  background: linear-gradient(180deg, oklch(from var(--surface-strong) l c h / 0.98), oklch(from var(--surface) l c h / 0.95));
   transition:
     border-color var(--dur-short) var(--ease-out),
     background-color var(--dur-short) var(--ease-out),
@@ -216,8 +272,8 @@ button {
   border: 1px solid var(--border);
   outline: 2px solid transparent;
   outline-offset: 1px;
-  border-radius: var(--radius-sm);
-  background: var(--surface-strong);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, oklch(from var(--surface-strong) l c h / 0.98), oklch(from var(--surface) l c h / 0.96));
   color: var(--foreground);
   transition:
     background-color var(--dur-short) var(--ease-out);
@@ -283,6 +339,35 @@ button {
 
 .collection-desk-shell {
   background: linear-gradient(180deg, var(--panel), var(--surface));
+}
+
+.data-band {
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-sm);
+}
+
+.archive-month-label {
+  position: sticky;
+  top: 5rem;
+}
+
+.timeline-slab {
+  overflow: hidden;
+  border-radius: 1.5rem;
+}
+
+.auth-panel {
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(180deg, oklch(from var(--panel) l c h / 0.95), oklch(from var(--surface) l c h / 0.95)),
+    linear-gradient(135deg, oklch(from var(--accent) l c h / 0.035), transparent 48%);
+}
+
+.auth-form-panel {
+  border: 1px solid var(--border);
+  border-radius: 1.25rem;
+  background: linear-gradient(180deg, oklch(from var(--surface) l c h / 0.97), oklch(from var(--card) l c h / 0.95));
 }
 
 .motion-surface:hover {
@@ -364,12 +449,19 @@ button {
     padding-left: 0;
     padding-top: var(--space-sm);
   }
+
+  .workbench-note {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+    padding-left: 0;
+    padding-top: var(--space-sm);
+  }
 }
 
 @media (min-width: 768px) {
   .page-hero-grid {
-    grid-template-columns: minmax(0, 1.7fr) minmax(16rem, 0.9fr);
-    align-items: end;
+    grid-template-columns: minmax(0, 1.6fr) minmax(18rem, 0.8fr);
+    align-items: start;
   }
 
   .stat-ribbon {
@@ -377,8 +469,13 @@ button {
   }
 
   .workbench-intro {
-    grid-template-columns: minmax(0, 1.7fr) minmax(16rem, 0.9fr);
-    align-items: end;
+    grid-template-columns: minmax(0, 1.65fr) minmax(16rem, 0.75fr);
+    align-items: start;
+  }
+
+  .letter-intro {
+    grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+    align-items: start;
   }
 }
 

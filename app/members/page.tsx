@@ -19,12 +19,13 @@ export default async function MembersPage() {
     <div className="page-wrap">
       <header className="workbench-intro">
         <SectionHeader
+          label="Members"
           title="Find a member, then open their recent history."
           description="Search by nickname, full name, team, or generation. Open a card to check the same archive trail the older Streamlit view exposed."
           titleClassName="text-[clamp(2.5rem,4vw,4rem)]"
         />
         <aside className="workbench-note">
-          <h2 className="text-sm font-semibold text-[var(--foreground)]">Scan before opening</h2>
+          <div className="kicker">Scan before opening</div>
           <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
             This route favors quick scanning first. The modal history stays secondary until a member is actually selected.
           </p>

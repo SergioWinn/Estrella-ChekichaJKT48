@@ -59,45 +59,64 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="en" suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-        <div className="mx-auto min-h-screen max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-          <header className="app-shell mb-6 overflow-hidden px-5 py-4 backdrop-blur-sm sm:px-6 lg:sticky lg:top-4 lg:z-[var(--z-sticky-nav)]">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-              <div className="space-y-3">
-                <div className="kicker">Estrella archive desk</div>
+        <div className="site-frame mx-auto min-h-screen max-w-[110rem] px-4 py-4 sm:px-6 lg:px-8">
+          <header className="site-header app-shell mb-8 overflow-hidden px-4 py-4 sm:px-6 lg:sticky lg:top-4 lg:z-[var(--z-sticky-nav)]">
+            <div className="site-header-top flex flex-col gap-6">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div className="space-y-4">
+                  <div className="kicker">Estrella archive desk</div>
+                  <div className="site-meta-strip flex flex-wrap items-center gap-3 text-[11px] font-medium uppercase tracking-[0.18em] text-[var(--muted-strong)]">
+                    <span>Archive monitor</span>
+                    <span className="hidden h-1 w-1 rounded-full bg-[var(--border-strong)] sm:block" />
+                    <span>Since January 2026</span>
+                    <span className="hidden h-1 w-1 rounded-full bg-[var(--border-strong)] sm:block" />
+                    <span>JKT48 cheki records</span>
+                  </div>
+                </div>
+                <div className="site-actions flex items-center gap-3 self-start lg:self-auto">
+                  <ThemeToggle />
+                  {user ? (
+                    <form action={logoutAction}>
+                      <button
+                        className="site-icon-button inline-flex size-11 items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]"
+                        aria-label="Logout"
+                        title="Logout"
+                      >
+                        <LogoutIcon className="size-5" />
+                      </button>
+                    </form>
+                  ) : (
+                    <Link
+                      href="/login"
+                      className="site-icon-button inline-flex size-11 items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]"
+                      aria-label="Open login or signup"
+                      title="Login or signup"
+                    >
+                      <AuthIcon className="size-5" />
+                    </Link>
+                  )}
+                </div>
+              </div>
+              <div className="site-header-bar grid gap-5 border-t border-[var(--border)] pt-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.65fr)] lg:items-end">
                 <div>
-                  <h1 className="max-w-3xl text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-4xl">Chekicha Archive Monitor</h1>
-                  <p className="mt-2 max-w-2xl text-sm text-[var(--muted)] sm:text-base">
+                  <h1 className="max-w-4xl text-[clamp(2.6rem,4vw,5rem)] font-semibold tracking-[-0.06em] text-[var(--foreground)]">
+                    Chekicha Archive Monitor
+                  </h1>
+                  <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)] sm:text-base">
                     Track resolved sessions, member appearances, and collector records from January 2026 onward.
                   </p>
                 </div>
-              </div>
-              <div className="flex items-center gap-3 self-start lg:self-end">
-                <ThemeToggle />
-                {user ? (
-                  <form action={logoutAction}>
-                    <button
-                      className="inline-flex size-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]"
-                      aria-label="Logout"
-                      title="Logout"
-                    >
-                      <LogoutIcon className="size-5" />
-                    </button>
-                  </form>
-                ) : (
-                  <Link
-                    href="/login"
-                    className="inline-flex size-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]"
-                    aria-label="Open login or signup"
-                    title="Login or signup"
-                  >
-                    <AuthIcon className="size-5" />
-                  </Link>
-                )}
+                <div className="site-summary-panel border border-[var(--border)] bg-[var(--surface)] px-4 py-4">
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted-strong)]">System</div>
+                  <div className="mt-2 text-sm leading-6 text-[var(--foreground-soft)]">
+                    Overview, audit timeline, member browser, collector shelf, and admin workspace in one archive shell.
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="mt-5 flex flex-col gap-4 border-t border-[var(--border)] pt-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="mt-5 flex flex-col gap-4 border-t border-[var(--border)] pt-4 xl:flex-row xl:items-center xl:justify-between">
               <SiteNav links={links} />
-              <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--muted)]">
+              <div className="site-credits flex flex-wrap items-center gap-3 text-sm text-[var(--muted)]">
                 <p>
                   Developed by{" "}
                   <a
@@ -113,7 +132,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                   href="https://tako.id/Sportagame19Win"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 font-medium text-[var(--foreground-soft)] transition-colors hover:bg-[var(--surface-hover)]"
+                  className="site-support-link inline-flex min-h-11 items-center gap-2 whitespace-nowrap border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 font-medium text-[var(--foreground-soft)] transition-colors hover:bg-[var(--surface-hover)]"
                 >
                   <SupportIcon className="size-3.5 text-[var(--accent)]" />
                   Support via Tako

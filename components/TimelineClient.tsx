@@ -117,7 +117,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
         <div className="motion-card app-card grid gap-4 p-4 md:p-5">
           <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,18rem)] lg:items-start lg:gap-4">
             <div>
-              <p className="text-sm font-semibold text-[var(--muted-strong)]">Filter</p>
+              <div className="kicker">Filter</div>
               <p className="mt-2 max-w-[32rem] text-sm leading-6 text-[var(--muted)]">
                 Start with the event type, then tighten the list by series or team when you need a narrower audit slice.
               </p>
@@ -179,7 +179,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
       {sections.length ? (
         sections.map(([monthLabel, monthRows]) => (
           <section key={monthLabel} className="motion-section space-y-5 border-t border-[var(--border)] pt-5 sm:pt-6">
-            <div className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--muted-strong)] md:text-base">{monthLabel}</div>
+            <div className="archive-month-label text-sm font-bold uppercase tracking-[0.16em] text-[var(--muted-strong)] md:text-base">{monthLabel}</div>
             <div className="grid grid-cols-2 gap-2 sm:gap-4">
               {monthRows.map((row, index) => {
                 const card = buildTimelineCardState(row);
@@ -188,7 +188,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                 return (
                     <article
                       key={row.id || `${row.event_name}-${row.start_time}`}
-                      className="motion-card motion-list-item app-card-strong relative grid min-w-0 gap-2 p-2 md:grid-cols-[4rem_7.5rem_1fr] md:items-center md:gap-4 md:p-5"
+                      className="timeline-slab motion-card motion-list-item app-card-strong relative grid min-w-0 gap-3 p-3 md:grid-cols-[4rem_8.5rem_1fr] md:items-center md:gap-5 md:p-5"
                       style={{ "--i": Math.min(index, 5) } as CSSProperties}
                     >
                     <div className="hidden md:block absolute right-5 top-5 md:right-6 md:top-6">
@@ -205,7 +205,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                     <div className="hidden md:block">
                       <DateRail value={row.start_time} />
                     </div>
-                    <div className="aspect-video min-w-0 w-full overflow-hidden rounded-[var(--radius-sm)] bg-[var(--surface)] md:aspect-[4/3]">
+                    <div className="aspect-video min-w-0 w-full overflow-hidden rounded-[1rem] bg-[var(--surface)] md:aspect-[4/3]">
                       {row.event_image_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -220,10 +220,10 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                         <MediaPlaceholder />
                       )}
                     </div>
-                    <div className="min-w-0 space-y-2">
+                    <div className="min-w-0 space-y-3">
                       <div className="min-w-0 md:pr-24">
                         <div className="min-w-0">
-                          <h2 className="truncate text-sm font-bold tracking-[-0.03em] text-[var(--foreground)] sm:text-base md:text-2xl">{row.event_name || "Untitled event"}</h2>
+                          <h2 className="truncate text-sm font-bold tracking-[-0.04em] text-[var(--foreground)] sm:text-base md:text-[2rem]">{row.event_name || "Untitled event"}</h2>
                           <div className="mt-1 grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 text-[11px] md:mt-2 md:text-[0.95rem]">
                             <EventTeamBadge team={eventTeam} eventType={row.event_type} compact />
                             <span className="min-w-0 truncate text-[var(--muted-strong)]">{formatEventTime(row.start_time, row.end_time)} WIB</span>

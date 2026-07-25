@@ -23,7 +23,7 @@ function QuickCountCard({
   value: string | number;
 }) {
   return (
-    <article className="motion-card border-t border-[var(--border)] pt-4">
+    <article className="motion-card data-band">
       <div className={`tabular-nums text-4xl font-semibold tracking-[-0.04em] ${tone}`}>{value}</div>
       <p className="mt-2 text-sm font-semibold text-[var(--muted-strong)]">{label}</p>
       <p className="mt-2 text-sm text-[var(--muted)]">{copy}</p>
@@ -47,6 +47,7 @@ export default async function Page() {
         <div className="page-hero-grid">
           <div className="space-y-6">
             <SectionHeader
+              label="Overview"
               title="Cheki records, tracked from 2026."
               description="See who appears most often in show and event cheki recorded since January 2026."
               titleClassName="max-w-4xl text-[clamp(2.8rem,5vw,5rem)]"
@@ -72,7 +73,7 @@ export default async function Page() {
             </div>
           </div>
           <aside className="page-rail">
-            <h2 className="text-sm font-semibold text-[var(--foreground)]">Archive scope</h2>
+            <div className="kicker">Archive scope</div>
             <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
               This archive starts in January 2026. Birthday and graduation rows stay in the small counts below, while the main ranking and recent list use show and event rows.
             </p>
@@ -84,6 +85,7 @@ export default async function Page() {
         left={
           <article className="motion-section app-shell flex h-[34rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem] xl:h-full">
             <SectionHeader
+              label="Leaderboard"
               title="Members who appear most often"
               titleClassName="text-2xl sm:text-3xl"
               description="Showing the top 10 members with two or more appearances. Ties keep the same rank number and follow the latest show or event assignment."
@@ -121,6 +123,7 @@ export default async function Page() {
           <div className="xl:sticky xl:top-24">
             <article className="motion-section app-shell flex h-[34rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem]">
               <SectionHeader
+                label="Recent"
                 title="Latest assigned members"
                 titleClassName="text-2xl sm:text-3xl"
                 description="Both slots from the same event can appear if both were filled."
@@ -159,6 +162,7 @@ export default async function Page() {
 
       <section className="motion-section app-shell p-5 sm:p-6">
         <SectionHeader
+          label="Breakdown"
           title="How the archive is divided right now"
           titleClassName="text-2xl sm:text-3xl"
           description="Small numbers only. No extra chart noise."
@@ -172,6 +176,7 @@ export default async function Page() {
       </section>
       <section className="motion-section app-shell p-5 sm:p-6">
         <SectionHeader
+          label="Teams"
           title="Performing team split"
           titleClassName="text-2xl sm:text-3xl"
           description="Show/event rows only. Birthday and graduation stay outside team counts."
@@ -193,6 +198,7 @@ export default async function Page() {
 
       <section className="motion-section app-shell p-5 sm:p-6">
         <SectionHeader
+          label="Attention"
           title="Open draws still waiting in the archive"
           titleClassName="text-2xl sm:text-3xl"
           description="Operational detail stays visible, but secondary."

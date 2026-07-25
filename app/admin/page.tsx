@@ -26,12 +26,13 @@ export default async function AdminPage({
     <div className="page-wrap">
       <header className="workbench-intro">
         <SectionHeader
+          label="Admin"
           title="Run archive operations from one restricted workspace."
           description="Queue work, event maintenance, and member upkeep stay inside one admin route, with the highest-priority tasks surfaced first."
           titleClassName="text-[clamp(2.5rem,4vw,4rem)]"
         />
         <aside className="workbench-note">
-          <h2 className="text-sm font-semibold text-[var(--foreground)]">Admin workflow</h2>
+          <div className="kicker">Admin workflow</div>
           <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
             This route is operational, not promotional. The priority is queue resolution, then event and roster maintenance.
           </p>

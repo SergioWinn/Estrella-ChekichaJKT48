@@ -15,22 +15,29 @@ export default async function LoginPage({
 
   return (
     <div className="mx-auto max-w-5xl page-wrap">
-      <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+      <section className="auth-panel grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.08fr_0.92fr] lg:p-8">
         <div className="letter-intro">
           <SectionHeader
+            label="Access"
             title="Reopen your cheki shelf."
             description="Sign in with the same username-first flow as before. Admins route into the control workspace, collectors into their own shelf."
             titleClassName="text-[clamp(2.2rem,4vw,3.7rem)]"
             descriptionClassName="text-sm leading-7 sm:text-base"
           />
+          <aside className="workbench-note">
+            <div className="kicker">Private access</div>
+            <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
+              No extra onboarding, no public profile layer. This route stays narrow and direct.
+            </p>
+          </aside>
         </div>
-        <div className="border-t border-[var(--border)] p-6 sm:p-8">
+        <div className="auth-form-panel p-6 sm:p-8">
           <h2 className="text-xl font-semibold text-[var(--foreground)]">Sign in</h2>
           {error ? <div className="mt-4 rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
           <form action={loginAction} className="mt-5 space-y-4">
             <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Username</span><input name="username" autoComplete="username" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
             <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Password</span><input name="password" type="password" autoComplete="current-password" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
-            <button className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)] transition hover:bg-[var(--accent-strong)]">
+            <button className="inline-flex min-h-11 w-full items-center justify-center rounded-[1rem] bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)] transition hover:bg-[var(--accent-strong)]">
               Sign in
             </button>
           </form>

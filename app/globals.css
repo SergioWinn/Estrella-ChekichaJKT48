@@ -121,7 +121,7 @@ button {
 }
 
 .site-header {
-  border-radius: 1.75rem;
+  border-radius: 1.45rem;
   background:
     linear-gradient(180deg, oklch(from var(--panel) l c h / 0.96), oklch(from var(--surface) l c h / 0.94)),
     linear-gradient(135deg, oklch(from var(--accent) l c h / 0.03), transparent 45%);
@@ -451,6 +451,21 @@ button {
     display: none;
   }
 
+  .site-nav-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .site-nav-link {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .archive-month-label {
+    position: static;
+  }
+
   .page-rail {
     border-left: 0;
     border-top: 1px solid var(--border);
@@ -463,6 +478,18 @@ button {
     border-top: 1px solid var(--border);
     padding-left: 0;
     padding-top: var(--space-sm);
+  }
+}
+
+@media (max-width: 479px) {
+  .site-nav-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .site-nav-link {
+    min-width: 6.5rem;
   }
 }
 

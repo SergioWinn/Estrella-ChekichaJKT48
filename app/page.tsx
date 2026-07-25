@@ -46,11 +46,20 @@ export default async function Page() {
       <section className="motion-section page-hero">
         <div className="page-hero-grid">
           <div className="space-y-6">
+            <div className="space-y-3">
+              <div className="kicker">Estrella archive desk</div>
+              <div className="site-meta-strip flex flex-wrap items-center gap-2.5 text-[10px] font-medium uppercase tracking-[0.18em] text-[var(--muted-strong)]">
+                <span>Archive monitor</span>
+                <span className="hidden h-1 w-1 rounded-full bg-[var(--border-strong)] sm:block" />
+                <span>Since January 2026</span>
+                <span className="hidden h-1 w-1 rounded-full bg-[var(--border-strong)] sm:block" />
+                <span>JKT48 cheki records</span>
+              </div>
+            </div>
             <SectionHeader
-              label="Overview"
-              title="Cheki records, tracked from 2026."
-              description="See who appears most often in show and event cheki recorded since January 2026."
-              titleClassName="max-w-4xl text-[clamp(2.8rem,5vw,5rem)]"
+              title="Chekicha Archive Monitor"
+              description="Track resolved sessions, member appearances, and collector records from January 2026 onward."
+              titleClassName="max-w-4xl text-[clamp(2.6rem,5vw,4.8rem)]"
               descriptionClassName="max-w-3xl text-base leading-8"
             />
             <div className="stat-ribbon">
@@ -73,9 +82,9 @@ export default async function Page() {
             </div>
           </div>
           <aside className="page-rail">
-            <div className="kicker">Archive scope</div>
+            <div className="kicker">System</div>
             <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
-              This archive starts in January 2026. Birthday and graduation rows stay in the small counts below, while the main ranking and recent list use show and event rows.
+              Overview, audit timeline, member browser, collector shelf, and admin workspace in one archive shell.
             </p>
           </aside>
         </div>

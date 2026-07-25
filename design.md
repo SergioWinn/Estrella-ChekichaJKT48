@@ -25,8 +25,8 @@ modern-minimal
 
 ## Typography
 
-- Display: Space Grotesk, weight 600, style normal
-- Body: Source Sans 3, weight 400
+- Display: Geist, weight 600, style normal
+- Body: Geist, weight 400
 - Mono: IBM Plex Mono, weight 500
 - Display tracking: -0.045em
 - Type scale anchor: `--text-display` = `clamp(2.8rem, 4vw, 4.8rem)`
@@ -63,7 +63,7 @@ Tailwind spacing utilities only when they resolve to multiples of 4 px.
 
 - The wordmark and archive-monitor framing
 - The accent colour and its small footprint
-- The display and body fonts
+- The unified Geist display/body system
 - The tighter rectangular border language
 - The section heading rhythm with stacked kicker above the title
 
@@ -89,8 +89,8 @@ The live source is [`tokens.css`](tokens.css). Core portable roles:
   --color-accent: oklch(0.72 0.11 235);
   --color-accent-ink: oklch(0.2 0.03 252);
   --color-focus: oklch(0.78 0.09 228);
-  --font-display: "Space Grotesk", "Segoe UI", sans-serif;
-  --font-body: "Source Sans 3", "Segoe UI", sans-serif;
+  --font-display: "Geist", "Segoe UI", sans-serif;
+  --font-body: "Geist", "Segoe UI", sans-serif;
   --font-outlier: "IBM Plex Mono", "Cascadia Mono", monospace;
 }
 ```
@@ -106,8 +106,8 @@ The live source is [`tokens.css`](tokens.css). Core portable roles:
   --color-rule: oklch(0.42 0.03 247 / 0.34);
   --color-accent: oklch(0.72 0.11 235);
   --color-focus: oklch(0.78 0.09 228);
-  --font-display: "Space Grotesk", "Segoe UI", sans-serif;
-  --font-body: "Source Sans 3", "Segoe UI", sans-serif;
+  --font-display: "Geist", "Segoe UI", sans-serif;
+  --font-body: "Geist", "Segoe UI", sans-serif;
   --font-outlier: "IBM Plex Mono", "Cascadia Mono", monospace;
   --spacing-sm: 1rem;
   --spacing-md: 1.5rem;

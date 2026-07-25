@@ -8,8 +8,8 @@
   --color-accent-ink: oklch(0.2 0.03 252);
   --color-focus: oklch(0.78 0.09 228);
 
-  --font-display: "Space Grotesk", "Segoe UI", sans-serif;
-  --font-body: "Source Sans 3", "Segoe UI", sans-serif;
+  --font-display: "Geist", "Segoe UI", sans-serif;
+  --font-body: "Geist", "Segoe UI", sans-serif;
   --font-mono: "IBM Plex Mono", "Cascadia Mono", monospace;
 
   --space-3xs: 0.25rem;

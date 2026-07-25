@@ -10,6 +10,7 @@ export interface ChekichaRow {
   end_time?: string | null;
   event_image_url?: string | null;
   event_name?: string | null;
+  event_team?: string | null;
   event_series?: string | null;
   event_type?: string | null;
   id?: string | null;
@@ -24,6 +25,7 @@ export interface ChekichaRow {
 export interface OverviewAssignment {
   avatar_url?: string | null;
   event_name: string;
+  event_team?: string | null;
   event_type: string;
   generasi?: number | null;
   member_id: string;
@@ -82,6 +84,7 @@ export interface AuthProfile {
 export interface EventPreset {
   event_image_url?: string | null;
   event_name: string;
+  event_team?: string | null;
   event_series?: string | null;
   event_type: string;
   id: string;
@@ -95,6 +98,7 @@ export interface CollectionEntry {
   event_id: string;
   event_image_url?: string | null;
   event_name: string;
+  event_team?: string | null;
   event_type: string;
   id: string;
   member_avatar_url?: string | null;

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { FilterPill } from "@/components/FilterPill";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { CloseIcon } from "@/components/UiIcons";
@@ -210,6 +211,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                           <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--accent)] sm:px-2.5 sm:text-[11px]">
                             {row.event_type || "Roulette"}
                           </span>
+                          <EventTeamBadge team={row.event_team} compact />
                           {slotLabel ? (
                             <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)] sm:px-2.5 sm:text-[11px]">
                               {slotLabel}

@@ -77,6 +77,7 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
         avatar_url: memberA.avatar_url,
         generasi: memberA.generasi,
         event_name: row.event_name || "Untitled event",
+        event_team: row.event_team || "ALL",
         event_type: eventType || "Roulette",
         start_time: row.start_time,
         start_dt: startTime,
@@ -216,14 +217,14 @@ export function buildMemberArchive(rows: MemberHistoryEntry[]) {
 export async function loadOverviewRows(): Promise<ChekichaRow[]> {
   return supabaseSelect<ChekichaRow>(
     "chekicha",
-    "id,event_type,event_name,start_time,slot_mode,member_id_a,member_id_b,member_a:member_id_a(nickname,avatar_url,generasi),member_b:member_id_b(nickname,avatar_url,generasi)",
+    "id,event_type,event_team,event_name,start_time,slot_mode,member_id_a,member_id_b,member_a:member_id_a(nickname,avatar_url,generasi),member_b:member_id_b(nickname,avatar_url,generasi)",
   );
 }
 
 export async function loadTimelineRows(): Promise<TimelineEvent[]> {
   return supabaseSelect<TimelineEvent>(
     "chekicha",
-    "id,start_time,end_time,event_name,event_series,event_type,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(full_name,nickname,avatar_url),member_b:member_id_b(full_name,nickname,avatar_url)",
+    "id,start_time,end_time,event_name,event_series,event_team,event_type,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(full_name,nickname,avatar_url),member_b:member_id_b(full_name,nickname,avatar_url)",
     { orderBy: "start_time", orderDirection: "desc" },
   );
 }
@@ -239,7 +240,7 @@ export async function loadMembers(): Promise<MemberRecord[]> {
 export async function loadMemberArchiveRows(): Promise<MemberHistoryEntry[]> {
   return supabaseSelect<MemberHistoryEntry>(
     "chekicha",
-    "id,event_name,event_type,start_time,event_image_url,slot_mode,member_id_a,member_id_b",
+    "id,event_name,event_team,event_type,start_time,event_image_url,slot_mode,member_id_a,member_id_b",
     { orderBy: "start_time", orderDirection: "desc" },
   );
 }

@@ -1,6 +1,15 @@
 const AUTH_EMAIL_DOMAIN = "users.chekitrack.local";
 
 export const STATUS_OPTIONS = ["LOVE", "DREAM", "PASSION", "TRAINEE", "GRADUATED"] as const;
+export const EVENT_TEAM_OPTIONS = ["ALL", "LOVE", "DREAM", "PASSION", "TRAINEE"] as const;
+export type EventTeam = (typeof EVENT_TEAM_OPTIONS)[number];
+export const EVENT_TEAM_COLORS: Record<EventTeam, string> = {
+  ALL: "#e20514",
+  LOVE: "#e20785",
+  DREAM: "#00a4a5",
+  PASSION: "#f69220",
+  TRAINEE: "#c47878",
+};
 export const GENERATION_OPTIONS = [3, 6, 7, 8, 9, 10, 11, 12, 13, 14] as const;
 export const TIME_STEP_MINUTES = 15;
 
@@ -16,6 +25,7 @@ export interface AuthProfile {
 export interface EventPreset {
   event_image_url?: string | null;
   event_name: string;
+  event_team?: string | null;
   event_series?: string | null;
   event_type: string;
   id?: string;
@@ -48,6 +58,20 @@ export function singleMemberEvent(eventType: string | null | undefined): boolean
 
 export function getEventDurationMinutes(eventType: string): number {
   return singleMemberEvent(eventType) ? 60 : 15;
+}
+
+export function normalizeEventTeam(value: string | null | undefined): EventTeam {
+  const team = String(value || "ALL").toUpperCase();
+  return EVENT_TEAM_OPTIONS.includes(team as EventTeam) ? team as EventTeam : "ALL";
+}
+
+export function getEventTeamStyle(value: string | null | undefined) {
+  const team = normalizeEventTeam(value);
+  return {
+    backgroundColor: `${EVENT_TEAM_COLORS[team]}26`,
+    borderColor: EVENT_TEAM_COLORS[team],
+    color: EVENT_TEAM_COLORS[team],
+  };
 }
 
 export function duplicateMemberLabels(
@@ -112,6 +136,7 @@ export function buildEventPayload(args: {
     event_name: args.preset.event_name,
     event_series: args.eventType === "Roulette" ? args.preset.event_series?.trim() || args.preset.event_name : null,
     event_type: args.preset.event_type,
+    event_team: normalizeEventTeam(args.preset.event_team),
     event_image_url: args.preset.event_image_url || null,
     slot_mode: isSingle ? 1 : args.slotMode,
     member_id_a: args.memberIdA || null,

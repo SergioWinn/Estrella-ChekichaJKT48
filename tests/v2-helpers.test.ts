@@ -48,6 +48,7 @@ test("collectible slot helper emits member and slot labels like the Streamlit co
       id: "evt-1",
       event_name: "Birthday Live",
       event_type: "Birthday",
+      event_team: "LOVE",
       start_time: "2026-07-10T10:00:00+07:00",
       end_time: "2026-07-10T11:00:00+07:00",
       slot_mode: 1,
@@ -60,6 +61,7 @@ test("collectible slot helper emits member and slot labels like the Streamlit co
       id: "evt-2",
       event_name: "Roulette Night",
       event_type: "Roulette",
+      event_team: "DREAM",
       start_time: "2026-07-09T10:00:00+07:00",
       end_time: "2026-07-09T10:15:00+07:00",
       slot_mode: 2,
@@ -74,6 +76,8 @@ test("collectible slot helper emits member and slot labels like the Streamlit co
   assert.equal(slots[0].slot_label, "Member");
   assert.equal(slots[1].slot_label, "Slot A");
   assert.equal(slots[2].slot_label, "Slot B");
+  assert.equal(slots[0].event_team, "LOVE");
+  assert.equal(slots[1].event_team, "DREAM");
   assert.equal(slots[0].member_status, "LOVE");
   assert.equal(slots[2].member_status, "DREAM");
   assert.equal(slots[0].member_full_name, "Michella Adlen");
@@ -102,6 +106,7 @@ test("collection hydration prefers resolved slot data over stale entry ids", () 
         slot_label: "Slot A",
         event_name: "Pajama Drive",
         event_type: "Roulette",
+        event_team: "LOVE",
         start_time: "2026-07-10T10:00:00+07:00",
         end_time: "2026-07-10T10:15:00+07:00",
         event_image_url: null,
@@ -111,7 +116,7 @@ test("collection hydration prefers resolved slot data over stale entry ids", () 
         member_status: "LOVE",
         member_avatar_url: null,
         member_generasi: 10,
-        display_label: "Pajama Drive | Slot A | Michie",
+        display_label: "Pajama Drive | LOVE | Slot A | Michie",
       },
     ],
     [],
@@ -120,6 +125,7 @@ test("collection hydration prefers resolved slot data over stale entry ids", () 
 
   assert.equal(hydrated[0]?.slot_key, "A");
   assert.equal(hydrated[0]?.event_name, "Pajama Drive");
+  assert.equal(hydrated[0]?.event_team, "LOVE");
   assert.equal(hydrated[0]?.member_name, "Michie");
   assert.equal(hydrated[0]?.member_full_name, "Michella Adlen");
   assert.equal(hydrated[0]?.member_status, "LOVE");
@@ -142,7 +148,7 @@ test("admin helpers block duplicate member names and coerce birthday events to o
   const eventPayload = buildEventPayload({
     eventDate: "2026-07-10",
     eventType: "Birthday",
-    preset: { event_name: "Birthday Live", event_series: "Ramadhan", event_type: "Birthday", event_image_url: "" },
+    preset: { event_name: "Birthday Live", event_series: "Ramadhan", event_team: "ALL", event_type: "Birthday", event_image_url: "" },
     slotMode: 2,
     startTimeValue: "10:15",
     startHour: 10,
@@ -159,7 +165,7 @@ test("admin helpers block duplicate member names and coerce birthday events to o
   const roulettePayload = buildEventPayload({
     eventDate: "2026-07-10",
     eventType: "Roulette",
-    preset: { event_name: "Sahur Bareng", event_series: "Ramadhan", event_type: "Roulette" },
+    preset: { event_name: "Sahur Bareng", event_series: "Ramadhan", event_team: "PASSION", event_type: "Roulette" },
     slotMode: 1,
     startTimeValue: "10:15",
     startHour: 10,
@@ -167,4 +173,5 @@ test("admin helpers block duplicate member names and coerce birthday events to o
   });
 
   assert.equal(roulettePayload.event_series, "Ramadhan");
+  assert.equal(roulettePayload.event_team, "PASSION");
 });

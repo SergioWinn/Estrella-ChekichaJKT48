@@ -45,7 +45,7 @@ export async function loadEventPresets(supabase: Awaited<ReturnType<typeof creat
   void supabase;
   return supabaseSelect<EventPreset>(
     "event_presets",
-    "id,event_name,event_series,event_type,event_image_url,sort_order,is_active",
+    "id,event_name,event_series,event_team,event_type,event_image_url,sort_order,is_active",
     { filters: { is_active: "eq.true" }, orderBy: "sort_order", orderDirection: "asc" },
   );
 }
@@ -54,7 +54,7 @@ export async function loadAdminEventRows(supabase: Awaited<ReturnType<typeof cre
   void supabase;
   return supabaseSelect<ChekichaRow>(
     "chekicha",
-    "id,event_name,event_series,event_type,start_time,end_time,event_image_url,slot_mode,member_id_a,member_id_b",
+    "id,event_name,event_series,event_team,event_type,start_time,end_time,event_image_url,slot_mode,member_id_a,member_id_b",
     { orderBy: "start_time", orderDirection: "desc" },
   );
 }
@@ -83,7 +83,7 @@ export async function loadCollectibleSlotsForUser(supabase: Awaited<ReturnType<t
   return buildCollectibleSlots(
     await supabaseSelect<ChekichaRow>(
       "chekicha",
-      "id,event_name,event_type,start_time,end_time,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(nickname,full_name,avatar_url,generasi,status),member_b:member_id_b(nickname,full_name,avatar_url,generasi,status)",
+      "id,event_name,event_team,event_type,start_time,end_time,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(nickname,full_name,avatar_url,generasi,status),member_b:member_id_b(nickname,full_name,avatar_url,generasi,status)",
       { orderBy: "start_time", orderDirection: "desc" },
     ),
   );
@@ -106,9 +106,9 @@ export async function loadCollectionEntriesForUser(
   const eventIds = [...new Set(rows.map((row) => row.event_id))];
   const memberIds = [...new Set(rows.map((row) => row.member_id))];
   const [events, members, slotRows] = await Promise.all([
-    supabaseSelect<{ end_time?: string | null; event_image_url?: string | null; event_name?: string | null; event_type?: string | null; id: string; start_time?: string | null }>(
+    supabaseSelect<{ end_time?: string | null; event_image_url?: string | null; event_name?: string | null; event_team?: string | null; event_type?: string | null; id: string; start_time?: string | null }>(
       "chekicha",
-      "id,event_name,event_type,start_time,end_time,event_image_url",
+      "id,event_name,event_team,event_type,start_time,end_time,event_image_url",
       { filters: { id: `in.(${eventIds.join(",")})` } },
     ),
     supabaseSelect<Pick<MemberRecord, "avatar_url" | "full_name" | "generasi" | "id" | "nickname" | "status">>(
@@ -118,7 +118,7 @@ export async function loadCollectionEntriesForUser(
     ),
     supabaseSelect<ChekichaRow>(
       "chekicha",
-      "id,event_name,event_type,start_time,end_time,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(nickname,full_name,avatar_url,generasi,status),member_b:member_id_b(nickname,full_name,avatar_url,generasi,status)",
+      "id,event_name,event_team,event_type,start_time,end_time,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(nickname,full_name,avatar_url,generasi,status),member_b:member_id_b(nickname,full_name,avatar_url,generasi,status)",
       { filters: { id: `in.(${eventIds.join(",")})` } },
     ),
   ]);
@@ -129,6 +129,7 @@ export async function loadCollectionEntriesForUser(
     events.map((event) => ({
       event_id: event.id,
       event_name: event.event_name || "Archived event",
+      event_team: event.event_team || "ALL",
       event_type: event.event_type || "Roulette",
       start_time: event.start_time,
       end_time: event.end_time,

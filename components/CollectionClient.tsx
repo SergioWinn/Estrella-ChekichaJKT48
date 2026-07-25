@@ -5,6 +5,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
+import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { FilterPill } from "@/components/FilterPill";
 import { CloseIcon } from "@/components/UiIcons";
 import { SectionHeader } from "@/components/SectionHeader";
@@ -101,6 +102,7 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
                     <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--accent)]">
                       {entry.event_type}
                     </span>
+                    <EventTeamBadge team={entry.event_team} compact />
                     {showSlot ? (
                       <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)]">
                         Slot {entry.slot_key}

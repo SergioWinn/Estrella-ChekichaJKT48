@@ -8,6 +8,7 @@ export interface CollectibleSlot {
   event_id: string;
   event_image_url?: string | null;
   event_name: string;
+  event_team?: string | null;
   event_type: string;
   member_avatar_url?: string | null;
   member_full_name?: string | null;
@@ -38,6 +39,7 @@ export function buildCollectibleSlots(rows: ChekichaRow[]): CollectibleSlot[] {
     const memberB = relationToSingleMember(row.member_b);
     const eventName = row.event_name || "Untitled event";
     const eventType = row.event_type || "Roulette";
+    const eventTeam = row.event_team || "ALL";
     const dayTime = dt ? `${dt.getUTCDate()} ${dt.toLocaleString("en-US", { month: "short", timeZone: "UTC" })} ${dt.getUTCFullYear()} | ${formatEventTime(row.start_time, row.end_time)}` : "Unknown date";
 
     if (row.id && row.member_id_a && memberA) {
@@ -48,6 +50,7 @@ export function buildCollectibleSlots(rows: ChekichaRow[]): CollectibleSlot[] {
         slot_key: "A",
         slot_label: slotLabel,
         event_name: eventName,
+        event_team: eventTeam,
         event_type: eventType,
         start_time: row.start_time,
         end_time: row.end_time,
@@ -58,7 +61,7 @@ export function buildCollectibleSlots(rows: ChekichaRow[]): CollectibleSlot[] {
         member_status: memberA.status,
         member_avatar_url: memberA.avatar_url,
         member_generasi: memberA.generasi,
-        display_label: `${eventName} | ${dayTime} | ${slotLabel} | ${memberA.nickname || "Unknown member"}`,
+        display_label: `${eventName} | ${eventTeam} | ${dayTime} | ${slotLabel} | ${memberA.nickname || "Unknown member"}`,
       });
     }
 
@@ -69,6 +72,7 @@ export function buildCollectibleSlots(rows: ChekichaRow[]): CollectibleSlot[] {
         slot_key: "B",
         slot_label: "Slot B",
         event_name: eventName,
+        event_team: eventTeam,
         event_type: eventType,
         start_time: row.start_time,
         end_time: row.end_time,
@@ -79,7 +83,7 @@ export function buildCollectibleSlots(rows: ChekichaRow[]): CollectibleSlot[] {
         member_status: memberB.status,
         member_avatar_url: memberB.avatar_url,
         member_generasi: memberB.generasi,
-        display_label: `${eventName} | ${dayTime} | Slot B | ${memberB.nickname || "Unknown member"}`,
+        display_label: `${eventName} | ${eventTeam} | ${dayTime} | Slot B | ${memberB.nickname || "Unknown member"}`,
       });
     }
   }
@@ -114,7 +118,7 @@ export function addCollectionQuantityToEntries(
 export function hydrateCollectionEntries(
   rows: Array<Pick<CollectionEntry, "created_at" | "event_id" | "id" | "member_id" | "quantity" | "slot_key" | "updated_at" | "user_id">>,
   slots: CollectibleSlot[],
-  fallbackEvents: Array<Pick<CollectionEntry, "end_time" | "event_id" | "event_image_url" | "event_name" | "event_type" | "start_time">>,
+  fallbackEvents: Array<Pick<CollectionEntry, "end_time" | "event_id" | "event_image_url" | "event_name" | "event_team" | "event_type" | "start_time">>,
   fallbackMembers: Array<Pick<CollectionEntry, "member_avatar_url" | "member_full_name" | "member_generasi" | "member_id" | "member_name" | "member_status">>,
 ): CollectionEntry[] {
   const slotsByKey = new Map(slots.map((slot) => [`${slot.event_id}:${slot.slot_key}`, slot]));
@@ -131,6 +135,7 @@ export function hydrateCollectionEntries(
       ...row,
       slot_key: slotKey,
       event_name: slot?.event_name || event?.event_name || "Archived event",
+      event_team: slot?.event_team || event?.event_team || "ALL",
       event_type: slot?.event_type || event?.event_type || "Roulette",
       start_time: slot?.start_time || event?.start_time,
       end_time: slot?.end_time || event?.end_time,

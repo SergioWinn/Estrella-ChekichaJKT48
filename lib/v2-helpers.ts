@@ -10,6 +10,13 @@ export const EVENT_TEAM_COLORS: Record<EventTeam, string> = {
   PASSION: "#f69220",
   TRAINEE: "#c47878",
 };
+const FIXED_SETLIST_TEAMS: Array<{ keywords: string[]; team: EventTeam }> = [
+  { keywords: ["passion 200"], team: "PASSION" },
+  { keywords: ["dream bakudan"], team: "DREAM" },
+  { keywords: ["itadaki love"], team: "LOVE" },
+  { keywords: ["pajama drive"], team: "TRAINEE" },
+];
+
 export const GENERATION_OPTIONS = [3, 6, 7, 8, 9, 10, 11, 12, 13, 14] as const;
 export const TIME_STEP_MINUTES = 15;
 
@@ -63,6 +70,12 @@ export function getEventDurationMinutes(eventType: string): number {
 export function normalizeEventTeam(value: string | null | undefined): EventTeam {
   const team = String(value || "ALL").toUpperCase();
   return EVENT_TEAM_OPTIONS.includes(team as EventTeam) ? team as EventTeam : "ALL";
+}
+
+export function getFixedEventTeam(eventName: string | null | undefined, eventType?: string | null): EventTeam | null {
+  if (singleMemberEvent(eventType)) return "ALL";
+  const name = String(eventName || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  return FIXED_SETLIST_TEAMS.find((rule) => rule.keywords.some((keyword) => name.includes(keyword)))?.team ?? null;
 }
 
 export function getEventTeamStyle(value: string | null | undefined) {
@@ -136,7 +149,7 @@ export function buildEventPayload(args: {
     event_name: args.preset.event_name,
     event_series: args.eventType === "Roulette" ? args.preset.event_series?.trim() || args.preset.event_name : null,
     event_type: args.preset.event_type,
-    event_team: normalizeEventTeam(args.preset.event_team),
+    event_team: getFixedEventTeam(args.preset.event_name, args.eventType) ?? normalizeEventTeam(args.preset.event_team),
     event_image_url: args.preset.event_image_url || null,
     slot_mode: isSingle ? 1 : args.slotMode,
     member_id_a: args.memberIdA || null,

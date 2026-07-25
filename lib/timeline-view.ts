@@ -1,4 +1,6 @@
 import { relationToMember } from "./archive-data.ts";
+import type { EventTeam } from "./v2-helpers.ts";
+import { EVENT_TEAM_OPTIONS, normalizeEventTeam, singleMemberEvent } from "./v2-helpers.ts";
 import type { TimelineEvent } from "./types.ts";
 
 function getEventSeries(event: TimelineEvent): string {
@@ -17,19 +19,29 @@ export function getRouletteSeriesOptions(events: TimelineEvent[]): string[] {
   return Array.from(series.values()).sort((a, b) => a.localeCompare(b));
 }
 
-export function filterTimelineEvents(events: TimelineEvent[], filterType: string, rouletteSeries = "All"): TimelineEvent[] {
+export function filterTimelineEvents(events: TimelineEvent[], filterType: string, rouletteSeries = "All", teamFilter = "All"): TimelineEvent[] {
   return events.filter((event) => {
     const eventType = event.event_type || "Roulette";
     if (filterType !== "All" && eventType !== filterType) return false;
+    if (teamFilter !== "All" && (singleMemberEvent(eventType) || normalizeEventTeam(event.event_team) !== teamFilter)) return false;
     return filterType !== "Roulette" || rouletteSeries === "All" || getEventSeries(event) === rouletteSeries;
   });
 }
 
-export function buildTimelineFilterNote(filterType: string, rouletteSeries = "All"): string {
-  if (filterType === "All") return "Showing every event type across all months";
-  if (filterType === "Roulette" && rouletteSeries !== "All") return `Showing only ${rouletteSeries} roulette sessions`;
-  if (filterType === "Roulette") return "Showing every roulette show across all months";
-  return `Showing only ${filterType} events`;
+export function buildTimelineFilterNote(filterType: string, rouletteSeries = "All", teamFilter = "All"): string {
+  const suffix = teamFilter === "All" ? "" : ` for ${teamFilter}`;
+  if (filterType === "All") return `Showing every event type across all months${suffix}`;
+  if (filterType === "Roulette" && rouletteSeries !== "All") return `Showing only ${rouletteSeries} roulette sessions${suffix}`;
+  if (filterType === "Roulette") return `Showing every roulette show across all months${suffix}`;
+  return `Showing only ${filterType} events${suffix}`;
+}
+
+export function countTimelineTeams(events: TimelineEvent[]): Record<EventTeam, number> {
+  const counts = Object.fromEntries(EVENT_TEAM_OPTIONS.map((team) => [team, 0])) as Record<EventTeam, number>;
+  for (const event of events) {
+    if (!singleMemberEvent(event.event_type)) counts[normalizeEventTeam(event.event_team)] += 1;
+  }
+  return counts;
 }
 
 export function buildTimelineCardState(row: TimelineEvent) {

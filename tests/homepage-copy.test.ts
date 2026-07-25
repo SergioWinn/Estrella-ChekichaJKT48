@@ -23,6 +23,7 @@ test("buildHomepageCopy mirrors the Streamlit homepage messaging", () => {
     pending_slots: 2,
     recent_assignments: [],
     show_event_sessions: 65,
+    team_counts: { ALL: 1, LOVE: 2, DREAM: 3, PASSION: 4, TRAINEE: 5 },
   });
 
   assert.equal(copy.waitingCopy, "2 draws still waiting");

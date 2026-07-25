@@ -1,4 +1,4 @@
-/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V4 */
+/* Hallmark - pre-emit critique: P5 H5 E5 S5 R5 V4 */
 "use client";
 
 import { useMemo, useState } from "react";
@@ -8,10 +8,12 @@ import { FilterPill } from "@/components/FilterPill";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { countPendingSlots, groupTimelineByMonth } from "@/lib/archive-data.ts";
 import { formatEventTime } from "@/lib/format.ts";
-import { buildTimelineCardState, buildTimelineFilterNote, filterTimelineEvents, getRouletteSeriesOptions } from "@/lib/timeline-view.ts";
+import { buildTimelineCardState, buildTimelineFilterNote, countTimelineTeams, filterTimelineEvents, getRouletteSeriesOptions } from "@/lib/timeline-view.ts";
+import { EVENT_TEAM_OPTIONS } from "@/lib/v2-helpers.ts";
 import type { TimelineEvent } from "@/lib/types.ts";
 
 const FILTERS = ["All", "Roulette", "Birthday", "Graduation"] as const;
+const TEAM_FILTERS = ["All", ...EVENT_TEAM_OPTIONS] as const;
 
 function DateRail({ value }: { value: string }) {
   const dt = new Date(value);
@@ -80,12 +82,15 @@ function MemberPill({
 export function TimelineClient({ events }: { events: TimelineEvent[] }) {
   const [filterType, setFilterType] = useState<(typeof FILTERS)[number]>("All");
   const [rouletteSeries, setRouletteSeries] = useState("All");
+  const [teamFilter, setTeamFilter] = useState<(typeof TEAM_FILTERS)[number]>("All");
 
   const rouletteSeriesOptions = useMemo(() => getRouletteSeriesOptions(events), [events]);
-  const filtered = useMemo(() => filterTimelineEvents(events, filterType, rouletteSeries), [events, filterType, rouletteSeries]);
+  const teamBaseEvents = useMemo(() => filterTimelineEvents(events, filterType, rouletteSeries), [events, filterType, rouletteSeries]);
+  const teamCounts = useMemo(() => countTimelineTeams(teamBaseEvents), [teamBaseEvents]);
+  const filtered = useMemo(() => filterTimelineEvents(events, filterType, rouletteSeries, teamFilter), [events, filterType, rouletteSeries, teamFilter]);
   const pendingCount = useMemo(() => countPendingSlots(events), [events]);
   const sections = useMemo(() => groupTimelineByMonth(filtered), [filtered]);
-  const filterNote = useMemo(() => buildTimelineFilterNote(filterType, rouletteSeries), [filterType, rouletteSeries]);
+  const filterNote = useMemo(() => buildTimelineFilterNote(filterType, rouletteSeries, teamFilter), [filterType, rouletteSeries, teamFilter]);
 
   return (
     <div className="space-y-6">
@@ -126,6 +131,20 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
               </select>
             </label>
           ) : null}
+          <div className="mt-4">
+            <span className="text-xs font-semibold text-[var(--muted-strong)]">Performing team</span>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {TEAM_FILTERS.map((option) => (
+                <FilterPill
+                  key={option}
+                  onClick={() => setTeamFilter(option)}
+                  active={teamFilter === option}
+                >
+                  {option === "All" ? "All" : `${option} ${teamCounts[option]}`}
+                </FilterPill>
+              ))}
+            </div>
+          </div>
           <div className="mt-3 text-xs text-[var(--muted)] md:text-sm">{filterNote}</div>
         </div>
       </section>

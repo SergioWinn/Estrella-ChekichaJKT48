@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
@@ -15,7 +15,7 @@ import {
   updateQueueAction,
 } from "@/lib/v2-actions.ts";
 import { formatEventDate, formatEventTime } from "@/lib/format.ts";
-import { EVENT_TEAM_OPTIONS, GENERATION_OPTIONS, STATUS_OPTIONS, TIME_STEP_MINUTES, singleMemberEvent } from "@/lib/v2-helpers.ts";
+import { EVENT_TEAM_OPTIONS, GENERATION_OPTIONS, STATUS_OPTIONS, TIME_STEP_MINUTES, getFixedEventTeam, singleMemberEvent } from "@/lib/v2-helpers.ts";
 import type { ChekichaRow, EventPreset, MemberRecord } from "@/lib/types.ts";
 
 const ADMIN_TABS = [
@@ -207,6 +207,8 @@ export function AdminWorkspace({
   const [createMemberA, setCreateMemberA] = useState("");
   const [createMemberB, setCreateMemberB] = useState("");
   const [editState, setEditState] = useState<{ eventId: string; eventType: string; slotMode: string } | null>(null);
+  const [editEventName, setEditEventName] = useState(events[0]?.event_name || "");
+  const [editEventTeam, setEditEventTeam] = useState(events[0]?.event_team || "ALL");
   const [newNickname, setNewNickname] = useState("");
   const [newFullName, setNewFullName] = useState("");
   const [newStatus, setNewStatus] = useState<string>(STATUS_OPTIONS[0] || "LOVE");
@@ -236,8 +238,17 @@ export function AdminWorkspace({
   const createSingleMember = singleMemberEvent(createEventType);
   const editSingleMember = singleMemberEvent(editEventType);
   const showEditSlotB = !editSingleMember && editSlotMode === "2";
+  const createFixedTeam = getFixedEventTeam(selectedCreatePreset?.event_name, createEventType);
+  const createSelectedTeam = createFixedTeam ?? createEventTeam;
+  const editFixedTeam = getFixedEventTeam(editEventName, editEventType);
+  const editSelectedTeam = editFixedTeam ?? editEventTeam;
   const createEventDateText = `${createDate || "No date"} | ${createTimeValue} WIB`;
   const memberOptions = useMemo(() => members.map((m) => ({ label: memberOptionLabel(m), value: m.id })), [members]);
+
+  useEffect(() => {
+    setEditEventName(selectedEvent?.event_name || "");
+    setEditEventTeam(selectedEvent?.event_team || "ALL");
+  }, [selectedEventKey, selectedEvent]);
 
   function setEditEventType(nextValue: string) {
     setEditState({ eventId: selectedEventKey, eventType: nextValue, slotMode: editSlotMode });
@@ -305,7 +316,7 @@ export function AdminWorkspace({
               Resolve waiting entries first. Slot assignment is the most time-sensitive admin task, so it stays at the front of this workspace.
             </p>
             <p className="mt-3 text-sm leading-6 text-[var(--muted-strong)]">
-              <strong className="font-semibold text-[var(--foreground)]">Roulette</strong> — a standard show/event session where which members attend is determined by lottery. Archive entries are logged after the result is known.
+              <strong className="font-semibold text-[var(--foreground)]">Roulette</strong> - a standard show/event session where which members attend is determined by lottery. Archive entries are logged after the result is known.
             </p>
             <div className="mt-5 border-t border-[var(--border)] pt-4 text-sm text-[var(--muted)]">
               <strong className="text-[var(--foreground)]">How to fill results:</strong> choose the member for each waiting slot, then save that row. The row leaves this queue after every required slot is filled.
@@ -438,7 +449,7 @@ export function AdminWorkspace({
                         const preset = presets.find((item) => item.id === event.target.value);
                         if (preset) {
                           setCreatePresetId(preset.id);
-                          setCreateEventTeam(preset.event_team || "ALL");
+                          setCreateEventTeam(getFixedEventTeam(preset.event_name, preset.event_type) ?? (preset.event_team || "ALL"));
                           if (singleMemberEvent(preset.event_type)) {
                             setCreateSlotMode("1");
                             setCreateMemberB("");
@@ -457,7 +468,16 @@ export function AdminWorkspace({
                     <input type="hidden" name="event_image_url" value={selectedCreatePreset?.event_image_url || ""} />
                   </div>
                 </div>
-                {createSingleMember ? <input type="hidden" name="event_team" value="ALL" /> : (
+                {createSingleMember ? <input type="hidden" name="event_team" value="ALL" /> : createFixedTeam ? (
+                  <div className="space-y-2">
+                    <input type="hidden" name="event_team" value={createSelectedTeam} />
+                    <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
+                    <select aria-label="Performing team" value={createSelectedTeam} disabled className="app-input min-h-12 w-full px-4 py-3 text-lg">
+                      {EVENT_TEAM_OPTIONS.map((team) => <option key={team} value={team}>{team}</option>)}
+                    </select>
+                    <p className="text-sm text-[var(--muted)]">Locked by setlist rule.</p>
+                  </div>
+                ) : (
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
                     <select aria-label="Performing team" name="event_team" value={createEventTeam} onChange={(event) => setCreateEventTeam(event.target.value)} className="app-input min-h-12 w-full px-4 py-3 text-lg">
@@ -502,6 +522,7 @@ export function AdminWorkspace({
                   eventName={selectedCreatePreset?.event_name || "Select a preset"}
                   eventType={createEventType}
                   eventImageUrl={selectedCreatePreset?.event_image_url}
+                  eventTeam={createSelectedTeam}
                   dateText={createEventDateText}
                   footer={createSingleMember ? "Single-member event" : `${createSlotMode} slot mode`}
                 />
@@ -546,7 +567,7 @@ export function AdminWorkspace({
                       <div className="grid gap-3 sm:grid-cols-2">
                         <div className="space-y-2">
                           <label className="block text-sm font-semibold text-[var(--muted)]">Event name</label>
-                          <input aria-label="Event name" name="event_name" defaultValue={selectedEvent.event_name || ""} className="app-input min-h-12 w-full px-4 py-3 text-lg" />
+                          <input aria-label="Event name" name="event_name" value={editEventName} onChange={(event) => setEditEventName(event.target.value)} className="app-input min-h-12 w-full px-4 py-3 text-lg" />
                         </div>
                         <div className="space-y-2">
                           <label className="block text-sm font-semibold text-[var(--muted)]">Event type</label>
@@ -555,6 +576,7 @@ export function AdminWorkspace({
                             setEditEventType(nextType);
                             if (singleMemberEvent(nextType)) {
                               setEditSlotMode("1");
+                              setEditEventTeam("ALL");
                             }
                           }} className="app-input min-h-12 w-full px-4 py-3 text-lg" />
                         </div>
@@ -563,10 +585,19 @@ export function AdminWorkspace({
                           <input aria-label="Timeline series" name="event_series" defaultValue={selectedEvent.event_series || ""} placeholder="Example: Ramadhan" className="app-input min-h-12 w-full px-4 py-3 text-lg" />
                           <p className="text-sm text-[var(--muted)]">Roulette rows with the same series appear as one Timeline filter option.</p>
                         </div>
-                        {editSingleMember ? <input type="hidden" name="event_team" value="ALL" /> : (
+                        {editSingleMember ? <input type="hidden" name="event_team" value="ALL" /> : editFixedTeam ? (
+                          <div className="space-y-2 sm:col-span-2">
+                            <input type="hidden" name="event_team" value={editSelectedTeam} />
+                            <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
+                            <select aria-label="Performing team" value={editSelectedTeam} disabled className="app-input min-h-12 w-full px-4 py-3 text-lg">
+                              {EVENT_TEAM_OPTIONS.map((team) => <option key={team} value={team}>{team}</option>)}
+                            </select>
+                            <p className="text-sm text-[var(--muted)]">Locked by setlist rule.</p>
+                          </div>
+                        ) : (
                           <div className="space-y-2 sm:col-span-2">
                             <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
-                            <select aria-label="Performing team" name="event_team" defaultValue={selectedEvent.event_team || "ALL"} className="app-input min-h-12 w-full px-4 py-3 text-lg">
+                            <select aria-label="Performing team" name="event_team" value={editEventTeam} onChange={(event) => setEditEventTeam(event.target.value)} className="app-input min-h-12 w-full px-4 py-3 text-lg">
                               {EVENT_TEAM_OPTIONS.map((team) => <option key={team} value={team}>{team}</option>)}
                             </select>
                           </div>
@@ -605,9 +636,10 @@ export function AdminWorkspace({
                         <input type="hidden" name="member_id_b" value="" />
                       )}
                       <EventPreviewCard
-                        eventName={selectedEvent.event_name || "Untitled event"}
-                        eventType={selectedEvent.event_type || "Roulette"}
+                        eventName={editEventName || "Untitled event"}
+                        eventType={editEventType || "Roulette"}
                         eventImageUrl={selectedEvent.event_image_url}
+                        eventTeam={editSelectedTeam}
                         dateText={`${formatEventDate(selectedEvent.start_time)} | ${formatEventTime(selectedEvent.start_time, selectedEvent.end_time)} WIB`}
                         footer={editSingleMember ? "Single-member event" : `Current mode: ${editSlotMode} slot`}
                       />

@@ -54,6 +54,7 @@ export interface OverviewSnapshot {
   pending_slots: number;
   recent_assignments: OverviewAssignment[];
   show_event_sessions: number;
+  team_counts: Record<string, number>;
 }
 
 export interface TimelineEvent extends ChekichaRow {

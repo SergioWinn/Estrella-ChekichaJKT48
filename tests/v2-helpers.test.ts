@@ -6,6 +6,7 @@ import {
   duplicateMemberLabels,
   getAuthRedirectPath,
   getEventDurationMinutes,
+  getFixedEventTeam,
   normalizeUsername,
   usernameToEmail,
   validateUsername,
@@ -174,4 +175,24 @@ test("admin helpers block duplicate member names and coerce birthday events to o
 
   assert.equal(roulettePayload.event_series, "Ramadhan");
   assert.equal(roulettePayload.event_team, "PASSION");
+});
+
+test("fixed setlist teams override manual event team values", () => {
+  assert.equal(getFixedEventTeam("PASSION 200%", "Roulette"), "PASSION");
+  assert.equal(getFixedEventTeam("DREAM BAKUDAN", "Roulette"), "DREAM");
+  assert.equal(getFixedEventTeam("ITADAKI LOVE", "Roulette"), "LOVE");
+  assert.equal(getFixedEventTeam("Pajama Drive", "Roulette"), "TRAINEE");
+  assert.equal(getFixedEventTeam("Cara Meminum Ramune", "Roulette"), null);
+
+  const payload = buildEventPayload({
+    eventDate: "2026-07-10",
+    eventType: "Roulette",
+    preset: { event_name: "DREAM BAKUDAN", event_series: "DREAM BAKUDAN", event_team: "LOVE", event_type: "Roulette" },
+    slotMode: 1,
+    startTimeValue: "10:15",
+    startHour: 10,
+    startMinute: 15,
+  });
+
+  assert.equal(payload.event_team, "DREAM");
 });

@@ -10,6 +10,7 @@ import type {
   TimelineEvent,
 } from "./types.ts";
 import { formatMonthLabel } from "./format.ts";
+import { EVENT_TEAM_OPTIONS, normalizeEventTeam } from "./v2-helpers.ts";
 
 const SPECIAL_EVENT_TYPES = new Set(["Birthday", "Graduation"]);
 
@@ -48,6 +49,7 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
   let pendingSlots = 0;
   let latestShowEvent: Date | null = null;
   const assignments: OverviewAssignment[] = [];
+  const teamCounts = Object.fromEntries(EVENT_TEAM_OPTIONS.map((team) => [team, 0]));
 
   for (const row of eventRows) {
     const eventType = row.event_type;
@@ -60,6 +62,7 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
       graduationSessions += 1;
     } else {
       showEventSessions += 1;
+      teamCounts[normalizeEventTeam(row.event_team)] += 1;
       if (!latestShowEvent || startTime > latestShowEvent) {
         latestShowEvent = startTime;
       }
@@ -95,6 +98,7 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
           avatar_url: memberB.avatar_url,
           generasi: memberB.generasi,
           event_name: row.event_name || "Untitled event",
+          event_team: row.event_team || "ALL",
           event_type: eventType || "Roulette",
           start_time: row.start_time,
           start_dt: startTime,
@@ -164,6 +168,7 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
     latest_show_event: latestShowEvent,
     leaderboard,
     recent_assignments: recentAssignments,
+    team_counts: teamCounts,
   };
 }
 

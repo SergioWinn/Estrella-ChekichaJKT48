@@ -1,9 +1,11 @@
-﻿import type { CSSProperties } from "react";
+import type { CSSProperties } from "react";
+import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { buildOverviewSnapshot, loadOverviewRows } from "@/lib/archive-data.ts";
 import { formatEventDate } from "@/lib/format.ts";
 import { buildHomepageCopy } from "@/lib/homepage-copy.ts";
 import { MatchedHeightColumns } from "@/components/MatchedHeightColumns";
 import { SectionHeader } from "@/components/SectionHeader";
+import { EVENT_TEAM_OPTIONS } from "@/lib/v2-helpers.ts";
 
 export const dynamic = "force-dynamic";
 
@@ -163,6 +165,23 @@ export default async function Page() {
           <QuickCountCard label={copy.quickCounts[1]!.label} value={copy.quickCounts[1]!.value} copy={copy.quickCounts[1]!.copy} tone="text-[var(--warning)]" />
           <QuickCountCard label={copy.quickCounts[2]!.label} value={copy.quickCounts[2]!.value} copy={copy.quickCounts[2]!.copy} tone="text-[var(--muted-strong)]" />
           <QuickCountCard label={copy.quickCounts[3]!.label} value={copy.quickCounts[3]!.value} copy={copy.quickCounts[3]!.copy} tone="text-[var(--accent-strong)]" />
+        </div>
+      </section>
+      <section className="app-shell p-5 sm:p-6">
+        <SectionHeader
+          title="Performing team split"
+          titleClassName="text-2xl sm:text-3xl"
+          description="Show/event rows only. Birthday and graduation stay outside team counts."
+        />
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          {EVENT_TEAM_OPTIONS.map((team) => (
+            <article key={team} className="border-t border-[var(--border)] pt-4">
+              <div className="flex items-center justify-between gap-3">
+                <EventTeamBadge team={team} eventType="Roulette" compact />
+                <div className="tabular-nums text-3xl font-semibold tracking-[-0.04em] text-[var(--foreground)]">{snapshot.team_counts[team] || 0}</div>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 

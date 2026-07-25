@@ -112,6 +112,7 @@ test("buildOverviewSnapshot counts sessions, pending slots, ranks ties, and limi
   assert.equal(snapshot.birthday_sessions, 1);
   assert.equal(snapshot.graduation_sessions, 1);
   assert.equal(snapshot.assigned_show_event_slots, 8);
+  assert.deepEqual(snapshot.team_counts, { ALL: 7, LOVE: 0, DREAM: 0, PASSION: 0, TRAINEE: 0 });
   assert.equal(snapshot.pending_slots, 2);
   assert.equal(snapshot.leaderboard.length, 3);
   assert.deepEqual(

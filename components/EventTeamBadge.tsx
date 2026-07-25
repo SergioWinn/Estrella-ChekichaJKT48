@@ -3,12 +3,10 @@ import { getEventTeamStyle, normalizeEventTeam, singleMemberEvent } from "@/lib/
 export function EventTeamBadge({
   team,
   eventType,
-  label = "Team",
   compact = false,
 }: {
   compact?: boolean;
   eventType?: string | null;
-  label?: string;
   team?: string | null;
 }) {
   if (singleMemberEvent(eventType)) return null;
@@ -20,7 +18,7 @@ export function EventTeamBadge({
       className={`inline-flex shrink-0 items-center rounded-full border font-bold uppercase tracking-[0.12em] ${compact ? "px-2 py-0.5 text-[9px]" : "px-2.5 py-1 text-[10px] md:text-xs"}`}
       style={getEventTeamStyle(normalized)}
     >
-      {label} {normalized}
+      {normalized}
     </span>
   );
 }

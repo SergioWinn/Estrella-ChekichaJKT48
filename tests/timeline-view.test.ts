@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { buildTimelineCardState, buildTimelineFilterNote, filterTimelineEvents, getRouletteSeriesOptions } from "../lib/timeline-view.ts";
+import { buildTimelineCardState, buildTimelineFilterNote, countTimelineTeams, filterTimelineEvents, getRouletteSeriesOptions } from "../lib/timeline-view.ts";
 
 test("buildTimelineFilterNote mirrors the Streamlit filter copy", () => {
   assert.equal(buildTimelineFilterNote("All"), "Showing every event type across all months");
@@ -25,6 +25,20 @@ test("roulette series helpers group distinct Ramadhan events", () => {
   assert.equal(filterTimelineEvents(events, "Birthday", "Pajama Drive").length, 1);
 });
 
+
+test("timeline team filter and counts ignore special single-member events", () => {
+  const events = [
+    { id: "1", event_name: "Legacy Show", event_type: "Roulette", event_team: "ALL", start_time: "2026-07-01T10:00:00Z" },
+    { id: "2", event_name: "Ramune", event_type: "Roulette", event_team: "LOVE", start_time: "2026-07-02T10:00:00Z" },
+    { id: "3", event_name: "Sambil", event_type: "Roulette", event_team: "DREAM", start_time: "2026-07-03T10:00:00Z" },
+    { id: "4", event_name: "Birthday Live", event_type: "Birthday", event_team: "LOVE", start_time: "2026-07-04T10:00:00Z" },
+  ];
+
+  assert.deepEqual(filterTimelineEvents(events, "All", "All", "LOVE").map((event) => event.id), ["2"]);
+  assert.deepEqual(filterTimelineEvents(events, "All", "All", "ALL").map((event) => event.id), ["1"]);
+  assert.equal(buildTimelineFilterNote("All", "All", "DREAM"), "Showing every event type across all months for DREAM");
+  assert.deepEqual(countTimelineTeams(events), { ALL: 1, LOVE: 1, DREAM: 1, PASSION: 0, TRAINEE: 0 });
+});
 test("buildTimelineCardState emits waiting labels for unfinished timeline rows", () => {
   const single = buildTimelineCardState({
     end_time: null,

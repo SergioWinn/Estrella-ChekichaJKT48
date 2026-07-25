@@ -1,3 +1,5 @@
+/* Hallmark · genre: modern-minimal · macrostructure: Stat-Led · design-system: design.md · designed-as-app */
+
 import type { CSSProperties } from "react";
 import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { buildOverviewSnapshot, loadOverviewRows } from "@/lib/archive-data.ts";

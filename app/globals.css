@@ -3,7 +3,7 @@
 @import "tailwindcss";
 
 /* Hallmark - pre-emit critique: P5 H5 E5 S5 R5 V5 */
-/* Hallmark - genre: modern-minimal - macrostructure: Stat-Led / Workbench / Letter - design-system: design.md - designed-as-app - contrast: pass (40-41) */
+/* Hallmark - genre: modern-minimal - tone: archive workbench - anchor hue: blue - structure: Stat-Led / Workbench / Letter */
 
 :root {
   color-scheme: dark;
@@ -40,9 +40,7 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top, var(--accent-soft) 0%, transparent 28%),
-    linear-gradient(180deg, var(--background-alt), var(--background));
+  background: linear-gradient(180deg, var(--background-alt), var(--background));
   color: var(--foreground);
   font-family: var(--font-body);
   text-rendering: geometricPrecision;
@@ -127,12 +125,7 @@ button {
 }
 
 .page-hero::after {
-  content: "";
-  position: absolute;
-  inset: auto -10% -30% 35%;
-  height: 12rem;
-  background: radial-gradient(circle, var(--accent-soft-strong) 0%, transparent 72%);
-  pointer-events: none;
+  content: none;
 }
 
 .page-hero-grid {
@@ -251,6 +244,37 @@ button {
 
 .app-input[data-state="loading"] {
   cursor: progress;
+}
+
+.team-badge {
+  border-color: var(--team-color);
+  background: var(--team-color-soft);
+  color: var(--team-color);
+}
+
+.team-badge--all {
+  --team-color: var(--team-all);
+  --team-color-soft: var(--team-all-soft);
+}
+
+.team-badge--love {
+  --team-color: var(--team-love);
+  --team-color-soft: var(--team-love-soft);
+}
+
+.team-badge--dream {
+  --team-color: var(--team-dream);
+  --team-color-soft: var(--team-dream-soft);
+}
+
+.team-badge--passion {
+  --team-color: var(--team-passion);
+  --team-color-soft: var(--team-passion-soft);
+}
+
+.team-badge--trainee {
+  --team-color: var(--team-trainee);
+  --team-color-soft: var(--team-trainee-soft);
 }
 
 .collection-desk-overlay {

@@ -75,6 +75,16 @@
   --danger-border: oklch(0.72 0.12 18 / 0.26);
   --danger-soft: oklch(0.72 0.12 18 / 0.14);
   --danger-foreground: oklch(0.93 0.02 18);
+  --team-all: oklch(0.72 0.11 18);
+  --team-all-soft: oklch(0.72 0.11 18 / 0.16);
+  --team-love: oklch(0.69 0.17 351);
+  --team-love-soft: oklch(0.69 0.17 351 / 0.16);
+  --team-dream: oklch(0.72 0.1 210);
+  --team-dream-soft: oklch(0.72 0.1 210 / 0.16);
+  --team-passion: oklch(0.8 0.12 66);
+  --team-passion-soft: oklch(0.8 0.12 66 / 0.18);
+  --team-trainee: oklch(0.73 0.06 24);
+  --team-trainee-soft: oklch(0.73 0.06 24 / 0.16);
   --hero-gradient: linear-gradient(135deg, oklch(0.32 0.03 249) 0%, oklch(0.24 0.022 252) 50%, oklch(0.27 0.04 232) 100%);
   --hero-gradient-soft: linear-gradient(180deg, oklch(0.3 0.024 249 / 0.88), oklch(0.24 0.02 252 / 0.65));
 }
@@ -119,6 +129,16 @@
   --danger-border: oklch(0.56 0.12 18 / 0.2);
   --danger-soft: oklch(0.8 0.06 18 / 0.18);
   --danger-foreground: oklch(0.98 0.004 18);
+  --team-all: oklch(0.58 0.12 18);
+  --team-all-soft: oklch(0.58 0.12 18 / 0.1);
+  --team-love: oklch(0.6 0.18 351);
+  --team-love-soft: oklch(0.6 0.18 351 / 0.12);
+  --team-dream: oklch(0.58 0.11 210);
+  --team-dream-soft: oklch(0.58 0.11 210 / 0.12);
+  --team-passion: oklch(0.66 0.13 66);
+  --team-passion-soft: oklch(0.66 0.13 66 / 0.14);
+  --team-trainee: oklch(0.56 0.07 24);
+  --team-trainee-soft: oklch(0.56 0.07 24 / 0.12);
   --hero-gradient: linear-gradient(135deg, oklch(0.985 0.005 248) 0%, oklch(0.95 0.008 246) 50%, oklch(0.91 0.02 236) 100%);
   --hero-gradient-soft: linear-gradient(180deg, oklch(0.98 0.004 248), oklch(0.94 0.01 246));
 }

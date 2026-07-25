@@ -3,13 +3,6 @@ const AUTH_EMAIL_DOMAIN = "users.chekitrack.local";
 export const STATUS_OPTIONS = ["LOVE", "DREAM", "PASSION", "TRAINEE", "GRADUATED"] as const;
 export const EVENT_TEAM_OPTIONS = ["ALL", "LOVE", "DREAM", "PASSION", "TRAINEE"] as const;
 export type EventTeam = (typeof EVENT_TEAM_OPTIONS)[number];
-export const EVENT_TEAM_COLORS: Record<EventTeam, string> = {
-  ALL: "#e20514",
-  LOVE: "#e20785",
-  DREAM: "#00a4a5",
-  PASSION: "#f69220",
-  TRAINEE: "#c47878",
-};
 const VARIABLE_TEAM_SETLISTS = ["cara meminum ramune", "sambil menggandeng erat tanganku"];
 const FIXED_SETLIST_TEAMS: Array<{ keywords: string[]; team: EventTeam }> = [
   { keywords: ["pertaruhan cinta", "ramadhan"], team: "ALL" },
@@ -94,15 +87,6 @@ export function getFixedEventTeam(eventName: string | null | undefined, eventTyp
 
 export function getEffectiveEventTeam(eventName: string | null | undefined, eventType: string | null | undefined, eventTeam: string | null | undefined): EventTeam {
   return getFixedEventTeam(eventName, eventType) ?? normalizeEventTeam(eventTeam);
-}
-
-export function getEventTeamStyle(value: string | null | undefined) {
-  const team = normalizeEventTeam(value);
-  return {
-    backgroundColor: `${EVENT_TEAM_COLORS[team]}26`,
-    borderColor: EVENT_TEAM_COLORS[team],
-    color: EVENT_TEAM_COLORS[team],
-  };
 }
 
 export function duplicateMemberLabels(

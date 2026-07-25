@@ -116,7 +116,7 @@ function EventPreviewCard({
             <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground)]">
               Type {eventType}
             </span>
-            <EventTeamBadge team={eventTeam} />
+            <EventTeamBadge team={eventTeam} eventType={eventType} />
             {footer ? (
               <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)]">
                 {footer}
@@ -337,7 +337,7 @@ export function AdminWorkspace({
                       <div>
                         <div className="text-xs font-semibold text-[var(--accent)]">Waiting draw</div>
                         <div className="mt-4 text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)]">{event.event_name || "Untitled event"}</div>
-                        <div className="mt-5 flex flex-wrap items-center gap-2 text-lg text-[var(--muted)]"><EventTeamBadge team={event.event_team} /><span>{formatEventDate(event.start_time)} | {formatEventTime(event.start_time, event.end_time)} WIB</span></div>
+                        <div className="mt-5 flex flex-wrap items-center gap-2 text-lg text-[var(--muted)]"><EventTeamBadge team={event.event_team} eventType={event.event_type} /><span>{formatEventDate(event.start_time)} | {formatEventTime(event.start_time, event.end_time)} WIB</span></div>
                         <div className="mt-5 flex flex-wrap gap-2">
                           {waitingA ? <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-2 text-sm font-bold uppercase tracking-[0.08em] text-[var(--foreground)]">Slot A waiting for roulette</span> : null}
                           {waitingB ? <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-2 text-sm font-bold uppercase tracking-[0.08em] text-[var(--foreground)]">Slot B waiting for roulette</span> : null}
@@ -457,12 +457,14 @@ export function AdminWorkspace({
                     <input type="hidden" name="event_image_url" value={selectedCreatePreset?.event_image_url || ""} />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
-                  <select aria-label="Performing team" name="event_team" value={createEventTeam} onChange={(event) => setCreateEventTeam(event.target.value)} className="app-input min-h-12 w-full px-4 py-3 text-lg">
-                    {EVENT_TEAM_OPTIONS.map((team) => <option key={team} value={team}>{team}</option>)}
-                  </select>
-                </div>
+                {createSingleMember ? <input type="hidden" name="event_team" value="ALL" /> : (
+                  <div className="space-y-2">
+                    <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
+                    <select aria-label="Performing team" name="event_team" value={createEventTeam} onChange={(event) => setCreateEventTeam(event.target.value)} className="app-input min-h-12 w-full px-4 py-3 text-lg">
+                      {EVENT_TEAM_OPTIONS.map((team) => <option key={team} value={team}>{team}</option>)}
+                    </select>
+                  </div>
+                )}
                 {createSingleMember ? <input type="hidden" name="slot_mode" value="1" /> : (
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Slot mode</label>
@@ -561,12 +563,14 @@ export function AdminWorkspace({
                           <input aria-label="Timeline series" name="event_series" defaultValue={selectedEvent.event_series || ""} placeholder="Example: Ramadhan" className="app-input min-h-12 w-full px-4 py-3 text-lg" />
                           <p className="text-sm text-[var(--muted)]">Roulette rows with the same series appear as one Timeline filter option.</p>
                         </div>
-                        <div className="space-y-2 sm:col-span-2">
-                          <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
-                          <select aria-label="Performing team" name="event_team" defaultValue={selectedEvent.event_team || "ALL"} className="app-input min-h-12 w-full px-4 py-3 text-lg">
-                            {EVENT_TEAM_OPTIONS.map((team) => <option key={team} value={team}>{team}</option>)}
-                          </select>
-                        </div>
+                        {editSingleMember ? <input type="hidden" name="event_team" value="ALL" /> : (
+                          <div className="space-y-2 sm:col-span-2">
+                            <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
+                            <select aria-label="Performing team" name="event_team" defaultValue={selectedEvent.event_team || "ALL"} className="app-input min-h-12 w-full px-4 py-3 text-lg">
+                              {EVENT_TEAM_OPTIONS.map((team) => <option key={team} value={team}>{team}</option>)}
+                            </select>
+                          </div>
+                        )}
                       </div>
                       <input type="hidden" name="event_image_url" value={selectedEvent.event_image_url || ""} />
                       <div className="space-y-2">

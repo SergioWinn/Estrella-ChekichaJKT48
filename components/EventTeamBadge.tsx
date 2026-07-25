@@ -1,6 +1,18 @@
-import { getEventTeamStyle, normalizeEventTeam } from "@/lib/v2-helpers.ts";
+import { getEventTeamStyle, normalizeEventTeam, singleMemberEvent } from "@/lib/v2-helpers.ts";
 
-export function EventTeamBadge({ team, label = "Team", compact = false }: { compact?: boolean; label?: string; team?: string | null }) {
+export function EventTeamBadge({
+  team,
+  eventType,
+  label = "Team",
+  compact = false,
+}: {
+  compact?: boolean;
+  eventType?: string | null;
+  label?: string;
+  team?: string | null;
+}) {
+  if (singleMemberEvent(eventType)) return null;
+
   const normalized = normalizeEventTeam(team);
 
   return (

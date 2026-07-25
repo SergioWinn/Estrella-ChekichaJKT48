@@ -177,7 +177,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                         <div className="min-w-0">
                           <h2 className="truncate text-sm font-bold tracking-[-0.03em] text-[var(--foreground)] sm:text-base md:text-2xl">{row.event_name || "Untitled event"}</h2>
                           <div className="mt-1 grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 text-[11px] md:mt-2 md:text-[0.95rem]">
-                            <EventTeamBadge team={row.event_team} compact />
+                            <EventTeamBadge team={row.event_team} eventType={row.event_type} compact />
                             <span className="min-w-0 truncate text-[var(--muted-strong)]">{formatEventTime(row.start_time, row.end_time)} WIB</span>
                           </div>
                         </div>

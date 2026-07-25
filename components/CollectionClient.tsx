@@ -102,7 +102,7 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
                     <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--accent)]">
                       {entry.event_type}
                     </span>
-                    <EventTeamBadge team={entry.event_team} compact />
+                    <EventTeamBadge team={entry.event_team} eventType={entry.event_type} compact />
                     {showSlot ? (
                       <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)]">
                         Slot {entry.slot_key}

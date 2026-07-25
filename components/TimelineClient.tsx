@@ -91,22 +91,36 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
   const pendingCount = useMemo(() => countPendingSlots(events), [events]);
   const sections = useMemo(() => groupTimelineByMonth(filtered), [filtered]);
   const filterNote = useMemo(() => buildTimelineFilterNote(filterType, rouletteSeries, teamFilter), [filterType, rouletteSeries, teamFilter]);
+  const pendingLabel = pendingCount === 1 ? "1 row still needs a member assignment." : pendingCount > 1 ? `${pendingCount} rows still need member assignments.` : "All archived rows already have full member coverage.";
 
   return (
     <div className="space-y-6">
-      <section className="app-shell grid gap-4 p-4 md:grid-cols-[0.9fr_0.9fr_1.3fr] md:p-5">
-        <div>
-          <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{filtered.length}</div>
-          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Events shown</p>
+      <section className="app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+          <div className="app-card p-4 md:p-5">
+            <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{filtered.length}</div>
+            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Events shown</p>
+            <p className="mt-3 max-w-[22rem] text-sm leading-6 text-[var(--muted)]">
+              {filtered.length === events.length ? "Showing the full archive across every saved month." : `Showing ${filtered.length} results from the active archive filters.`}
+            </p>
+          </div>
+          <div className="app-card p-4 md:p-5">
+            <div className={`tabular-nums text-3xl font-extrabold tracking-[-0.04em] md:text-4xl ${pendingCount ? "text-[var(--accent)]" : "text-[var(--foreground)]"}`}>{pendingCount}</div>
+            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Open slots</p>
+            <p className="mt-3 max-w-[22rem] text-sm leading-6 text-[var(--muted)]">{pendingLabel}</p>
+          </div>
         </div>
-        <div>
-          <div className={`tabular-nums text-3xl font-extrabold tracking-[-0.04em] md:text-4xl ${pendingCount ? "text-[var(--accent)]" : "text-[var(--foreground)]"}`}>{pendingCount}</div>
-          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Open slots</p>
-        </div>
-        <div className="space-y-3">
-          <p className="text-sm font-semibold text-[var(--muted-strong)]">Filter</p>
-          <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_13rem_11rem] xl:items-end">
-            <div className="flex flex-wrap gap-2">
+        <div className="app-card grid gap-4 p-4 md:p-5">
+          <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,18rem)] lg:items-start lg:gap-4">
+            <div>
+              <p className="text-sm font-semibold text-[var(--muted-strong)]">Filter</p>
+              <p className="mt-2 max-w-[32rem] text-sm leading-6 text-[var(--muted)]">
+                Start with the event type, then tighten the list by series or team when you need a narrower audit slice.
+              </p>
+            </div>
+            <div className="text-sm leading-6 text-[var(--foreground-soft)] lg:text-right" aria-live="polite">{filterNote}</div>
+          </div>
+          <div className="flex flex-wrap gap-2">
               {FILTERS.map((option) => (
                 <FilterPill
                   key={option}
@@ -116,22 +130,23 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                   {option}
                 </FilterPill>
               ))}
-            </div>
-            {filterType === "Roulette" ? (
-              <label className="grid gap-1">
-                <span className="text-xs font-semibold text-[var(--muted-strong)]">Series</span>
-                <select
-                  value={rouletteSeries}
-                  onChange={(event) => setRouletteSeries(event.target.value)}
-                  className="app-input min-h-10 w-full truncate px-3 py-2 text-sm"
-                >
-                  <option value="All">All roulette series</option>
-                  {rouletteSeriesOptions.map((series) => (
-                    <option key={series} value={series}>{series}</option>
-                  ))}
-                </select>
-              </label>
-            ) : <div className="hidden xl:block" />}
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <label className="grid gap-1">
+              <span className="text-xs font-semibold text-[var(--muted-strong)]">Series</span>
+              <select
+                value={filterType === "Roulette" ? rouletteSeries : "All"}
+                onChange={(event) => setRouletteSeries(event.target.value)}
+                disabled={filterType !== "Roulette"}
+                aria-disabled={filterType !== "Roulette"}
+                className="app-input min-h-10 w-full truncate px-3 py-2 text-sm disabled:text-[var(--muted)]"
+              >
+                <option value="All">{filterType === "Roulette" ? "All roulette series" : "Series only for roulette"}</option>
+                {rouletteSeriesOptions.map((series) => (
+                  <option key={series} value={series}>{series}</option>
+                ))}
+              </select>
+            </label>
             <label className="grid gap-1">
               <span className="text-xs font-semibold text-[var(--muted-strong)]">Team</span>
               <select
@@ -145,7 +160,6 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
               </select>
             </label>
           </div>
-          <div className="text-xs text-[var(--muted)] md:text-sm">{filterNote}</div>
         </div>
       </section>
 

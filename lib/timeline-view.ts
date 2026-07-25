@@ -1,6 +1,6 @@
 import { relationToMember } from "./archive-data.ts";
 import type { EventTeam } from "./v2-helpers.ts";
-import { EVENT_TEAM_OPTIONS, normalizeEventTeam, singleMemberEvent } from "./v2-helpers.ts";
+import { EVENT_TEAM_OPTIONS, getEffectiveEventTeam, singleMemberEvent } from "./v2-helpers.ts";
 import type { TimelineEvent } from "./types.ts";
 
 function getEventSeries(event: TimelineEvent): string {
@@ -23,7 +23,7 @@ export function filterTimelineEvents(events: TimelineEvent[], filterType: string
   return events.filter((event) => {
     const eventType = event.event_type || "Roulette";
     if (filterType !== "All" && eventType !== filterType) return false;
-    if (teamFilter !== "All" && (singleMemberEvent(eventType) || normalizeEventTeam(event.event_team) !== teamFilter)) return false;
+    if (teamFilter !== "All" && (singleMemberEvent(eventType) || getEffectiveEventTeam(event.event_name, eventType, event.event_team) !== teamFilter)) return false;
     return filterType !== "Roulette" || rouletteSeries === "All" || getEventSeries(event) === rouletteSeries;
   });
 }
@@ -39,7 +39,7 @@ export function buildTimelineFilterNote(filterType: string, rouletteSeries = "Al
 export function countTimelineTeams(events: TimelineEvent[]): Record<EventTeam, number> {
   const counts = Object.fromEntries(EVENT_TEAM_OPTIONS.map((team) => [team, 0])) as Record<EventTeam, number>;
   for (const event of events) {
-    if (!singleMemberEvent(event.event_type)) counts[normalizeEventTeam(event.event_team)] += 1;
+    if (!singleMemberEvent(event.event_type)) counts[getEffectiveEventTeam(event.event_name, event.event_type, event.event_team)] += 1;
   }
   return counts;
 }

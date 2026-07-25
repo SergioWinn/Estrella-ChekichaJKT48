@@ -10,10 +10,12 @@ export const EVENT_TEAM_COLORS: Record<EventTeam, string> = {
   PASSION: "#f69220",
   TRAINEE: "#c47878",
 };
+const VARIABLE_TEAM_SETLISTS = ["cara meminum ramune", "sambil menggandeng erat tanganku"];
 const FIXED_SETLIST_TEAMS: Array<{ keywords: string[]; team: EventTeam }> = [
-  { keywords: ["passion 200"], team: "PASSION" },
-  { keywords: ["dream bakudan"], team: "DREAM" },
+  { keywords: ["pertaruhan cinta", "ramadhan"], team: "ALL" },
   { keywords: ["itadaki love"], team: "LOVE" },
+  { keywords: ["dream bakudan"], team: "DREAM" },
+  { keywords: ["passion 200"], team: "PASSION" },
   { keywords: ["pajama drive"], team: "TRAINEE" },
 ];
 
@@ -72,10 +74,26 @@ export function normalizeEventTeam(value: string | null | undefined): EventTeam 
   return EVENT_TEAM_OPTIONS.includes(team as EventTeam) ? team as EventTeam : "ALL";
 }
 
+function normalizeSetlistName(value: string | null | undefined): string {
+  return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").replace(/\s+/g, " ").trim();
+}
+
+export function isVariableTeamSetlist(eventName: string | null | undefined, eventType?: string | null): boolean {
+  if (singleMemberEvent(eventType)) return false;
+  const name = normalizeSetlistName(eventName);
+  return VARIABLE_TEAM_SETLISTS.some((keyword) => name.includes(keyword));
+}
+
 export function getFixedEventTeam(eventName: string | null | undefined, eventType?: string | null): EventTeam | null {
   if (singleMemberEvent(eventType)) return "ALL";
-  const name = String(eventName || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
-  return FIXED_SETLIST_TEAMS.find((rule) => rule.keywords.some((keyword) => name.includes(keyword)))?.team ?? null;
+  const name = normalizeSetlistName(eventName);
+  if (!name) return null;
+  const fixed = FIXED_SETLIST_TEAMS.find((rule) => rule.keywords.some((keyword) => name.includes(keyword)))?.team;
+  return fixed ?? (isVariableTeamSetlist(eventName, eventType) ? null : "ALL");
+}
+
+export function getEffectiveEventTeam(eventName: string | null | undefined, eventType: string | null | undefined, eventTeam: string | null | undefined): EventTeam {
+  return getFixedEventTeam(eventName, eventType) ?? normalizeEventTeam(eventTeam);
 }
 
 export function getEventTeamStyle(value: string | null | undefined) {
@@ -149,7 +167,7 @@ export function buildEventPayload(args: {
     event_name: args.preset.event_name,
     event_series: args.eventType === "Roulette" ? args.preset.event_series?.trim() || args.preset.event_name : null,
     event_type: args.preset.event_type,
-    event_team: getFixedEventTeam(args.preset.event_name, args.eventType) ?? normalizeEventTeam(args.preset.event_team),
+    event_team: getEffectiveEventTeam(args.preset.event_name, args.eventType, args.preset.event_team),
     event_image_url: args.preset.event_image_url || null,
     slot_mode: isSingle ? 1 : args.slotMode,
     member_id_a: args.memberIdA || null,

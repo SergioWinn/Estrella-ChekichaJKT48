@@ -174,7 +174,7 @@ test("admin helpers block duplicate member names and coerce birthday events to o
   });
 
   assert.equal(roulettePayload.event_series, "Ramadhan");
-  assert.equal(roulettePayload.event_team, "PASSION");
+  assert.equal(roulettePayload.event_team, "ALL");
 });
 
 test("fixed setlist teams override manual event team values", () => {
@@ -182,7 +182,11 @@ test("fixed setlist teams override manual event team values", () => {
   assert.equal(getFixedEventTeam("DREAM BAKUDAN", "Roulette"), "DREAM");
   assert.equal(getFixedEventTeam("ITADAKI LOVE", "Roulette"), "LOVE");
   assert.equal(getFixedEventTeam("Pajama Drive", "Roulette"), "TRAINEE");
+  assert.equal(getFixedEventTeam("Pertaruhan Cinta", "Roulette"), "ALL");
+  assert.equal(getFixedEventTeam("Ramadhan", "Roulette"), "ALL");
   assert.equal(getFixedEventTeam("Cara Meminum Ramune", "Roulette"), null);
+  assert.equal(getFixedEventTeam("Sambil Menggandeng Erat Tanganku", "Roulette"), null);
+  assert.equal(getFixedEventTeam("Some Future Fixed Setlist", "Roulette"), "ALL");
 
   const payload = buildEventPayload({
     eventDate: "2026-07-10",
@@ -195,4 +199,16 @@ test("fixed setlist teams override manual event team values", () => {
   });
 
   assert.equal(payload.event_team, "DREAM");
+
+  const allPayload = buildEventPayload({
+    eventDate: "2026-07-10",
+    eventType: "Roulette",
+    preset: { event_name: "Pertaruhan Cinta", event_series: "Pertaruhan Cinta", event_team: "PASSION", event_type: "Roulette" },
+    slotMode: 1,
+    startTimeValue: "10:15",
+    startHour: 10,
+    startMinute: 15,
+  });
+
+  assert.equal(allPayload.event_team, "ALL");
 });

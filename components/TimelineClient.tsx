@@ -9,7 +9,7 @@ import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { countPendingSlots, groupTimelineByMonth } from "@/lib/archive-data.ts";
 import { formatEventTime } from "@/lib/format.ts";
 import { buildTimelineCardState, buildTimelineFilterNote, countTimelineTeams, filterTimelineEvents, getRouletteSeriesOptions } from "@/lib/timeline-view.ts";
-import { EVENT_TEAM_OPTIONS } from "@/lib/v2-helpers.ts";
+import { EVENT_TEAM_OPTIONS, getEffectiveEventTeam } from "@/lib/v2-helpers.ts";
 import type { TimelineEvent } from "@/lib/types.ts";
 
 const FILTERS = ["All", "Roulette", "Birthday", "Graduation"] as const;
@@ -87,10 +87,13 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
   const rouletteSeriesOptions = useMemo(() => getRouletteSeriesOptions(events), [events]);
   const teamBaseEvents = useMemo(() => filterTimelineEvents(events, filterType, rouletteSeries), [events, filterType, rouletteSeries]);
   const teamCounts = useMemo(() => countTimelineTeams(teamBaseEvents), [teamBaseEvents]);
-  const filtered = useMemo(() => filterTimelineEvents(events, filterType, rouletteSeries, teamFilter), [events, filterType, rouletteSeries, teamFilter]);
+  const availableTeamFilters = useMemo(() => EVENT_TEAM_OPTIONS.filter((team) => teamCounts[team] > 0), [teamCounts]);
+  const activeTeamFilter = availableTeamFilters.length > 1 && availableTeamFilters.includes(teamFilter as never) ? teamFilter : "All";
+  const teamFilterLocked = availableTeamFilters.length <= 1;
+  const filtered = useMemo(() => filterTimelineEvents(events, filterType, rouletteSeries, activeTeamFilter), [events, filterType, rouletteSeries, activeTeamFilter]);
   const pendingCount = useMemo(() => countPendingSlots(events), [events]);
   const sections = useMemo(() => groupTimelineByMonth(filtered), [filtered]);
-  const filterNote = useMemo(() => buildTimelineFilterNote(filterType, rouletteSeries, teamFilter), [filterType, rouletteSeries, teamFilter]);
+  const filterNote = useMemo(() => buildTimelineFilterNote(filterType, rouletteSeries, activeTeamFilter), [filterType, rouletteSeries, activeTeamFilter]);
   const pendingLabel = pendingCount === 1 ? "1 row still needs a member assignment." : pendingCount > 1 ? `${pendingCount} rows still need member assignments.` : "All archived rows already have full member coverage.";
 
   return (
@@ -150,13 +153,22 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
             <label className="grid gap-1">
               <span className="text-xs font-semibold text-[var(--muted-strong)]">Team</span>
               <select
-                value={teamFilter}
+                value={activeTeamFilter}
                 onChange={(event) => setTeamFilter(event.target.value as (typeof TEAM_FILTERS)[number])}
-                className="app-input min-h-10 w-full truncate px-3 py-2 text-sm"
+                disabled={teamFilterLocked}
+                aria-disabled={teamFilterLocked}
+                className="app-input min-h-10 w-full truncate px-3 py-2 text-sm disabled:text-[var(--muted)]"
               >
-                {TEAM_FILTERS.map((option) => (
-                  <option key={option} value={option}>{option === "All" ? "All teams" : `${option} ${teamCounts[option]}`}</option>
-                ))}
+                {teamFilterLocked ? (
+                  <option value="All">{availableTeamFilters[0] ? `${availableTeamFilters[0]} auto` : "No team filter"}</option>
+                ) : (
+                  <>
+                    <option value="All">All teams</option>
+                    {availableTeamFilters.map((option) => (
+                      <option key={option} value={option}>{`${option} ${teamCounts[option]}`}</option>
+                    ))}
+                  </>
+                )}
               </select>
             </label>
           </div>
@@ -170,6 +182,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
             <div className="grid grid-cols-2 gap-2 sm:gap-4">
               {monthRows.map((row) => {
                 const card = buildTimelineCardState(row);
+                const eventTeam = getEffectiveEventTeam(row.event_name, row.event_type, row.event_team);
 
                 return (
                     <article
@@ -210,7 +223,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                         <div className="min-w-0">
                           <h2 className="truncate text-sm font-bold tracking-[-0.03em] text-[var(--foreground)] sm:text-base md:text-2xl">{row.event_name || "Untitled event"}</h2>
                           <div className="mt-1 grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 text-[11px] md:mt-2 md:text-[0.95rem]">
-                            <EventTeamBadge team={row.event_team} eventType={row.event_type} compact />
+                            <EventTeamBadge team={eventTeam} eventType={row.event_type} compact />
                             <span className="min-w-0 truncate text-[var(--muted-strong)]">{formatEventTime(row.start_time, row.end_time)} WIB</span>
                           </div>
                         </div>

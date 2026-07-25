@@ -15,8 +15,10 @@ import {
   updateQueueAction,
 } from "@/lib/v2-actions.ts";
 import { formatEventDate, formatEventTime } from "@/lib/format.ts";
-import { EVENT_TEAM_OPTIONS, GENERATION_OPTIONS, STATUS_OPTIONS, TIME_STEP_MINUTES, getFixedEventTeam, singleMemberEvent } from "@/lib/v2-helpers.ts";
+import { GENERATION_OPTIONS, STATUS_OPTIONS, TIME_STEP_MINUTES, getEffectiveEventTeam, getFixedEventTeam, singleMemberEvent } from "@/lib/v2-helpers.ts";
 import type { ChekichaRow, EventPreset, MemberRecord } from "@/lib/types.ts";
+
+const MANUAL_EVENT_TEAM_OPTIONS = ["LOVE", "DREAM", "PASSION"] as const;
 
 const ADMIN_TABS = [
   { key: "queue", label: "Fill Results" },
@@ -67,7 +69,18 @@ function eventTimeValue(value?: string | null) {
 }
 
 function eventOptionLabel(event: ChekichaRow) {
-  return `${event.event_name || "Untitled event"} | ${event.event_team || "ALL"} | ${formatEventDate(event.start_time)} | ${formatEventTime(event.start_time, event.end_time)} WIB`;
+  const team = getEffectiveEventTeam(event.event_name, event.event_type, event.event_team);
+  return `${event.event_name || "Untitled event"} | ${team} | ${formatEventDate(event.start_time)} | ${formatEventTime(event.start_time, event.end_time)} WIB`;
+}
+
+function presetOptionLabel(preset: EventPreset) {
+  const fixedTeam = getFixedEventTeam(preset.event_name, preset.event_type);
+  return `${preset.event_name} | ${fixedTeam ? `${fixedTeam} auto` : "Choose team"}`;
+}
+
+function coerceManualEventTeam(value: string | null | undefined) {
+  const team = String(value || "").toUpperCase();
+  return team === "DREAM" || team === "PASSION" ? team : "LOVE";
 }
 
 function memberOptionLabel(member: MemberRecord) {
@@ -203,12 +216,12 @@ export function AdminWorkspace({
   const [createDate, setCreateDate] = useState(new Date().toISOString().slice(0, 10));
   const [createTimeValue, setCreateTimeValue] = useState("09:00");
   const [createSlotMode, setCreateSlotMode] = useState("1");
-  const [createEventTeam, setCreateEventTeam] = useState(presets[0]?.event_team || "ALL");
+  const [createEventTeam, setCreateEventTeam] = useState(coerceManualEventTeam(presets[0]?.event_team));
   const [createMemberA, setCreateMemberA] = useState("");
   const [createMemberB, setCreateMemberB] = useState("");
   const [editState, setEditState] = useState<{ eventId: string; eventType: string; slotMode: string } | null>(null);
   const [editEventName, setEditEventName] = useState(events[0]?.event_name || "");
-  const [editEventTeam, setEditEventTeam] = useState(events[0]?.event_team || "ALL");
+  const [editEventTeam, setEditEventTeam] = useState(coerceManualEventTeam(events[0]?.event_team));
   const [newNickname, setNewNickname] = useState("");
   const [newFullName, setNewFullName] = useState("");
   const [newStatus, setNewStatus] = useState<string>(STATUS_OPTIONS[0] || "LOVE");
@@ -239,15 +252,17 @@ export function AdminWorkspace({
   const editSingleMember = singleMemberEvent(editEventType);
   const showEditSlotB = !editSingleMember && editSlotMode === "2";
   const createFixedTeam = getFixedEventTeam(selectedCreatePreset?.event_name, createEventType);
-  const createSelectedTeam = createFixedTeam ?? createEventTeam;
+  const createManualTeam = coerceManualEventTeam(createEventTeam);
+  const createSelectedTeam = createFixedTeam ?? createManualTeam;
   const editFixedTeam = getFixedEventTeam(editEventName, editEventType);
-  const editSelectedTeam = editFixedTeam ?? editEventTeam;
+  const editManualTeam = coerceManualEventTeam(editEventTeam);
+  const editSelectedTeam = editFixedTeam ?? editManualTeam;
   const createEventDateText = `${createDate || "No date"} | ${createTimeValue} WIB`;
   const memberOptions = useMemo(() => members.map((m) => ({ label: memberOptionLabel(m), value: m.id })), [members]);
 
   useEffect(() => {
     setEditEventName(selectedEvent?.event_name || "");
-    setEditEventTeam(selectedEvent?.event_team || "ALL");
+    setEditEventTeam(coerceManualEventTeam(selectedEvent?.event_team));
   }, [selectedEventKey, selectedEvent]);
 
   function setEditEventType(nextValue: string) {
@@ -449,7 +464,7 @@ export function AdminWorkspace({
                         const preset = presets.find((item) => item.id === event.target.value);
                         if (preset) {
                           setCreatePresetId(preset.id);
-                          setCreateEventTeam(getFixedEventTeam(preset.event_name, preset.event_type) ?? (preset.event_team || "ALL"));
+                          setCreateEventTeam(coerceManualEventTeam(preset.event_team));
                           if (singleMemberEvent(preset.event_type)) {
                             setCreateSlotMode("1");
                             setCreateMemberB("");
@@ -459,7 +474,7 @@ export function AdminWorkspace({
                       className="app-input min-h-12 w-full px-4 py-3 text-lg"
                     >
                       {presets.map((preset) => (
-                        <option key={preset.id} value={preset.id}>{preset.event_name} | {preset.event_team || "ALL"}</option>
+                        <option key={preset.id} value={preset.id}>{presetOptionLabel(preset)}</option>
                       ))}
                     </select>
                     <input type="hidden" name="event_name" value={selectedCreatePreset?.event_name || ""} />
@@ -473,15 +488,15 @@ export function AdminWorkspace({
                     <input type="hidden" name="event_team" value={createSelectedTeam} />
                     <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
                     <select aria-label="Performing team" value={createSelectedTeam} disabled className="app-input min-h-12 w-full px-4 py-3 text-lg">
-                      {EVENT_TEAM_OPTIONS.map((team) => <option key={team} value={team}>{team}</option>)}
+                      <option value={createSelectedTeam}>{createSelectedTeam} auto</option>
                     </select>
-                    <p className="text-sm text-[var(--muted)]">Locked by setlist rule.</p>
+                    <p className="text-sm text-[var(--muted)]">Auto-filled from setlist.</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
-                    <select aria-label="Performing team" name="event_team" value={createEventTeam} onChange={(event) => setCreateEventTeam(event.target.value)} className="app-input min-h-12 w-full px-4 py-3 text-lg">
-                      {EVENT_TEAM_OPTIONS.map((team) => <option key={team} value={team}>{team}</option>)}
+                    <select aria-label="Performing team" name="event_team" value={createManualTeam} onChange={(event) => setCreateEventTeam(event.target.value)} className="app-input min-h-12 w-full px-4 py-3 text-lg">
+                      {MANUAL_EVENT_TEAM_OPTIONS.map((team) => <option key={team} value={team}>{team}</option>)}
                     </select>
                   </div>
                 )}
@@ -590,15 +605,15 @@ export function AdminWorkspace({
                             <input type="hidden" name="event_team" value={editSelectedTeam} />
                             <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
                             <select aria-label="Performing team" value={editSelectedTeam} disabled className="app-input min-h-12 w-full px-4 py-3 text-lg">
-                              {EVENT_TEAM_OPTIONS.map((team) => <option key={team} value={team}>{team}</option>)}
+                              <option value={editSelectedTeam}>{editSelectedTeam} auto</option>
                             </select>
-                            <p className="text-sm text-[var(--muted)]">Locked by setlist rule.</p>
+                            <p className="text-sm text-[var(--muted)]">Auto-filled from setlist.</p>
                           </div>
                         ) : (
                           <div className="space-y-2 sm:col-span-2">
                             <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
-                            <select aria-label="Performing team" name="event_team" value={editEventTeam} onChange={(event) => setEditEventTeam(event.target.value)} className="app-input min-h-12 w-full px-4 py-3 text-lg">
-                              {EVENT_TEAM_OPTIONS.map((team) => <option key={team} value={team}>{team}</option>)}
+                            <select aria-label="Performing team" name="event_team" value={editManualTeam} onChange={(event) => setEditEventTeam(event.target.value)} className="app-input min-h-12 w-full px-4 py-3 text-lg">
+                              {MANUAL_EVENT_TEAM_OPTIONS.map((team) => <option key={team} value={team}>{team}</option>)}
                             </select>
                           </div>
                         )}

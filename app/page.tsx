@@ -37,6 +37,7 @@ export default async function Page() {
   const rows = await loadOverviewRows();
   const snapshot = buildOverviewSnapshot(rows);
   const copy = buildHomepageCopy(snapshot);
+  const visibleLeaderboard = snapshot.leaderboard.slice(0, 10);
 
   return (
     <div className="page-wrap">
@@ -83,11 +84,11 @@ export default async function Page() {
             <SectionHeader
               title="Members who appear most often"
               titleClassName="text-2xl sm:text-3xl"
-              description="Only members with two or more appearances are shown. Ties keep the same rank number and are ordered by the latest show or event assignment."
+              description="Showing the top 10 members with two or more appearances. Ties keep the same rank number and follow the latest show or event assignment."
             />
             <div className="mt-5 grid min-h-0 flex-1 gap-3 overflow-y-auto pr-1">
-              {snapshot.leaderboard.length ? (
-                snapshot.leaderboard.map((row) => (
+              {visibleLeaderboard.length ? (
+                visibleLeaderboard.map((row) => (
                   <div key={row.member_id} className="motion-list-item flex items-center gap-4 border-t border-[var(--border)] py-4" style={buildStaggerStyle(row.rank - 1)}>
                     <div className="min-w-12 text-xl font-semibold text-[var(--accent)]">#{row.rank}</div>
                     <div className="flex size-14 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)]">
@@ -116,13 +117,13 @@ export default async function Page() {
         }
         right={
           <div className="xl:sticky xl:top-24">
-            <article className="app-shell p-5">
+            <article className="app-shell flex h-[34rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem]">
               <SectionHeader
                 title="Latest assigned members"
                 titleClassName="text-2xl sm:text-3xl"
                 description="Both slots from the same event can appear if both were filled."
               />
-              <div className="mt-5 space-y-3">
+              <div className="mt-5 min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
                 {snapshot.recent_assignments.length ? (
                   snapshot.recent_assignments.map((row, index) => (
                     <div key={`${row.member_id}-${row.start_time}-${index}`} className="motion-list-item border-t border-[var(--border)] py-4" style={buildStaggerStyle(index)}>

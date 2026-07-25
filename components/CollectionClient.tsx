@@ -1,6 +1,6 @@
 "use client";
 
-/* Hallmark · pre-emit critique: P4 H5 E4 S5 R5 V4 */
+/* Hallmark Ã‚| pre-emit critique: P4 H5 E4 S5 R5 V4 */
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -66,7 +66,7 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
                 {member.name}
               </h3>
               <p className="mt-1 text-sm text-[var(--muted)]">
-                {member.entries.length} saved {member.entries.length === 1 ? "session" : "sessions"} · {member.totalQuantity} total cheki
+                {member.entries.length} saved {member.entries.length === 1 ? "session" : "sessions"} Ã‚| {member.totalQuantity} total cheki
               </p>
             </div>
           </div>
@@ -91,7 +91,7 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
                     <div className="min-w-0">
                       <h4 className="truncate text-sm font-semibold text-[var(--foreground)] sm:text-base">{entry.event_name}</h4>
                       <p className="mt-1 text-xs text-[var(--muted)] sm:text-sm">
-                        {formatEventDate(entry.start_time)} · {formatEventTime(entry.start_time, entry.end_time)} WIB
+                        {formatEventDate(entry.start_time)} Ã‚| {formatEventTime(entry.start_time, entry.end_time)} WIB
                       </p>
                     </div>
                     <span className="shrink-0 rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-xs font-bold tabular-nums text-[var(--foreground)]">
@@ -246,49 +246,53 @@ export function CollectionClient({
       {success ? <div role="status" aria-live="polite" className="sr-only">{success}</div> : null}
       {error ? <div role="alert" className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
 
-      <section className="app-card p-4 md:p-5">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-[var(--muted)]">
-          <span>{memberCollections.length} members with saved cheki.</span>
-          <span>{visibleQuantity} cheki in this view</span>
+      <section className="app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+          <div className="app-card p-4 md:p-5">
+            <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{memberCollections.length}</div>
+            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Members shown</p>
+          </div>
+          <div className="app-card p-4 md:p-5">
+            <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{visibleQuantity}</div>
+            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Cheki shown</p>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div className="grid gap-4">
+        <div className="app-card grid gap-4 p-4 md:p-5">
+          <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(12rem,16rem)] lg:items-start lg:gap-4">
+            <div>
+              <p className="text-sm font-semibold text-[var(--muted-strong)]">Filter collection</p>
+              <p className="mt-2 max-w-[32rem] text-sm leading-6 text-[var(--muted)]">Narrow saved cheki by event type or member status.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setDeskOpen(true)}
+              className="min-h-10 rounded-full bg-[var(--accent)] px-5 text-sm font-semibold text-[var(--accent-foreground)] transition hover:bg-[var(--accent-strong)]"
+            >
+              Open collection desk
+            </button>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
             <div className="space-y-2">
-              <div className="text-sm font-semibold text-[var(--muted-strong)]">Event type</div>
+              <div className="text-xs font-semibold text-[var(--muted-strong)]">Event type</div>
               <div className="flex flex-wrap gap-2">
                 {FILTER_OPTIONS.map((option) => (
-                  <FilterPill
-                    key={option}
-                    onClick={() => setFilter(option)}
-                    active={filter === option}
-                  >
+                  <FilterPill key={option} onClick={() => setFilter(option)} active={filter === option}>
                     {option}
                   </FilterPill>
                 ))}
               </div>
             </div>
             <div className="space-y-2">
-              <div className="text-sm font-semibold text-[var(--muted-strong)]">Member status</div>
+              <div className="text-xs font-semibold text-[var(--muted-strong)]">Member status</div>
               <div className="flex flex-wrap gap-2">
                 {STATUS_FILTER_OPTIONS.map((option) => (
-                  <FilterPill
-                    key={option}
-                    onClick={() => setStatusFilter(option)}
-                    active={statusFilter === option}
-                  >
+                  <FilterPill key={option} onClick={() => setStatusFilter(option)} active={statusFilter === option}>
                     {option}
                   </FilterPill>
                 ))}
               </div>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setDeskOpen(true)}
-            className="min-h-11 rounded-full bg-[var(--accent)] px-5 text-sm font-semibold text-[var(--accent-foreground)] transition hover:bg-[var(--accent-strong)] md:text-[0.95rem]"
-          >
-            Open collection desk
-          </button>
         </div>
       </section>
 
@@ -314,7 +318,7 @@ export function CollectionClient({
               <div className="min-w-0 flex-1">
                 <div className="truncate text-base font-semibold tracking-[-0.025em] text-[var(--foreground)] sm:text-lg">{member.name}</div>
                 <div className="mt-0.5 text-xs text-[var(--muted)] sm:text-sm">
-                  {[member.status, member.generation ? `Gen ${member.generation}` : null].filter(Boolean).join(" · ") || "Member details unavailable"}
+                  {[member.status, member.generation ? `Gen ${member.generation}` : null].filter(Boolean).join(" Ã‚| ") || "Member details unavailable"}
                 </div>
                 <div className="mt-1 truncate text-xs text-[var(--muted-strong)]">
                   {member.entries.length} saved {member.entries.length === 1 ? "session" : "sessions"}

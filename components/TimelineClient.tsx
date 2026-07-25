@@ -160,7 +160,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                 className="app-input min-h-10 w-full truncate px-3 py-2 text-sm disabled:text-[var(--muted)]"
               >
                 {teamFilterLocked ? (
-                  <option value="All">{availableTeamFilters[0] ? `${availableTeamFilters[0]} auto` : "No team filter"}</option>
+                  <option value="All">{availableTeamFilters[0] ? `${availableTeamFilters[0]}` : "No team filter"}</option>
                 ) : (
                   <>
                     <option value="All">All teams</option>

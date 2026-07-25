@@ -51,32 +51,34 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
 
   return (
     <div className="space-y-6">
-      <section className="app-shell grid gap-4 p-4 md:grid-cols-[0.9fr_0.9fr_1.3fr] md:p-5">
-        <div>
-          <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{visibleMembers.length}</div>
-          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Members shown</p>
+      <section className="app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
+          <div className="app-card p-4 md:p-5">
+            <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{visibleMembers.length}</div>
+            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Members shown</p>
+          </div>
+          <div className="app-card p-4 md:p-5">
+            <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{membersWithHistory}</div>
+            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">With history</p>
+          </div>
         </div>
-        <div>
-          <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{membersWithHistory}</div>
-          <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">With history</p>
-        </div>
-        <div className="space-y-3">
-          <label className="block space-y-2">
-            <span className="text-sm font-semibold text-[var(--muted-strong)]">Search members</span>
+        <div className="app-card grid gap-4 p-4 md:p-5">
+          <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,18rem)] lg:items-start lg:gap-4">
+            <div>
+              <p className="text-sm font-semibold text-[var(--muted-strong)]">Search members</p>
+              <p className="mt-2 max-w-[32rem] text-sm leading-6 text-[var(--muted)]">Search nickname, full name, team, or generation.</p>
+            </div>
             <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search nickname, full name, team, or generation"
-              className="app-input min-h-11 w-full px-4 py-3 text-sm placeholder:text-[var(--muted)] md:text-base"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              aria-label="Search members"
+              placeholder="Search members"
+              className="app-input min-h-10 w-full px-3 py-2 text-sm placeholder:text-[var(--muted)]"
             />
-          </label>
-          <div className="flex flex-wrap gap-2.5 md:flex-nowrap">
+          </div>
+          <div className="flex flex-wrap gap-2">
             {STATUS_OPTIONS.map((option) => (
-              <FilterPill
-                key={option}
-                onClick={() => setStatus(option)}
-                active={status === option}
-              >
+              <FilterPill key={option} onClick={() => setStatus(option)} active={status === option}>
                 {option}
               </FilterPill>
             ))}

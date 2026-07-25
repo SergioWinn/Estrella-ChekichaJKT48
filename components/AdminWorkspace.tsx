@@ -75,7 +75,7 @@ function eventOptionLabel(event: ChekichaRow) {
 
 function presetOptionLabel(preset: EventPreset) {
   const fixedTeam = getFixedEventTeam(preset.event_name, preset.event_type);
-  return `${preset.event_name} | ${fixedTeam ? `${fixedTeam} auto` : "Choose team"}`;
+  return `${preset.event_name} | ${fixedTeam ? `${fixedTeam}` : "Choose team"}`;
 }
 
 function coerceManualEventTeam(value: string | null | undefined) {
@@ -305,18 +305,18 @@ export function AdminWorkspace({
         <AdminStatCard label="Members" value={members.length} />
       </section>
 
-      <nav className="flex flex-wrap gap-2 border-b border-[var(--border)] pb-1">
+      <nav className="app-card flex flex-wrap gap-2 p-2" aria-label="Admin workspace sections">
         {ADMIN_TABS.map((tab) => (
           <button
             key={tab.key}
             type="button"
             onClick={() => setActiveTab(tab.key)}
             aria-pressed={activeTab === tab.key}
-            className={`border-b-[3px] px-0 py-3 text-[1.05rem] font-semibold transition ${
+            className={`min-h-10 rounded-full px-4 text-sm font-semibold transition-colors ${
               activeTab === tab.key
-                ? "border-[var(--accent)] text-[var(--foreground)]"
-                : "border-transparent text-[var(--muted)] hover:text-[var(--foreground)]"
-            } mr-6`}
+                ? "bg-[var(--accent)] text-[var(--accent-foreground)]"
+                : "text-[var(--muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
+            }`}
           >
             {tab.label}
           </button>
@@ -488,9 +488,9 @@ export function AdminWorkspace({
                     <input type="hidden" name="event_team" value={createSelectedTeam} />
                     <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
                     <select aria-label="Performing team" value={createSelectedTeam} disabled className="app-input min-h-12 w-full px-4 py-3 text-lg">
-                      <option value={createSelectedTeam}>{createSelectedTeam} auto</option>
+                      <option value={createSelectedTeam}>{createSelectedTeam}</option>
                     </select>
-                    <p className="text-sm text-[var(--muted)]">Auto-filled from setlist.</p>
+                    <p className="text-sm text-[var(--muted)]">Filled from setlist.</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -605,9 +605,9 @@ export function AdminWorkspace({
                             <input type="hidden" name="event_team" value={editSelectedTeam} />
                             <label className="block text-sm font-semibold text-[var(--muted)]">Performing team</label>
                             <select aria-label="Performing team" value={editSelectedTeam} disabled className="app-input min-h-12 w-full px-4 py-3 text-lg">
-                              <option value={editSelectedTeam}>{editSelectedTeam} auto</option>
+                              <option value={editSelectedTeam}>{editSelectedTeam}</option>
                             </select>
-                            <p className="text-sm text-[var(--muted)]">Auto-filled from setlist.</p>
+                            <p className="text-sm text-[var(--muted)]">Filled from setlist.</p>
                           </div>
                         ) : (
                           <div className="space-y-2 sm:col-span-2">

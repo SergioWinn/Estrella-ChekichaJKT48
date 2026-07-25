@@ -103,49 +103,49 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
           <div className={`tabular-nums text-3xl font-extrabold tracking-[-0.04em] md:text-4xl ${pendingCount ? "text-[var(--accent)]" : "text-[var(--foreground)]"}`}>{pendingCount}</div>
           <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Open slots</p>
         </div>
-        <div>
+        <div className="space-y-3">
           <p className="text-sm font-semibold text-[var(--muted-strong)]">Filter</p>
-          <div className="mt-3 flex flex-wrap gap-2.5 md:flex-nowrap">
-            {FILTERS.map((option) => (
-              <FilterPill
-                key={option}
-                onClick={() => setFilterType(option)}
-                active={filterType === option}
-              >
-                {option}
-              </FilterPill>
-            ))}
-          </div>
-          {filterType === "Roulette" ? (
-            <label className="mt-4 block">
-              <span className="text-xs font-semibold text-[var(--muted-strong)]">Roulette series</span>
-              <select
-                value={rouletteSeries}
-                onChange={(event) => setRouletteSeries(event.target.value)}
-                className="app-input mt-2 min-h-11 w-full truncate px-3 py-2.5 text-sm"
-              >
-                <option value="All">All roulette series</option>
-                {rouletteSeriesOptions.map((series) => (
-                  <option key={series} value={series}>{series}</option>
-                ))}
-              </select>
-            </label>
-          ) : null}
-          <div className="mt-4">
-            <span className="text-xs font-semibold text-[var(--muted-strong)]">Performing team</span>
-            <div className="mt-2 flex flex-wrap gap-2">
-              {TEAM_FILTERS.map((option) => (
+          <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_13rem_11rem] xl:items-end">
+            <div className="flex flex-wrap gap-2">
+              {FILTERS.map((option) => (
                 <FilterPill
                   key={option}
-                  onClick={() => setTeamFilter(option)}
-                  active={teamFilter === option}
+                  onClick={() => setFilterType(option)}
+                  active={filterType === option}
                 >
-                  {option === "All" ? "All" : `${option} ${teamCounts[option]}`}
+                  {option}
                 </FilterPill>
               ))}
             </div>
+            {filterType === "Roulette" ? (
+              <label className="grid gap-1">
+                <span className="text-xs font-semibold text-[var(--muted-strong)]">Series</span>
+                <select
+                  value={rouletteSeries}
+                  onChange={(event) => setRouletteSeries(event.target.value)}
+                  className="app-input min-h-10 w-full truncate px-3 py-2 text-sm"
+                >
+                  <option value="All">All roulette series</option>
+                  {rouletteSeriesOptions.map((series) => (
+                    <option key={series} value={series}>{series}</option>
+                  ))}
+                </select>
+              </label>
+            ) : <div className="hidden xl:block" />}
+            <label className="grid gap-1">
+              <span className="text-xs font-semibold text-[var(--muted-strong)]">Team</span>
+              <select
+                value={teamFilter}
+                onChange={(event) => setTeamFilter(event.target.value as (typeof TEAM_FILTERS)[number])}
+                className="app-input min-h-10 w-full truncate px-3 py-2 text-sm"
+              >
+                {TEAM_FILTERS.map((option) => (
+                  <option key={option} value={option}>{option === "All" ? "All teams" : `${option} ${teamCounts[option]}`}</option>
+                ))}
+              </select>
+            </label>
           </div>
-          <div className="mt-3 text-xs text-[var(--muted)] md:text-sm">{filterNote}</div>
+          <div className="text-xs text-[var(--muted)] md:text-sm">{filterNote}</div>
         </div>
       </section>
 

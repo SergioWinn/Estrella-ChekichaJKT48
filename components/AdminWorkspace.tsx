@@ -96,7 +96,7 @@ const TIME_OPTIONS = Array.from({ length: (24 * 60) / TIME_STEP_MINUTES }, (_, i
 
 function AdminStatCard({ label, value, tone = "text-[var(--foreground)]" }: { label: string; tone?: string; value: number | string }) {
   return (
-    <article className="app-card p-5">
+    <article className="motion-card app-card p-5">
       <div className={`text-4xl font-extrabold tracking-[-0.04em] ${tone}`}>{value}</div>
       <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">{label}</p>
     </article>
@@ -276,7 +276,7 @@ export function AdminWorkspace({
   return (
     <div className="space-y-6">
       <section className="grid gap-4 xl:grid-cols-[1.7fr_1fr]">
-        <div className="app-shell p-6 sm:p-8">
+        <div className="motion-section app-shell p-6 sm:p-8">
           <h2 className="mt-4 max-w-4xl text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-6xl">
             Operate the archive, not the public showcase.
           </h2>
@@ -284,7 +284,7 @@ export function AdminWorkspace({
             Manage members, schedule archive rows, and resolve waiting roulette slots from one restricted workspace.
           </p>
         </div>
-        <div className="app-shell p-6">
+        <div className="motion-section app-shell p-6">
           <h3 className="text-lg font-semibold text-[var(--foreground)]">Restricted workspace</h3>
           <p className="mt-3 text-xl leading-8 text-[var(--foreground-soft)]">
             This page is visible only to accounts with the <span className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-base font-semibold text-[var(--foreground)]">admin</span> role.
@@ -292,8 +292,8 @@ export function AdminWorkspace({
         </div>
       </section>
 
-      {success ? <div role="status" aria-live="polite" className="sr-only">{success}</div> : null}
-      {error ? <div role="alert" className="rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
+      {success ? <div role="status" aria-live="polite" className="motion-section rounded-xl border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm font-semibold text-[var(--accent)]">{success}</div> : null}
+      {error ? <div role="alert" className="motion-section rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
 
       <div className="rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-5 py-4 text-lg font-bold text-[var(--accent)]">
         Admin role active
@@ -305,7 +305,7 @@ export function AdminWorkspace({
         <AdminStatCard label="Members" value={members.length} />
       </section>
 
-      <nav className="app-card flex flex-wrap gap-2 p-2" aria-label="Admin workspace sections">
+      <nav className="motion-section app-card flex flex-wrap gap-2 p-2" aria-label="Admin workspace sections">
         {ADMIN_TABS.map((tab) => (
           <button
             key={tab.key}
@@ -351,7 +351,7 @@ export function AdminWorkspace({
                 const waitingB = hasPendingSlotB(event) && !singleMemberEvent(event.event_type);
 
                 return (
-                  <form key={String(event.id || `${event.event_name}-${event.start_time}`)} action={updateQueueAction} className="space-y-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+                  <form key={String(event.id || `${event.event_name}-${event.start_time}`)} action={updateQueueAction} className="motion-card space-y-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
                     <input type="hidden" name="event_id" value={event.id || ""} />
                     <input type="hidden" name="event_name" value={event.event_name || "Event"} />
                     <input type="hidden" name="slot_mode" value={event.slot_mode || 1} />
@@ -435,7 +435,7 @@ export function AdminWorkspace({
           </div>
 
           <div className="grid gap-6 xl:grid-cols-2">
-            <section className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+            <section className="motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <div className="text-xl font-bold text-[var(--foreground)]">Create event row</div>
               <form action={createEventAction} className="space-y-4">
                 <div className="space-y-2">
@@ -547,7 +547,7 @@ export function AdminWorkspace({
               </form>
             </section>
 
-            <section className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+            <section className="motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <div className="text-xl font-bold text-[var(--foreground)]">Edit event row</div>
               {selectedEvent ? (
                 <>
@@ -694,7 +694,7 @@ export function AdminWorkspace({
           </div>
 
           <div className="grid gap-6 xl:grid-cols-2">
-            <section className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+            <section className="motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <div className="text-xl font-bold text-[var(--foreground)]">Add member</div>
               <form action={createMemberAction} className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -744,7 +744,7 @@ export function AdminWorkspace({
               </form>
             </section>
 
-            <section className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+            <section className="motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <div className="text-xl font-bold text-[var(--foreground)]">Edit / delete member</div>
               {selectedMember ? (
                 <>

@@ -1,6 +1,7 @@
 /* Hallmark - pre-emit critique: P5 H5 E5 S5 R5 V4 */
 "use client";
 
+import type { CSSProperties } from "react";
 import { useMemo, useState } from "react";
 
 import { EventTeamBadge } from "@/components/EventTeamBadge";
@@ -98,22 +99,22 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
 
   return (
     <div className="space-y-6">
-      <section className="app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
+      <section className="motion-section app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-          <div className="app-card p-4 md:p-5">
+          <div className="motion-card app-card p-4 md:p-5">
             <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{filtered.length}</div>
             <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Events shown</p>
             <p className="mt-3 max-w-[22rem] text-sm leading-6 text-[var(--muted)]">
               {filtered.length === events.length ? "Showing the full archive across every saved month." : `Showing ${filtered.length} results from the active archive filters.`}
             </p>
           </div>
-          <div className="app-card p-4 md:p-5">
+          <div className="motion-card app-card p-4 md:p-5">
             <div className={`tabular-nums text-3xl font-extrabold tracking-[-0.04em] md:text-4xl ${pendingCount ? "text-[var(--accent)]" : "text-[var(--foreground)]"}`}>{pendingCount}</div>
             <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Open slots</p>
             <p className="mt-3 max-w-[22rem] text-sm leading-6 text-[var(--muted)]">{pendingLabel}</p>
           </div>
         </div>
-        <div className="app-card grid gap-4 p-4 md:p-5">
+        <div className="motion-card app-card grid gap-4 p-4 md:p-5">
           <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,18rem)] lg:items-start lg:gap-4">
             <div>
               <p className="text-sm font-semibold text-[var(--muted-strong)]">Filter</p>
@@ -177,17 +178,18 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
 
       {sections.length ? (
         sections.map(([monthLabel, monthRows]) => (
-          <section key={monthLabel} className="space-y-5 border-t border-[var(--border)] pt-5 sm:pt-6">
+          <section key={monthLabel} className="motion-section space-y-5 border-t border-[var(--border)] pt-5 sm:pt-6">
             <div className="text-sm font-bold uppercase tracking-[0.12em] text-[var(--muted-strong)] md:text-base">{monthLabel}</div>
             <div className="grid grid-cols-2 gap-2 sm:gap-4">
-              {monthRows.map((row) => {
+              {monthRows.map((row, index) => {
                 const card = buildTimelineCardState(row);
                 const eventTeam = getEffectiveEventTeam(row.event_name, row.event_type, row.event_team);
 
                 return (
                     <article
                       key={row.id || `${row.event_name}-${row.start_time}`}
-                      className="app-card-strong relative grid min-w-0 gap-2 p-2 md:grid-cols-[4rem_7.5rem_1fr] md:items-center md:gap-4 md:p-5"
+                      className="motion-card motion-list-item app-card-strong relative grid min-w-0 gap-2 p-2 md:grid-cols-[4rem_7.5rem_1fr] md:items-center md:gap-4 md:p-5"
+                      style={{ "--i": Math.min(index, 5) } as CSSProperties}
                     >
                     <div className="hidden md:block absolute right-5 top-5 md:right-6 md:top-6">
                       <span className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">

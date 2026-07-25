@@ -2,6 +2,7 @@
 
 /* Hallmark | pre-emit critique: P4 H5 E4 S5 R5 V4 */
 
+import type { CSSProperties } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
@@ -20,6 +21,10 @@ const FILTER_OPTIONS = ["All", "Roulette", "Birthday", "Graduation"] as const;
 const STATUS_FILTER_OPTIONS = ["All", ...MEMBER_STATUS_OPTIONS] as const;
 const DESK_MODES = ["Add", "Manage"] as const;
 const SLOT_PAGE_SIZE = 6;
+
+function buildStaggerStyle(index: number): CSSProperties {
+  return { "--i": Math.min(index, 5) } as CSSProperties;
+}
 
 type MemberCollection = {
   avatarUrl?: string | null;
@@ -236,28 +241,28 @@ export function CollectionClient({
 
   return (
     <div className="space-y-6">
-      <section className="app-shell p-5 sm:p-6">
+      <section className="motion-section app-shell p-5 sm:p-6">
         <SectionHeader
           title="Your cheki shelf comes first."
           description={`Signed in as @${username} with ${totalQuantity} total cheki across ${uniqueMembers} tracked members.`}
         />
       </section>
 
-      {success ? <div role="status" aria-live="polite" className="sr-only">{success}</div> : null}
-      {error ? <div role="alert" className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
+      {success ? <div role="status" aria-live="polite" className="motion-section rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm font-semibold text-[var(--accent)]">{success}</div> : null}
+      {error ? <div role="alert" className="motion-section rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
 
-      <section className="app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
+      <section className="motion-section app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-          <div className="app-card p-4 md:p-5">
+          <div className="motion-card app-card p-4 md:p-5">
             <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{memberCollections.length}</div>
             <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Members shown</p>
           </div>
-          <div className="app-card p-4 md:p-5">
+          <div className="motion-card app-card p-4 md:p-5">
             <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{visibleQuantity}</div>
             <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Cheki shown</p>
           </div>
         </div>
-        <div className="app-card grid gap-4 p-4 md:p-5">
+        <div className="motion-card app-card grid gap-4 p-4 md:p-5">
           <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(12rem,16rem)] lg:items-start lg:gap-4">
             <div>
               <p className="text-sm font-semibold text-[var(--muted-strong)]">Filter collection</p>
@@ -298,14 +303,15 @@ export function CollectionClient({
 
       {memberCollections.length ? (
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {memberCollections.map((member) => (
+          {memberCollections.map((member, index) => (
             <button
               key={member.id}
               type="button"
               aria-expanded={selectedMemberId === member.id}
               aria-haspopup="dialog"
               onClick={() => setSelectedMemberId(member.id)}
-              className="app-card flex min-h-24 w-full items-center gap-3 p-3 text-left hover:bg-[var(--surface-hover)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 sm:p-4"
+              className="motion-card motion-list-item app-card flex min-h-24 w-full items-center gap-3 p-3 text-left hover:bg-[var(--surface-hover)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 sm:p-4"
+              style={buildStaggerStyle(index)}
             >
               <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:size-16">
                 {member.avatarUrl ? (

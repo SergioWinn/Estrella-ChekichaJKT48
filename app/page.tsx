@@ -21,7 +21,7 @@ function QuickCountCard({
   value: string | number;
 }) {
   return (
-    <article className="border-t border-[var(--border)] pt-4">
+    <article className="motion-card border-t border-[var(--border)] pt-4">
       <div className={`tabular-nums text-4xl font-semibold tracking-[-0.04em] ${tone}`}>{value}</div>
       <p className="mt-2 text-sm font-semibold text-[var(--muted-strong)]">{label}</p>
       <p className="mt-2 text-sm text-[var(--muted)]">{copy}</p>
@@ -41,7 +41,7 @@ export default async function Page() {
 
   return (
     <div className="page-wrap">
-      <section className="page-hero">
+      <section className="motion-section page-hero">
         <div className="page-hero-grid">
           <div className="space-y-6">
             <SectionHeader
@@ -80,7 +80,7 @@ export default async function Page() {
 
       <MatchedHeightColumns
         left={
-          <article className="app-shell flex h-[34rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem] xl:h-full">
+          <article className="motion-section app-shell flex h-[34rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem] xl:h-full">
             <SectionHeader
               title="Members who appear most often"
               titleClassName="text-2xl sm:text-3xl"
@@ -117,7 +117,7 @@ export default async function Page() {
         }
         right={
           <div className="xl:sticky xl:top-24">
-            <article className="app-shell flex h-[34rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem]">
+            <article className="motion-section app-shell flex h-[34rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem]">
               <SectionHeader
                 title="Latest assigned members"
                 titleClassName="text-2xl sm:text-3xl"
@@ -155,7 +155,7 @@ export default async function Page() {
         }
       />
 
-      <section className="app-shell p-5 sm:p-6">
+      <section className="motion-section app-shell p-5 sm:p-6">
         <SectionHeader
           title="How the archive is divided right now"
           titleClassName="text-2xl sm:text-3xl"
@@ -168,7 +168,7 @@ export default async function Page() {
           <QuickCountCard label={copy.quickCounts[3]!.label} value={copy.quickCounts[3]!.value} copy={copy.quickCounts[3]!.copy} tone="text-[var(--accent-strong)]" />
         </div>
       </section>
-      <section className="app-shell p-5 sm:p-6">
+      <section className="motion-section app-shell p-5 sm:p-6">
         <SectionHeader
           title="Performing team split"
           titleClassName="text-2xl sm:text-3xl"
@@ -176,7 +176,7 @@ export default async function Page() {
         />
         <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {EVENT_TEAM_OPTIONS.map((team) => (
-            <article key={team} className="flex min-h-32 flex-col justify-between rounded-[8px] border border-[var(--border)] bg-[var(--surface)] p-4">
+            <article key={team} className="motion-card flex min-h-32 flex-col justify-between rounded-[8px] border border-[var(--border)] bg-[var(--surface)] p-4">
               <div>
                 <div className="tabular-nums text-4xl font-semibold leading-none tracking-[-0.04em] text-[var(--foreground)]">{snapshot.team_counts[team] || 0}</div>
                 <div className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">sessions</div>
@@ -189,7 +189,7 @@ export default async function Page() {
         </div>
       </section>
 
-      <section className="app-shell p-5 sm:p-6">
+      <section className="motion-section app-shell p-5 sm:p-6">
         <SectionHeader
           title="Open draws still waiting in the archive"
           titleClassName="text-2xl sm:text-3xl"

@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { EventTeamBadge } from "@/components/EventTeamBadge";
@@ -13,6 +14,10 @@ import { STATUS_OPTIONS as MEMBER_STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
 import type { MemberHistoryEntry, MemberRecord } from "@/lib/types.ts";
 
 const STATUS_OPTIONS = ["All", ...MEMBER_STATUS_OPTIONS] as const;
+
+function buildStaggerStyle(index: number): CSSProperties {
+  return { "--i": Math.min(index, 5) } as CSSProperties;
+}
 
 interface MemberBrowserItem extends MemberRecord {
   history: MemberHistoryEntry[];
@@ -51,18 +56,18 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
 
   return (
     <div className="space-y-6">
-      <section className="app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
+      <section className="motion-section app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-          <div className="app-card p-4 md:p-5">
+          <div className="motion-card app-card p-4 md:p-5">
             <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{visibleMembers.length}</div>
             <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Members shown</p>
           </div>
-          <div className="app-card p-4 md:p-5">
+          <div className="motion-card app-card p-4 md:p-5">
             <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{membersWithHistory}</div>
             <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">With history</p>
           </div>
         </div>
-        <div className="app-card grid gap-4 p-4 md:p-5">
+        <div className="motion-card app-card grid gap-4 p-4 md:p-5">
           <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,18rem)] lg:items-start lg:gap-4">
             <div>
               <p className="text-sm font-semibold text-[var(--muted-strong)]">Search members</p>
@@ -88,12 +93,13 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
 
       {visibleMembers.length ? (
         <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-          {visibleMembers.map((member) => (
+          {visibleMembers.map((member, index) => (
             <button
               key={member.id}
               type="button"
               onClick={() => setSelectedMemberId(member.id)}
-                className="app-card p-4 text-left transition-colors hover:bg-[var(--surface-hover)]"
+                className="motion-card motion-list-item app-card p-4 text-left transition-colors hover:bg-[var(--surface-hover)]"
+              style={buildStaggerStyle(index)}
             >
               <div className="flex items-center gap-4">
                 <div className="flex size-16 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-strong)]">

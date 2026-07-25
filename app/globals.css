@@ -2,8 +2,8 @@
 @import "../tokens.css";
 @import "tailwindcss";
 
-/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 */
-/* Hallmark · genre: modern-minimal · macrostructure: Stat-Led / Workbench / Letter · design-system: design.md · designed-as-app · contrast: pass (40–41) */
+/* Hallmark - pre-emit critique: P5 H5 E5 S5 R5 V5 */
+/* Hallmark - genre: modern-minimal - macrostructure: Stat-Led / Workbench / Letter - design-system: design.md - designed-as-app - contrast: pass (40-41) */
 
 :root {
   color-scheme: dark;
@@ -265,6 +265,19 @@ button {
   transform: translateY(-1px);
 }
 
+.motion-section {
+  animation: section-enter var(--dur-mid) var(--ease-out) both;
+  will-change: transform, opacity;
+}
+
+.motion-card {
+  will-change: transform;
+}
+
+.motion-card:hover {
+  transform: translateY(-2px);
+}
+
 .motion-list-item {
   animation: list-enter var(--dur-mid) var(--ease-out) both;
   animation-delay: calc(var(--i, 0) * 40ms);
@@ -273,6 +286,11 @@ button {
 
 .motion-list-item:hover {
   transform: translateY(-2px);
+}
+
+.motion-filter-change[aria-pressed="true"],
+.motion-filter-change[data-active="true"] {
+  animation: filter-settle var(--dur-short) var(--ease-out) both;
 }
 
 @keyframes list-enter {
@@ -284,6 +302,28 @@ button {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes section-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes filter-settle {
+  from {
+    transform: translateY(1px) scale(0.98);
+  }
+
+  to {
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -329,6 +369,9 @@ button {
   .app-card,
   .app-card-strong,
   .app-input,
+  .motion-section,
+  .motion-card,
+  .motion-filter-change,
   .motion-surface,
   .motion-list-item,
   button {

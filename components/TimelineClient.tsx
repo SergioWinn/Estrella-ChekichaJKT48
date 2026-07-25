@@ -28,8 +28,8 @@ function DateRail({ value }: { value: string }) {
   return (
     <div className="flex min-h-full items-center justify-center border-b border-[var(--border)] pb-3 md:justify-start md:border-b-0 md:border-r md:pb-0 md:pr-4">
       <div className="text-center md:min-w-14">
-        <div className="tabular-nums text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-[3.1rem]">{day}</div>
-        <div className="mt-1 text-base font-bold text-[var(--muted-strong)] md:text-lg">{month}</div>
+        <div className="tabular-nums text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-[3.1rem]">{day}</div>
+        <div className="mt-1 text-base font-semibold text-[var(--muted-strong)] md:text-lg">{month}</div>
       </div>
     </div>
   );
@@ -43,7 +43,7 @@ function CompactDate({ value }: { value: string }) {
 
   return (
     <div className="shrink-0 tabular-nums">
-      <span className="text-xl font-bold tracking-[-0.04em] text-[var(--foreground)]">{day}</span>
+      <span className="text-xl font-semibold tracking-[-0.05em] text-[var(--foreground)]">{day}</span>
     </div>
   );
 }
@@ -102,14 +102,14 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
       <section className="motion-section app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
           <div className="motion-card app-card p-4 md:p-5">
-            <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{filtered.length}</div>
+            <div className="tabular-nums text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-4xl">{filtered.length}</div>
             <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Events shown</p>
             <p className="mt-3 max-w-[22rem] text-sm leading-6 text-[var(--muted)]">
               {filtered.length === events.length ? "Showing the full archive across every saved month." : `Showing ${filtered.length} results from the active archive filters.`}
             </p>
           </div>
           <div className="motion-card app-card p-4 md:p-5">
-            <div className={`tabular-nums text-3xl font-extrabold tracking-[-0.04em] md:text-4xl ${pendingCount ? "text-[var(--accent)]" : "text-[var(--foreground)]"}`}>{pendingCount}</div>
+            <div className={`tabular-nums text-3xl font-semibold tracking-[-0.05em] md:text-4xl ${pendingCount ? "text-[var(--accent)]" : "text-[var(--foreground)]"}`}>{pendingCount}</div>
             <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Open slots</p>
             <p className="mt-3 max-w-[22rem] text-sm leading-6 text-[var(--muted)]">{pendingLabel}</p>
           </div>
@@ -223,7 +223,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                     <div className="min-w-0 space-y-3">
                       <div className="min-w-0 md:pr-24">
                         <div className="min-w-0">
-                          <h2 className="truncate text-base font-bold tracking-[-0.04em] text-[var(--foreground)] sm:text-[1.35rem] lg:text-[2rem]">{row.event_name || "Untitled event"}</h2>
+                          <h2 className="truncate text-base font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-[1.35rem] lg:text-[2rem]">{row.event_name || "Untitled event"}</h2>
                           <div className="mt-1 grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 text-[11px] md:mt-2 md:text-[0.95rem]">
                             <EventTeamBadge team={eventTeam} eventType={row.event_type} compact />
                             <span className="min-w-0 truncate text-[var(--muted-strong)]">{formatEventTime(row.start_time, row.end_time)} WIB</span>

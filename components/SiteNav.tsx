@@ -19,7 +19,7 @@ export function SiteNav({ links }: { links: NavLink[] }) {
           <Link
             key={link.href}
             href={link.href}
-            className={`site-nav-link inline-flex min-h-10 items-center justify-center border px-3 py-2 text-sm font-semibold whitespace-nowrap transition sm:min-h-11 sm:px-4 ${
+            className={`site-nav-link inline-flex min-h-10 items-center justify-center border px-3 py-2 text-sm font-medium tracking-[-0.02em] whitespace-nowrap transition sm:min-h-11 sm:px-4 ${
               isActive
                 ? "border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] text-[var(--foreground)]"
                 : "border-[var(--border)] bg-transparent text-[var(--muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"

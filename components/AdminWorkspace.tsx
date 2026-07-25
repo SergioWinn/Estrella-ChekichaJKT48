@@ -97,7 +97,7 @@ const TIME_OPTIONS = Array.from({ length: (24 * 60) / TIME_STEP_MINUTES }, (_, i
 function AdminStatCard({ label, value, tone = "text-[var(--foreground)]" }: { label: string; tone?: string; value: number | string }) {
   return (
     <article className="motion-card app-card p-5">
-      <div className={`text-4xl font-extrabold tracking-[-0.04em] ${tone}`}>{value}</div>
+      <div className={`text-4xl font-semibold tracking-[-0.05em] ${tone}`}>{value}</div>
       <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">{label}</p>
     </article>
   );
@@ -123,7 +123,7 @@ function EventPreviewCard({
       <h4 className="text-sm font-semibold text-[var(--foreground)]">Event details</h4>
       <div className="mt-4 grid gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-center">
         <div>
-          <div className="text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)]">{eventName}</div>
+          <div className="text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)]">{eventName}</div>
           {dateText ? <div className="mt-4 text-base text-[var(--muted)]">{dateText}</div> : null}
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground)]">
@@ -170,7 +170,7 @@ function MemberPreviewCard({
       <h4 className="text-sm font-semibold text-[var(--foreground)]">{title}</h4>
       <div className="mt-4 grid gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-center">
         <div>
-          <div className="text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)]">{nickname || "Nickname"}</div>
+          <div className="text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)]">{nickname || "Nickname"}</div>
           <div className="mt-4 text-xl text-[var(--muted)]">{fullName || "Full name"}</div>
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-3 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)]">
@@ -277,7 +277,7 @@ export function AdminWorkspace({
     <div className="space-y-6">
       <section className="grid gap-4 xl:grid-cols-[1.7fr_1fr]">
         <div className="motion-section app-shell p-6 sm:p-8">
-          <h2 className="mt-4 max-w-4xl text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-6xl">
+          <h2 className="mt-4 max-w-4xl text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-6xl">
             Operate the archive, not the public showcase.
           </h2>
           <p className="mt-6 max-w-4xl text-lg leading-9 text-[var(--muted)] sm:text-[1.45rem]">
@@ -326,7 +326,7 @@ export function AdminWorkspace({
       {activeTab === "queue" ? (
         <section className="space-y-4">
           <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
-            <h3 className="mt-4 text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-5xl">Update Roulette Results</h3>
+            <h3 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-5xl">Update Roulette Results</h3>
             <p className="mt-5 max-w-4xl text-lg leading-9 text-[var(--muted)]">
               Resolve waiting entries first. Slot assignment is the most time-sensitive admin task, so it stays at the front of this workspace.
             </p>
@@ -362,7 +362,7 @@ export function AdminWorkspace({
                     <div className="grid gap-4 md:grid-cols-[1fr_8rem] md:items-start">
                       <div>
                         <div className="text-xs font-semibold text-[var(--accent)]">Waiting draw</div>
-                        <div className="mt-4 text-4xl font-extrabold tracking-[-0.04em] text-[var(--foreground)]">{event.event_name || "Untitled event"}</div>
+                        <div className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)]">{event.event_name || "Untitled event"}</div>
                         <div className="mt-5 flex flex-wrap items-center gap-2 text-lg text-[var(--muted)]"><EventTeamBadge team={event.event_team} eventType={event.event_type} /><span>{formatEventDate(event.start_time)} | {formatEventTime(event.start_time, event.end_time)} WIB</span></div>
                         <div className="mt-5 flex flex-wrap gap-2">
                           {waitingA ? <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-2 text-sm font-bold uppercase tracking-[0.08em] text-[var(--foreground)]">Slot A waiting for roulette</span> : null}
@@ -425,7 +425,7 @@ export function AdminWorkspace({
       {activeTab === "events" ? (
         <section className="space-y-4">
           <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
-            <h3 className="mt-4 text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-5xl">Create or edit archive rows</h3>
+            <h3 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-5xl">Create or edit archive rows</h3>
             <p className="mt-5 max-w-4xl text-lg leading-9 text-[var(--muted)]">
               Use the event tools below to schedule a new row or correct an existing one without losing context.
             </p>
@@ -684,7 +684,7 @@ export function AdminWorkspace({
       {activeTab === "members" ? (
         <section className="space-y-4">
           <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
-            <h3 className="mt-4 text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-5xl">Manage collector roster</h3>
+            <h3 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-5xl">Manage collector roster</h3>
             <p className="mt-5 max-w-4xl text-lg leading-9 text-[var(--muted)]">
               Add a new member quickly or open the edit tool only when you need to change existing records.
             </p>

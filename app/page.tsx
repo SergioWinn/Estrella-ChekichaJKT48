@@ -24,7 +24,7 @@ function QuickCountCard({
 }) {
   return (
     <article className="motion-card data-band">
-      <div className={`tabular-nums text-4xl font-semibold tracking-[-0.04em] ${tone}`}>{value}</div>
+      <div className={`tabular-nums text-4xl font-medium tracking-[-0.05em] ${tone}`}>{value}</div>
       <p className="mt-2 text-sm font-semibold text-[var(--muted-strong)]">{label}</p>
       <p className="mt-2 text-sm text-[var(--muted)]">{copy}</p>
     </article>
@@ -64,19 +64,19 @@ export default async function Page() {
             />
             <div className="stat-ribbon">
               <div className="stat-ribbon-item">
-                <div className="tabular-nums text-2xl font-semibold tracking-[-0.03em] text-[var(--foreground)]">{snapshot.show_event_sessions}</div>
+                <div className="tabular-nums text-2xl font-medium tracking-[-0.04em] text-[var(--foreground)]">{snapshot.show_event_sessions}</div>
                 <p className="mt-1 text-sm text-[var(--muted-strong)]">Show and event sessions</p>
               </div>
               <div className="stat-ribbon-item">
-                <div className="tabular-nums text-2xl font-semibold tracking-[-0.03em] text-[var(--foreground)]">{copy.latestShowEventCopy}</div>
+                <div className="tabular-nums text-2xl font-medium tracking-[-0.04em] text-[var(--foreground)]">{copy.latestShowEventCopy}</div>
                 <p className="mt-1 text-sm text-[var(--muted-strong)]">Latest session</p>
               </div>
               <div className="stat-ribbon-item">
-                <div className="text-2xl font-semibold tracking-[-0.03em] text-[var(--foreground)]">{copy.topMemberName}</div>
+                <div className="text-2xl font-medium tracking-[-0.04em] text-[var(--foreground)]">{copy.topMemberName}</div>
                 <p className="mt-1 text-sm text-[var(--muted-strong)]">Top member</p>
               </div>
               <div className="stat-ribbon-item">
-                <div className="tabular-nums text-2xl font-semibold tracking-[-0.03em] text-[var(--accent)]">{copy.waitingCopy}</div>
+                <div className="tabular-nums text-2xl font-medium tracking-[-0.04em] text-[var(--accent)]">{copy.waitingCopy}</div>
                 <p className="mt-1 text-sm text-[var(--muted-strong)]">Open draws</p>
               </div>
             </div>
@@ -194,7 +194,7 @@ export default async function Page() {
           {EVENT_TEAM_OPTIONS.map((team) => (
             <article key={team} className="motion-card flex min-h-32 flex-col justify-between rounded-[8px] border border-[var(--border)] bg-[var(--surface)] p-4">
               <div>
-                <div className="tabular-nums text-4xl font-semibold leading-none tracking-[-0.04em] text-[var(--foreground)]">{snapshot.team_counts[team] || 0}</div>
+                <div className="tabular-nums text-4xl font-medium leading-none tracking-[-0.05em] text-[var(--foreground)]">{snapshot.team_counts[team] || 0}</div>
                 <div className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">sessions</div>
               </div>
               <div className="mt-5 flex justify-start">

@@ -67,7 +67,7 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
               )}
             </div>
             <div className="min-w-0">
-              <h3 id="member-history-title" className="truncate text-lg font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-xl">
+              <h3 id="member-history-title" className="truncate text-lg font-medium tracking-[-0.04em] text-[var(--foreground)] sm:text-xl">
                 {member.name}
               </h3>
               <p className="mt-1 text-sm text-[var(--muted)]">
@@ -94,7 +94,7 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
                 <article key={entry.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 sm:p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h4 className="truncate text-sm font-semibold text-[var(--foreground)] sm:text-base">{entry.event_name}</h4>
+                      <h4 className="truncate text-sm font-medium tracking-[-0.02em] text-[var(--foreground)] sm:text-base">{entry.event_name}</h4>
                       <p className="mt-1 text-xs text-[var(--muted)] sm:text-sm">
                         {formatEventDate(entry.start_time)} | {formatEventTime(entry.start_time, entry.end_time)} WIB
                       </p>
@@ -254,11 +254,11 @@ export function CollectionClient({
       <section className="motion-section app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
           <div className="motion-card app-card p-4 md:p-5">
-            <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{memberCollections.length}</div>
+            <div className="tabular-nums text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-4xl">{memberCollections.length}</div>
             <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Members shown</p>
           </div>
           <div className="motion-card app-card p-4 md:p-5">
-            <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{visibleQuantity}</div>
+            <div className="tabular-nums text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-4xl">{visibleQuantity}</div>
             <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Cheki shown</p>
           </div>
         </div>
@@ -322,7 +322,7 @@ export function CollectionClient({
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-base font-semibold tracking-[-0.025em] text-[var(--foreground)] sm:text-lg">{member.name}</div>
+                <div className="truncate text-base font-medium tracking-[-0.04em] text-[var(--foreground)] sm:text-lg">{member.name}</div>
                 <div className="mt-0.5 text-xs text-[var(--muted)] sm:text-sm">
                   {[member.status, member.generation ? `Gen ${member.generation}` : null].filter(Boolean).join(" | ") || "Member details unavailable"}
                 </div>
@@ -357,7 +357,7 @@ export function CollectionClient({
             <div className="flex items-start justify-between gap-4">
               <div>
                 <div className="text-xs font-semibold text-[var(--accent)]">Collection desk</div>
-                <h3 id="collection-desk-title" className="mt-2 text-lg font-extrabold text-[var(--foreground)] md:text-xl">Add, update, or remove collection entries.</h3>
+                <h3 id="collection-desk-title" className="mt-2 text-lg font-semibold tracking-[-0.04em] text-[var(--foreground)] md:text-xl">Add, update, or remove collection entries.</h3>
                 <p id="collection-desk-summary" className="mt-2 text-sm text-[var(--muted)]">Use Add mode to save new slots and Manage mode to correct quantities you already own.</p>
               </div>
               <button
@@ -434,7 +434,7 @@ export function CollectionClient({
                           {visibleCollectibleSlots.map((slot) => (
                               <form key={slot.slot_uid} action={addCollectionAction} className="grid gap-3 border-t border-[var(--border)] pt-4 lg:grid-cols-[minmax(0,1fr)_7rem_auto] lg:items-center">
                               <div className="min-w-0">
-                                <div className="truncate text-sm font-semibold text-[var(--foreground)] md:text-[0.95rem]">{slot.member_name}</div>
+                                <div className="truncate text-sm font-medium tracking-[-0.02em] text-[var(--foreground)] md:text-[0.95rem]">{slot.member_name}</div>
                                 <div className="truncate text-sm text-[var(--muted)] md:text-[0.95rem]">{slot.event_name}</div>
                                 <div className="mt-1 text-xs uppercase tracking-[0.14em] text-[var(--muted)]">
                                   {slot.slot_label} | {formatEventDate(slot.start_time)} | {formatEventTime(slot.start_time, slot.end_time)} WIB
@@ -496,7 +496,7 @@ export function CollectionClient({
                     <article key={entry.id} className="border-t border-[var(--border)] pt-4">
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <div className="text-sm font-semibold text-[var(--foreground)] md:text-[0.95rem]">{entry.member_name}</div>
+                          <div className="text-sm font-medium tracking-[-0.02em] text-[var(--foreground)] md:text-[0.95rem]">{entry.member_name}</div>
                           <div className="text-sm text-[var(--muted)] md:text-[0.95rem]">{entry.event_name}</div>
                           <div className="mt-2 text-sm text-[var(--muted)] md:text-[0.95rem]">
                             {formatEventDate(entry.start_time)} | {formatEventTime(entry.start_time, entry.end_time)} WIB

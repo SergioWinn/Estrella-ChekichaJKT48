@@ -21,7 +21,7 @@ export function SectionHeader({
     <div className={["section-header flex flex-col gap-4", className].filter(Boolean).join(" ")}>
       <div className="space-y-3">
         {label ? <div className="kicker">{label}</div> : null}
-        <h2 className={["max-w-4xl text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-4xl", titleClassName].filter(Boolean).join(" ")}>
+        <h2 className={["max-w-4xl text-3xl font-medium tracking-[-0.06em] text-[var(--foreground)] sm:text-4xl", titleClassName].filter(Boolean).join(" ")}>
           {title}
         </h2>
         {description ? (

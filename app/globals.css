@@ -1,5 +1,4 @@
-﻿@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=Source+Sans+3:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap");
 @import "../tokens.css";
 @import "tailwindcss";
 
@@ -98,7 +97,8 @@ h5,
 h6 {
   font-family: var(--font-display);
   font-style: normal;
-  line-height: 1.02;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
   overflow-wrap: anywhere;
 }
 

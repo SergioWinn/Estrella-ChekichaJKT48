@@ -59,11 +59,11 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
       <section className="motion-section app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
           <div className="motion-card app-card p-4 md:p-5">
-            <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{visibleMembers.length}</div>
+            <div className="tabular-nums text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-4xl">{visibleMembers.length}</div>
             <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Members shown</p>
           </div>
           <div className="motion-card app-card p-4 md:p-5">
-            <div className="tabular-nums text-3xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] md:text-4xl">{membersWithHistory}</div>
+            <div className="tabular-nums text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-4xl">{membersWithHistory}</div>
             <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">With history</p>
           </div>
         </div>
@@ -111,7 +111,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h2 className="truncate text-lg font-bold text-[var(--foreground)]">{member.nickname || "Unknown member"}</h2>
+                  <h2 className="truncate text-lg font-semibold tracking-[-0.03em] text-[var(--foreground)]">{member.nickname || "Unknown member"}</h2>
                   <div className="mt-2">
                     <span className="rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-[var(--foreground-soft)]">
                       {member.status || "Unknown team"}
@@ -165,7 +165,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <h2 id="member-detail-title" className="text-xl font-extrabold tracking-[-0.04em] text-[var(--foreground)] sm:text-[2.2rem]">{selectedMember.nickname || "Unknown member"}</h2>
+                    <h2 id="member-detail-title" className="text-xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-[2.2rem]">{selectedMember.nickname || "Unknown member"}</h2>
                     <p className="mt-1 text-sm text-[var(--muted-strong)] sm:text-base">{selectedMember.full_name || "No full name"}</p>
                   </div>
                   <div className="flex flex-wrap gap-1.5 sm:gap-2">
@@ -187,7 +187,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
             </div>
 
             <div className="mt-5">
-              <h3 className="text-lg font-bold text-[var(--foreground)]">Recent event history</h3>
+              <h3 className="text-lg font-semibold tracking-[-0.03em] text-[var(--foreground)]">Recent event history</h3>
               <div className="mt-3 overflow-x-auto pb-2">
                 <div className="grid grid-flow-col grid-rows-1 auto-cols-[minmax(9rem,42vw)] gap-2.5 sm:auto-cols-[11rem] lg:auto-cols-[12rem]">
                 {selectedMember.history.length ? (
@@ -212,7 +212,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                           )}
                         </div>
                         <div className="mt-2">
-                          <h4 className="truncate text-sm font-bold text-[var(--foreground)] sm:text-base">{row.event_name || "Untitled event"}</h4>
+                          <h4 className="truncate text-sm font-semibold tracking-[-0.02em] text-[var(--foreground)] sm:text-base">{row.event_name || "Untitled event"}</h4>
                           <p className="mt-1 text-xs text-[var(--muted-strong)] sm:text-sm">{formatEventDate(row.start_time)}</p>
                         </div>
                         <div className="mt-2 flex flex-wrap gap-1.5">

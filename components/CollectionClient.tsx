@@ -302,7 +302,7 @@ export function CollectionClient({
       </section>
 
       {memberCollections.length ? (
-        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <section className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {memberCollections.map((member, index) => (
             <button
               key={member.id}
@@ -313,7 +313,7 @@ export function CollectionClient({
               className="motion-card motion-list-item app-card flex min-h-24 w-full items-center gap-3 p-3 text-left hover:bg-[var(--surface-hover)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 sm:p-4"
               style={buildStaggerStyle(index)}
             >
-              <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:size-16">
+              <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:size-16">
                 {member.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={member.avatarUrl} alt="" className="h-full w-full object-cover" />
@@ -322,15 +322,15 @@ export function CollectionClient({
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-base font-medium tracking-[-0.04em] text-[var(--foreground)] sm:text-lg">{member.name}</div>
-                <div className="mt-0.5 text-xs text-[var(--muted)] sm:text-sm">
+                <div className="truncate text-[15px] font-medium tracking-[-0.04em] text-[var(--foreground)] sm:text-lg">{member.name}</div>
+                <div className="mt-0.5 text-[11px] text-[var(--muted)] sm:text-sm">
                   {[member.status, member.generation ? `Gen ${member.generation}` : null].filter(Boolean).join(" | ") || "Member details unavailable"}
                 </div>
-                <div className="mt-1 truncate text-xs text-[var(--muted-strong)]">
+                <div className="mt-1 truncate text-[11px] text-[var(--muted-strong)] sm:text-xs">
                   {member.entries.length} saved {member.entries.length === 1 ? "session" : "sessions"}
                 </div>
               </div>
-              <span className="shrink-0 rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-xs font-bold tabular-nums text-[var(--foreground)]">
+              <span className="shrink-0 rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2 py-1 text-[11px] font-bold tabular-nums text-[var(--foreground)] sm:px-2.5 sm:text-xs">
                 x{member.totalQuantity}
               </span>
             </button>

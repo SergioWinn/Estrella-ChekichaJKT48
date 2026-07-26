@@ -92,17 +92,17 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
       </section>
 
       {visibleMembers.length ? (
-        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+        <section className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {visibleMembers.map((member, index) => (
             <button
               key={member.id}
               type="button"
               onClick={() => setSelectedMemberId(member.id)}
-                className="motion-card motion-list-item app-card p-4 text-left transition-colors hover:bg-[var(--surface-hover)]"
+                className="motion-card motion-list-item app-card p-3 text-left transition-colors hover:bg-[var(--surface-hover)] sm:p-4"
               style={buildStaggerStyle(index)}
             >
-              <div className="flex items-center gap-4">
-                <div className="flex size-16 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-strong)]">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="flex size-14 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-strong)] sm:size-16">
                   {member.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={member.avatar_url} alt={member.nickname || "Member avatar"} className="h-full w-full object-cover" />
@@ -111,9 +111,9 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h2 className="truncate text-lg font-semibold tracking-[-0.03em] text-[var(--foreground)]">{member.nickname || "Unknown member"}</h2>
-                  <div className="mt-2">
-                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-[var(--foreground-soft)]">
+                  <h2 className="truncate text-base font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-lg">{member.nickname || "Unknown member"}</h2>
+                  <div className="mt-1.5">
+                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:text-xs">
                       {member.status || "Unknown team"}
                     </span>
                   </div>

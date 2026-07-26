@@ -188,7 +188,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                 return (
                     <article
                       key={row.id || `${row.event_name}-${row.start_time}`}
-                      className="timeline-slab motion-card motion-list-item app-card-strong relative grid min-w-0 gap-3 p-3 sm:p-4 md:grid-cols-[4rem_8.5rem_1fr] md:items-center md:gap-5 md:p-5"
+                      className="timeline-slab motion-card motion-list-item app-card-strong relative grid min-w-0 grid-cols-[minmax(0,1fr)_5.5rem] items-start gap-3 p-3 sm:grid-cols-[minmax(0,1fr)_6.5rem] sm:p-4 md:grid-cols-[4rem_minmax(0,1fr)_8rem] md:items-center md:gap-5 md:p-5"
                       style={{ "--i": Math.min(index, 5) } as CSSProperties}
                     >
                     <div className="hidden md:block absolute right-5 top-5 md:right-6 md:top-6">
@@ -196,7 +196,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                         {card.eventType}
                       </span>
                     </div>
-                    <div className="flex min-w-0 items-center justify-between gap-1 md:hidden">
+                    <div className="col-span-2 flex min-w-0 items-center justify-between gap-1 md:hidden">
                       <CompactDate value={row.start_time} />
                       <span className="inline-flex min-w-0 truncate rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--accent)]">
                         {card.eventType}
@@ -205,25 +205,10 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                     <div className="hidden md:block">
                       <DateRail value={row.start_time} />
                     </div>
-                    <div className="aspect-video min-w-0 w-full overflow-hidden rounded-[1rem] bg-[var(--surface)] md:aspect-[4/3]">
-                      {row.event_image_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={row.event_image_url}
-                          alt={row.event_name || "Event banner"}
-                          width="480"
-                          height="360"
-                          loading="lazy"
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <MediaPlaceholder />
-                      )}
-                    </div>
                     <div className="min-w-0 space-y-3">
                       <div className="min-w-0 md:pr-24">
                         <div className="min-w-0">
-                          <h2 className="truncate text-base font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-[1.35rem] lg:text-[2rem]">{row.event_name || "Untitled event"}</h2>
+                          <h2 className="truncate text-base font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-[1.2rem] lg:text-[1.65rem]">{row.event_name || "Untitled event"}</h2>
                           <div className="mt-1 grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 text-[11px] md:mt-2 md:text-[0.95rem]">
                             <EventTeamBadge team={eventTeam} eventType={row.event_type} compact />
                             <span className="min-w-0 truncate text-[var(--muted-strong)]">{formatEventTime(row.start_time, row.end_time)} WIB</span>
@@ -240,6 +225,21 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                           />
                         ))}
                       </div>
+                    </div>
+                    <div className="aspect-[4/5] min-w-0 w-full self-start overflow-hidden rounded-[1rem] bg-[var(--surface)]">
+                      {row.event_image_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={row.event_image_url}
+                          alt={row.event_name || "Event banner"}
+                          width="320"
+                          height="400"
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <MediaPlaceholder />
+                      )}
                     </div>
                   </article>
                 );

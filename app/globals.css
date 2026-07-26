@@ -155,6 +155,10 @@ button {
   align-items: center;
 }
 
+.site-nav-toggle {
+  border-radius: 1rem;
+}
+
 .site-nav-link {
   min-width: 7.25rem;
 }
@@ -452,10 +456,19 @@ button {
     display: none;
   }
 
+  .site-nav-shell {
+    width: 100%;
+  }
+
   .site-nav-grid {
-    display: grid;
+    display: none;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
+  }
+
+  .site-nav-grid.site-nav-grid--open {
+    display: grid;
+    margin-top: 0.75rem;
   }
 
   .site-nav-link {
@@ -495,6 +508,10 @@ button {
 }
 
 @media (min-width: 768px) {
+  .site-nav-toggle {
+    display: none;
+  }
+
   .page-hero-grid {
     grid-template-columns: minmax(0, 1.6fr) minmax(18rem, 0.8fr);
     align-items: start;

@@ -39,7 +39,8 @@ export default async function Page() {
   const rows = await loadOverviewRows();
   const snapshot = buildOverviewSnapshot(rows);
   const copy = buildHomepageCopy(snapshot);
-  const visibleLeaderboard = snapshot.leaderboard.slice(0, 10);
+  const visibleLeaderboard = snapshot.leaderboard.slice(0, 5);
+  const visibleRecentAssignments = snapshot.recent_assignments.slice(0, 5);
 
   return (
     <div className="page-wrap">
@@ -92,29 +93,31 @@ export default async function Page() {
 
       <MatchedHeightColumns
         left={
-          <article className="motion-section app-shell flex min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem]">
+          <article className="motion-section app-shell flex h-[31rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[33rem]">
             <SectionHeader
               label="Leaderboard"
               title="Members who appear most often"
               titleClassName="text-2xl sm:text-3xl"
-              description="Showing the top 10 members with two or more appearances. Ties keep the same rank number and follow the latest show or event assignment."
+              description="Showing the top 5 members with two or more appearances. Ties keep the same rank number and follow the latest show or event assignment."
             />
-            <div className="mt-5 grid gap-3 sm:min-h-0 sm:flex-1 sm:overflow-y-auto sm:pr-1">
+            <div className="mt-5 grid gap-3">
               {visibleLeaderboard.length ? (
                 visibleLeaderboard.map((row) => (
-                  <div key={row.member_id} className="motion-list-item flex items-center gap-4 border-t border-[var(--border)] py-4" style={buildStaggerStyle(row.rank - 1)}>
-                    <div className="min-w-12 text-xl font-semibold text-[var(--accent)]">#{row.rank}</div>
-                    <div className="flex size-14 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)]">
+                  <div key={row.member_id} className="motion-list-item flex items-center justify-between gap-3 border-t border-[var(--border)] py-4" style={buildStaggerStyle(row.rank - 1)}>
+                    <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+                      <div className="min-w-12 text-xl font-semibold text-[var(--accent)]">#{row.rank}</div>
+                      <div className="flex size-12 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)] sm:size-14">
                       {row.avatar_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={row.avatar_url} alt={row.nickname} className="h-full w-full object-cover" />
                       ) : (
                         <span className="text-lg font-bold text-[var(--foreground)]">{row.nickname.slice(0, 1).toUpperCase()}</span>
                       )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-lg font-semibold text-[var(--foreground)]">{row.nickname}</div>
-                      <div className="text-sm text-[var(--muted)]">{row.generasi ? `Gen ${row.generasi}` : "Generation unknown"}</div>
+                      </div>
+                      <div className="min-w-0">
+                        <div className="truncate text-lg font-semibold text-[var(--foreground)]">{row.nickname}</div>
+                        <div className="truncate text-sm text-[var(--muted)]">{row.generasi ? `Gen ${row.generasi}` : "Generation unknown"}</div>
+                      </div>
                     </div>
                     <div className="text-right">
                       <div className="tabular-nums text-2xl font-semibold text-[var(--foreground)]">{row.count}</div>
@@ -130,33 +133,34 @@ export default async function Page() {
         }
         right={
           <div className="xl:sticky xl:top-24">
-            <article className="motion-section app-shell flex min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem]">
+            <article className="motion-section app-shell flex h-[31rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[33rem]">
               <SectionHeader
                 label="Recent"
                 title="Latest assigned members"
                 titleClassName="text-2xl sm:text-3xl"
-                description="Both slots from the same event can appear if both were filled."
+                description="Showing the latest 5 filled assignments. Both slots from the same event can appear if both were filled."
               />
-              <div className="mt-5 space-y-3 sm:min-h-0 sm:flex-1 sm:overflow-y-auto sm:pr-1">
-                {snapshot.recent_assignments.length ? (
-                  snapshot.recent_assignments.map((row, index) => (
-                    <div key={`${row.member_id}-${row.start_time}-${index}`} className="motion-list-item border-t border-[var(--border)] py-4" style={buildStaggerStyle(index)}>
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex min-w-0 items-center gap-3">
-                          <div className="flex size-12 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)]">
+              <div className="mt-5 grid gap-3">
+                {visibleRecentAssignments.length ? (
+                  visibleRecentAssignments.map((row, index) => (
+                    <div key={`${row.member_id}-${row.start_time}-${index}`} className="motion-list-item flex items-center justify-between gap-3 border-t border-[var(--border)] py-4" style={buildStaggerStyle(index)}>
+                      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+                        <div className="flex size-12 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)] sm:size-14">
                             {row.avatar_url ? (
                               // eslint-disable-next-line @next/next/no-img-element
                               <img src={row.avatar_url} alt={row.nickname} className="h-full w-full object-cover" />
                             ) : (
                               <span className="text-base font-bold text-[var(--foreground)]">{row.nickname.slice(0, 1).toUpperCase()}</span>
                             )}
-                          </div>
-                          <div className="min-w-0">
-                            <div className="truncate text-lg font-semibold text-[var(--foreground)]">{row.nickname}</div>
-                            <div className="truncate text-sm text-[var(--muted)]">{row.event_name}</div>
-                          </div>
                         </div>
-                        <div className="text-right text-sm text-[var(--muted)]">{formatEventDate(row.start_dt)}</div>
+                        <div className="min-w-0">
+                          <div className="truncate text-lg font-semibold text-[var(--foreground)]">{row.nickname}</div>
+                          <div className="truncate text-sm text-[var(--muted)]">{row.event_name}</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="tabular-nums text-base font-semibold text-[var(--foreground)] sm:text-lg">{formatEventDate(row.start_dt)}</div>
+                        <div className="text-xs uppercase tracking-[0.16em] text-[var(--muted)]">date</div>
                       </div>
                     </div>
                   ))

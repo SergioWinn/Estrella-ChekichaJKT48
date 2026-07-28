@@ -97,7 +97,6 @@ export default async function Page() {
             <SectionHeader
               label="Leaderboard"
               title="Members who appear most often"
-              className="min-h-[11rem] sm:min-h-[12rem]"
               titleClassName="text-2xl sm:text-3xl"
               description="Showing the top 5 members with two or more appearances. Ties keep the same rank number and follow the latest show or event assignment."
             />
@@ -138,7 +137,6 @@ export default async function Page() {
               <SectionHeader
                 label="Recent"
                 title="Latest assigned members"
-                className="min-h-[11rem] sm:min-h-[12rem]"
                 titleClassName="text-2xl sm:text-3xl"
                 description="Showing the latest 5 filled assignments. Both slots from the same event can appear if both were filled."
               />

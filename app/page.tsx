@@ -5,7 +5,6 @@ import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { buildOverviewSnapshot, loadOverviewRows } from "@/lib/archive-data.ts";
 import { formatEventDate } from "@/lib/format.ts";
 import { buildHomepageCopy } from "@/lib/homepage-copy.ts";
-import { MatchedHeightColumns } from "@/components/MatchedHeightColumns";
 import { SectionHeader } from "@/components/SectionHeader";
 import { EVENT_TEAM_OPTIONS } from "@/lib/v2-helpers.ts";
 
@@ -91,9 +90,8 @@ export default async function Page() {
         </div>
       </section>
 
-      <MatchedHeightColumns
-        left={
-          <article className="motion-section app-shell flex h-full min-h-0 flex-col p-5">
+      <section className="grid items-stretch gap-4 xl:grid-cols-[1.2fr_1fr]">
+        <article className="motion-section app-shell flex h-full min-h-0 flex-col p-5">
             <SectionHeader
               label="Leaderboard"
               title="Members who appear most often"
@@ -104,7 +102,7 @@ export default async function Page() {
             <div className="mt-5 grid gap-3">
               {visibleLeaderboard.length ? (
                 visibleLeaderboard.map((row) => (
-                  <div key={row.member_id} className="motion-list-item flex items-center justify-between gap-3 border-t border-[var(--border)] py-4" style={buildStaggerStyle(row.rank - 1)}>
+                  <div key={row.member_id} className="motion-list-item flex min-h-[5.75rem] items-center justify-between gap-3 border-t border-[var(--border)] py-4" style={buildStaggerStyle(row.rank - 1)}>
                     <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                       <div className="min-w-12 text-xl font-semibold text-[var(--accent)]">#{row.rank}</div>
                       <div className="flex size-12 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)] sm:size-14">
@@ -131,49 +129,44 @@ export default async function Page() {
               )}
             </div>
           </article>
-        }
-        right={
-          <div>
-            <article className="motion-section app-shell flex h-full min-h-0 flex-col p-5">
-              <SectionHeader
-                label="Recent"
-                title="Latest assigned members"
-                className="min-h-[7.75rem] sm:min-h-[8.5rem]"
-                titleClassName="text-2xl sm:text-3xl"
-                description="Showing the latest 5 filled assignments. Both slots from the same event can appear if both were filled."
-              />
-              <div className="mt-5 grid gap-3">
-                {visibleRecentAssignments.length ? (
-                  visibleRecentAssignments.map((row, index) => (
-                    <div key={`${row.member_id}-${row.start_time}-${index}`} className="motion-list-item flex items-center justify-between gap-3 border-t border-[var(--border)] py-4" style={buildStaggerStyle(index)}>
-                      <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-                        <div className="flex size-12 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)] sm:size-14">
-                            {row.avatar_url ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img src={row.avatar_url} alt={row.nickname} className="h-full w-full object-cover" />
-                            ) : (
-                              <span className="text-base font-bold text-[var(--foreground)]">{row.nickname.slice(0, 1).toUpperCase()}</span>
-                            )}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="truncate text-lg font-semibold text-[var(--foreground)]">{row.nickname}</div>
-                          <div className="truncate text-sm text-[var(--muted)]">{row.event_name}</div>
-                        </div>
+          <article className="motion-section app-shell flex h-full min-h-0 flex-col p-5">
+            <SectionHeader
+              label="Recent"
+              title="Latest assigned members"
+              className="min-h-[7.75rem] sm:min-h-[8.5rem]"
+              titleClassName="text-2xl sm:text-3xl"
+              description="Showing the latest 5 filled assignments. Both slots from the same event can appear if both were filled."
+            />
+            <div className="mt-5 grid gap-3">
+              {visibleRecentAssignments.length ? (
+                visibleRecentAssignments.map((row, index) => (
+                  <div key={`${row.member_id}-${row.start_time}-${index}`} className="motion-list-item flex min-h-[5.75rem] items-center justify-between gap-3 border-t border-[var(--border)] py-4" style={buildStaggerStyle(index)}>
+                    <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+                      <div className="flex size-12 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)] sm:size-14">
+                        {row.avatar_url ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={row.avatar_url} alt={row.nickname} className="h-full w-full object-cover" />
+                        ) : (
+                          <span className="text-base font-bold text-[var(--foreground)]">{row.nickname.slice(0, 1).toUpperCase()}</span>
+                        )}
                       </div>
-                      <div className="text-right">
-                        <div className="tabular-nums text-base font-semibold text-[var(--foreground)] sm:text-lg">{formatEventDate(row.start_dt)}</div>
-                        <div className="text-xs uppercase tracking-[0.16em] text-[var(--muted)]">date</div>
+                      <div className="min-w-0">
+                        <div className="truncate text-lg font-semibold text-[var(--foreground)]">{row.nickname}</div>
+                        <div className="truncate text-sm text-[var(--muted)]">{row.event_name}</div>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="border-t border-[var(--border)] py-4 text-sm text-[var(--muted)]">Recent show and event assignments will appear here.</div>
-                )}
-              </div>
-            </article>
-          </div>
-        }
-      />
+                    <div className="text-right">
+                      <div className="tabular-nums text-base font-semibold text-[var(--foreground)] sm:text-lg">{formatEventDate(row.start_dt)}</div>
+                      <div className="text-xs uppercase tracking-[0.16em] text-[var(--muted)]">date</div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="border-t border-[var(--border)] py-4 text-sm text-[var(--muted)]">Recent show and event assignments will appear here.</div>
+              )}
+            </div>
+          </article>
+      </section>
 
       <section className="motion-section app-shell p-5 sm:p-6">
         <SectionHeader

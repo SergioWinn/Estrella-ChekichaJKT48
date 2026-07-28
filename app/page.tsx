@@ -133,7 +133,7 @@ export default async function Page() {
           </article>
         }
         right={
-          <div className="xl:sticky xl:top-24">
+          <div>
             <article className="motion-section app-shell flex h-full min-h-0 flex-col p-5">
               <SectionHeader
                 label="Recent"

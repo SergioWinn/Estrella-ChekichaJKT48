@@ -93,10 +93,11 @@ export default async function Page() {
 
       <MatchedHeightColumns
         left={
-          <article className="motion-section app-shell flex h-[31rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[33rem]">
+          <article className="motion-section app-shell flex h-full min-h-0 flex-col p-5">
             <SectionHeader
               label="Leaderboard"
               title="Members who appear most often"
+              className="min-h-[11rem] sm:min-h-[12rem]"
               titleClassName="text-2xl sm:text-3xl"
               description="Showing the top 5 members with two or more appearances. Ties keep the same rank number and follow the latest show or event assignment."
             />
@@ -133,10 +134,11 @@ export default async function Page() {
         }
         right={
           <div className="xl:sticky xl:top-24">
-            <article className="motion-section app-shell flex h-[31rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[33rem]">
+            <article className="motion-section app-shell flex h-full min-h-0 flex-col p-5">
               <SectionHeader
                 label="Recent"
                 title="Latest assigned members"
+                className="min-h-[11rem] sm:min-h-[12rem]"
                 titleClassName="text-2xl sm:text-3xl"
                 description="Showing the latest 5 filled assignments. Both slots from the same event can appear if both were filled."
               />

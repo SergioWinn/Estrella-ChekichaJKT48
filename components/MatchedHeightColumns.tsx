@@ -48,9 +48,9 @@ export function MatchedHeightColumns({
   }, []);
 
   return (
-    <section className="grid gap-4 xl:grid-cols-[1.2fr_1fr] items-start">
-      <div className="min-h-0" style={leftHeight ? { height: leftHeight } : undefined}>{left}</div>
-      <div ref={rightRef} className="min-h-0">{right}</div>
+    <section className="grid items-stretch gap-4 xl:grid-cols-[1.2fr_1fr]">
+      <div className="min-h-0 h-full" style={leftHeight ? { height: leftHeight } : undefined}>{left}</div>
+      <div ref={rightRef} className="min-h-0 h-full">{right}</div>
     </section>
   );
 }

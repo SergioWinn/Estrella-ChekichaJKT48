@@ -92,14 +92,14 @@ export default async function Page() {
 
       <MatchedHeightColumns
         left={
-          <article className="motion-section app-shell flex h-[34rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem] xl:h-full">
+          <article className="motion-section app-shell flex min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem]">
             <SectionHeader
               label="Leaderboard"
               title="Members who appear most often"
               titleClassName="text-2xl sm:text-3xl"
               description="Showing the top 10 members with two or more appearances. Ties keep the same rank number and follow the latest show or event assignment."
             />
-            <div className="mt-5 grid min-h-0 flex-1 gap-3 overflow-y-auto pr-1">
+            <div className="mt-5 grid gap-3 sm:min-h-0 sm:flex-1 sm:overflow-y-auto sm:pr-1">
               {visibleLeaderboard.length ? (
                 visibleLeaderboard.map((row) => (
                   <div key={row.member_id} className="motion-list-item flex items-center gap-4 border-t border-[var(--border)] py-4" style={buildStaggerStyle(row.rank - 1)}>
@@ -130,14 +130,14 @@ export default async function Page() {
         }
         right={
           <div className="xl:sticky xl:top-24">
-            <article className="motion-section app-shell flex h-[34rem] min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem]">
+            <article className="motion-section app-shell flex min-h-0 flex-col overflow-hidden p-5 sm:h-[38rem]">
               <SectionHeader
                 label="Recent"
                 title="Latest assigned members"
                 titleClassName="text-2xl sm:text-3xl"
                 description="Both slots from the same event can appear if both were filled."
               />
-              <div className="mt-5 space-y-3">
+              <div className="mt-5 space-y-3 sm:min-h-0 sm:flex-1 sm:overflow-y-auto sm:pr-1">
                 {snapshot.recent_assignments.length ? (
                   snapshot.recent_assignments.map((row, index) => (
                     <div key={`${row.member_id}-${row.start_time}-${index}`} className="motion-list-item border-t border-[var(--border)] py-4" style={buildStaggerStyle(index)}>

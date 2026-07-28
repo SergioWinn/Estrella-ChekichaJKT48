@@ -12,6 +12,7 @@ interface NavLink {
 export function SiteNav({ links }: { links: NavLink[] }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const activeLink = links.find((link) => link.href === pathname) ?? links[0];
 
   return (
     <nav className="site-nav-shell">
@@ -31,7 +32,7 @@ export function SiteNav({ links }: { links: NavLink[] }) {
               <span />
             </span>
           </span>
-          <span>{open ? "Close menu" : "Menu"}</span>
+          <span>{activeLink?.label || "Menu"}</span>
         </span>
         <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted-strong)]" aria-hidden="true">
           {open ? "Hide" : `${links.length} links`}

@@ -20,10 +20,22 @@ export function SiteNav({ links }: { links: NavLink[] }) {
         aria-expanded={open}
         aria-controls="site-nav-links"
         onClick={() => setOpen((value) => !value)}
-        className="site-nav-toggle inline-flex min-h-10 w-full items-center justify-between gap-3 border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-left text-sm font-medium tracking-[-0.02em] text-[var(--foreground)] transition hover:bg-[var(--surface-hover)] md:hidden"
+        aria-label={open ? "Close menu" : "Open menu"}
+        className="site-nav-toggle inline-flex min-h-11 w-full items-center justify-between gap-3 border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-left text-sm font-medium tracking-[-0.02em] text-[var(--foreground)] transition hover:bg-[var(--surface-hover)] md:hidden"
       >
-        <span>Navigate</span>
-        <span className="text-lg leading-none text-[var(--accent)]" aria-hidden="true">{open ? "-" : "+"}</span>
+        <span className="inline-flex items-center gap-3">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-hover)] text-[var(--accent)]">
+            <span className="site-nav-toggle-icon" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
+          </span>
+          <span>{open ? "Close menu" : "Menu"}</span>
+        </span>
+        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted-strong)]" aria-hidden="true">
+          {open ? "Hide" : `${links.length} links`}
+        </span>
       </button>
       <div id="site-nav-links" className={`site-nav-grid flex flex-wrap gap-2 ${open ? "site-nav-grid--open" : ""}`}>
         {links.map((link) => {

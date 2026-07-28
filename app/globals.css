@@ -159,6 +159,34 @@ button {
   border-radius: 1rem;
 }
 
+.site-nav-toggle-icon {
+  position: relative;
+  display: inline-flex;
+  width: 0.95rem;
+  height: 0.8rem;
+}
+
+.site-nav-toggle-icon span {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.site-nav-toggle-icon span:nth-child(1) {
+  top: 0;
+}
+
+.site-nav-toggle-icon span:nth-child(2) {
+  top: calc(50% - 0.75px);
+}
+
+.site-nav-toggle-icon span:nth-child(3) {
+  bottom: 0;
+}
+
 .site-nav-link {
   min-width: 7.25rem;
 }
@@ -462,18 +490,27 @@ button {
 
   .site-nav-grid {
     display: none;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 1.15rem;
+    background: linear-gradient(180deg, oklch(from var(--surface-strong) l c h / 0.98), oklch(from var(--surface) l c h / 0.96));
+    padding: 0.5rem;
   }
 
   .site-nav-grid.site-nav-grid--open {
     display: grid;
-    margin-top: 0.75rem;
+    margin-top: 0.65rem;
   }
 
   .site-nav-link {
     min-width: 0;
     width: 100%;
+    min-height: 3rem;
+    justify-content: flex-start;
+    border-radius: 0.9rem;
+    padding-inline: 1rem;
+    text-align: left;
   }
 
   .archive-month-label {
@@ -492,12 +529,6 @@ button {
     border-top: 1px solid var(--border);
     padding-left: 0;
     padding-top: var(--space-sm);
-  }
-}
-
-@media (max-width: 479px) {
-  .site-nav-grid {
-    grid-template-columns: 1fr;
   }
 }
 

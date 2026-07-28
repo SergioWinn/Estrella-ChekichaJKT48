@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface NavLink {
   href: string;
@@ -13,9 +13,31 @@ export function SiteNav({ links }: { links: NavLink[] }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const activeLink = links.find((link) => link.href === pathname) ?? links[0];
+  const navRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function handlePointerDown(event: MouseEvent | TouchEvent) {
+      if (navRef.current && !navRef.current.contains(event.target as Node)) setOpen(false);
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
 
   return (
-    <nav className="site-nav-shell">
+    <nav ref={navRef} className="site-nav-shell">
       <button
         type="button"
         aria-expanded={open}
@@ -33,9 +55,6 @@ export function SiteNav({ links }: { links: NavLink[] }) {
             </span>
           </span>
           <span>{activeLink?.label || "Menu"}</span>
-        </span>
-        <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted-strong)]" aria-hidden="true">
-          {open ? "Hide" : `${links.length} links`}
         </span>
       </button>
       <div id="site-nav-links" className={`site-nav-grid flex flex-wrap gap-2 ${open ? "site-nav-grid--open" : ""}`}>

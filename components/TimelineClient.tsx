@@ -188,7 +188,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                 return (
                     <article
                       key={row.id || `${row.event_name}-${row.start_time}`}
-                      className="timeline-slab motion-card motion-list-item app-card-strong relative grid min-w-0 grid-cols-[minmax(0,1fr)_5.5rem] items-start gap-3 p-3 sm:grid-cols-[minmax(0,1fr)_6.5rem] sm:p-4 md:grid-cols-[4rem_minmax(0,1fr)_8rem] md:items-center md:gap-5 md:p-5"
+                      className="timeline-slab motion-card motion-list-item app-card-strong relative grid min-w-0 grid-cols-1 items-start gap-3 p-3 sm:grid-cols-[minmax(0,1fr)_9rem] sm:gap-4 sm:p-4 md:grid-cols-[4rem_minmax(0,1fr)_11rem] md:items-center md:gap-5 md:p-5 lg:grid-cols-[4.5rem_minmax(0,1fr)_12.5rem]"
                       style={{ "--i": Math.min(index, 5) } as CSSProperties}
                     >
                     <div className="hidden md:block absolute right-5 top-5 md:right-6 md:top-6">
@@ -196,7 +196,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                         {card.eventType}
                       </span>
                     </div>
-                    <div className="col-span-2 flex min-w-0 items-center justify-between gap-1 md:hidden">
+                    <div className="flex min-w-0 items-center justify-between gap-2 sm:col-span-2 md:hidden">
                       <CompactDate value={row.start_time} />
                       <span className="inline-flex min-w-0 truncate rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--accent)]">
                         {card.eventType}
@@ -226,7 +226,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                         ))}
                       </div>
                     </div>
-                    <div className="aspect-[4/5] min-w-0 w-full self-start overflow-hidden rounded-[1rem] bg-[var(--surface)]">
+                    <div className="min-w-0 overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[linear-gradient(180deg,var(--surface-hover),var(--surface))] p-2 sm:aspect-[5/4] sm:self-start md:aspect-[4/5] md:p-3">
                       {row.event_image_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -235,7 +235,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                           width="320"
                           height="400"
                           loading="lazy"
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-contain object-center"
                         />
                       ) : (
                         <MediaPlaceholder />

@@ -226,7 +226,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                         ))}
                       </div>
                     </div>
-                    <div className="min-w-0 overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[linear-gradient(180deg,var(--surface-hover),var(--surface))] p-2 sm:aspect-[5/4] sm:self-start md:aspect-[4/5] md:p-3">
+                    <div className="min-w-0 overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[linear-gradient(180deg,var(--surface-hover),var(--surface))] p-2 sm:aspect-[4/3] sm:self-start md:aspect-[4/3] md:p-3">
                       {row.event_image_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img

@@ -71,7 +71,7 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
                 {member.name}
               </h3>
               <p className="mt-1 text-sm text-[var(--muted)]">
-                {member.entries.length} saved {member.entries.length === 1 ? "session" : "sessions"} | {member.totalQuantity} total cheki
+                {member.totalQuantity} cheki • {member.entries.length} {member.entries.length === 1 ? "session" : "sessions"}
               </p>
             </div>
           </div>
@@ -325,9 +325,6 @@ export function CollectionClient({
                 <div className="truncate text-[15px] font-medium tracking-[-0.04em] text-[var(--foreground)] sm:text-lg">{member.name}</div>
                 <div className="mt-0.5 text-[11px] text-[var(--muted)] sm:text-sm">
                   {[member.status, member.generation ? `Gen ${member.generation}` : null].filter(Boolean).join(" | ") || "Member details unavailable"}
-                </div>
-                <div className="mt-1 truncate text-[11px] text-[var(--muted-strong)] sm:text-xs">
-                  {member.entries.length} saved {member.entries.length === 1 ? "session" : "sessions"}
                 </div>
               </div>
               <span className="shrink-0 rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2 py-1 text-[11px] font-bold tabular-nums text-[var(--foreground)] sm:px-2.5 sm:text-xs">

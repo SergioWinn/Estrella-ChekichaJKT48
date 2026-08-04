@@ -184,7 +184,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
         sections.map(([monthLabel, monthRows]) => (
           <section key={monthLabel} className="motion-section space-y-5 border-t border-[var(--border)] pt-5 sm:pt-6">
             <div className="archive-month-label text-sm font-bold uppercase tracking-[0.16em] text-[var(--muted-strong)] md:text-base">{monthLabel}</div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:gap-4">
+            <div className="grid grid-cols-2 gap-2 xl:gap-4">
               {monthRows.map((row, index) => {
                 const card = buildTimelineCardState(row);
                 const eventTeam = getEffectiveEventTeam(row.event_name, row.event_type, row.event_team);

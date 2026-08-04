@@ -781,6 +781,7 @@ button {
   }
 
   .timeline-media {
+    height: 6.5rem;
     max-height: 6.5rem;
     border-radius: 0.95rem;
     padding: 0.5rem;

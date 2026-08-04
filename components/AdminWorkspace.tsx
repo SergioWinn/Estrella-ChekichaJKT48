@@ -369,8 +369,8 @@ export function AdminWorkspace({
           </header>
 
           <div className="grid gap-6 xl:grid-cols-2">
-            <section className="motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
-              <div className="text-xl font-bold text-[var(--foreground)]">Create event row</div>
+            <details name="event-admin-action" open className="app-disclosure motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Create event row</summary>
               <form action={createEventAction} className="space-y-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-[var(--muted)]">Event date</label>
@@ -477,10 +477,10 @@ export function AdminWorkspace({
                 />
                 <PendingSubmitButton pendingLabel="Creating event..." className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create event row</PendingSubmitButton>
               </form>
-            </section>
+            </details>
 
-            <section className="motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
-              <div className="text-xl font-bold text-[var(--foreground)]">Edit event row</div>
+            <details name="event-admin-action" className="app-disclosure motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Edit event row</summary>
               {selectedEvent ? (
                 <>
                   <div className="space-y-2">
@@ -612,7 +612,7 @@ export function AdminWorkspace({
               ) : (
                 <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-sm text-[var(--muted)]">No event rows are available to edit yet.</div>
               )}
-            </section>
+            </details>
           </div>
         </section>
       ) : null}
@@ -625,8 +625,8 @@ export function AdminWorkspace({
           </header>
 
           <div className="grid gap-6 xl:grid-cols-2">
-            <section className="motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
-              <div className="text-xl font-bold text-[var(--foreground)]">Add member</div>
+            <details name="member-admin-action" open className="app-disclosure motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Add member</summary>
               <form action={createMemberAction} className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
@@ -671,10 +671,10 @@ export function AdminWorkspace({
                 />
                 <PendingSubmitButton pendingLabel="Creating member..." className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create member</PendingSubmitButton>
               </form>
-            </section>
+            </details>
 
-            <section className="motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
-              <div className="text-xl font-bold text-[var(--foreground)]">Edit / delete member</div>
+            <details name="member-admin-action" className="app-disclosure motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Edit / delete member</summary>
               {selectedMember ? (
                 <>
                     <div className="space-y-2">
@@ -751,7 +751,7 @@ export function AdminWorkspace({
                   <span>Create the first member record above, then edit it here.</span>
                 </div>
               )}
-            </section>
+            </details>
           </div>
         </section>
       ) : null}

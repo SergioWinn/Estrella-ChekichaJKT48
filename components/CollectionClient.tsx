@@ -532,10 +532,10 @@ export function CollectionClient({
                           <div className="text-xs uppercase tracking-[0.14em] text-[var(--muted)]">Slot {entry.slot_key}</div>
                         </div>
                       </div>
-                      <div className="mt-4 flex gap-3">
-                        <form action={updateCollectionQuantityAction} className="flex flex-1 gap-2">
+                      <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                        <form action={updateCollectionQuantityAction} className="flex min-w-0 w-full flex-col gap-2 sm:flex-1 sm:flex-row">
                           <input type="hidden" name="entry_id" value={entry.id} />
-                          <div className="flex-1">
+                          <div className="min-w-0 flex-1">
                             <label className="mb-1 block text-xs font-semibold text-[var(--muted)]">Saved qty</label>
                             <input
                               type="number"
@@ -547,11 +547,11 @@ export function CollectionClient({
                                className="app-input min-h-11 w-full px-4 py-3 text-sm md:text-[0.95rem]"
                             />
                           </div>
-                          <PendingSubmitButton pendingLabel="Saving..." className="self-end whitespace-nowrap rounded-xl border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--accent-soft)] md:text-[0.95rem]">Save quantity</PendingSubmitButton>
+                          <PendingSubmitButton pendingLabel="Saving..." className="w-full self-end whitespace-nowrap rounded-xl border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--accent-soft)] sm:w-auto md:text-[0.95rem]">Save quantity</PendingSubmitButton>
                         </form>
-                        <form action={deleteCollectionEntryAction}>
+                        <form action={deleteCollectionEntryAction} className="w-full sm:w-auto">
                           <input type="hidden" name="entry_id" value={entry.id} />
-                          <PendingSubmitButton pendingLabel="Removing..." className="whitespace-nowrap rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--surface-hover)] md:text-[0.95rem]">Remove entry</PendingSubmitButton>
+                          <PendingSubmitButton pendingLabel="Removing..." className="w-full whitespace-nowrap rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--surface-hover)] sm:w-auto md:text-[0.95rem]">Remove entry</PendingSubmitButton>
                         </form>
                       </div>
                     </article>

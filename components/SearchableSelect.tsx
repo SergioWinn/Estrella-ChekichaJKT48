@@ -127,10 +127,10 @@ export function SearchableSelect({
         }}
         className="flex min-h-12 w-full items-center rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-left text-lg text-[var(--foreground)] transition-colors hover:border-[var(--border-strong)]"
       >
-        <span className={selected ? "text-[var(--foreground)]" : "text-[var(--muted)]"}>
+        <span className={`min-w-0 flex-1 truncate ${selected ? "text-[var(--foreground)]" : "text-[var(--muted)]"}`}>
           {selected?.label || placeholder}
         </span>
-        <span className="ml-auto shrink-0 text-[var(--muted)]" aria-hidden="true">
+        <span className="ml-2 shrink-0 text-[var(--muted)]" aria-hidden="true">
           <svg className={`search-select-chevron size-4 ${open ? "search-select-chevron--open" : ""}`} fill="none" viewBox="0 0 24 24">
             <path d="M6 9l6 6 6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
           </svg>
@@ -138,7 +138,7 @@ export function SearchableSelect({
       </button>
 
         <div
-          className="search-select-panel absolute left-0 right-0 top-full z-[var(--z-dropdown)] mt-1 max-h-64 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-dropdown)]"
+          className="search-select-panel absolute left-0 right-0 top-full z-[var(--z-dropdown)] mt-1 flex max-h-64 flex-col overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-dropdown)]"
           data-open={open ? "true" : "false"}
           aria-hidden={!open}
           inert={!open}
@@ -160,7 +160,7 @@ export function SearchableSelect({
               className="app-input min-h-11 w-full px-3 py-2 text-sm placeholder:text-[var(--muted)]"
             />
           </div>
-          <div id={listboxId} ref={listRef} className="overflow-y-auto" role="listbox">
+          <div id={listboxId} ref={listRef} className="min-h-0 flex-1 overflow-y-auto" role="listbox">
             {filtered.length ? (
               filtered.map((option, index) => (
                 <button
@@ -182,7 +182,7 @@ export function SearchableSelect({
                       : "text-[var(--foreground)]"
                   }`}
                 >
-                  {option.label}
+                  <span className="min-w-0 truncate">{option.label}</span>
                 </button>
               ))
             ) : (

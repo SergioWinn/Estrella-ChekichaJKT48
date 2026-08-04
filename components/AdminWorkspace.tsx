@@ -115,7 +115,7 @@ function EventPreviewCard({
   return (
     <details className="app-disclosure border-t border-[var(--border)] pt-4">
       <summary className="cursor-pointer text-sm font-semibold text-[var(--foreground)]">Preview event</summary>
-      <div className="mt-4 grid gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-center">
+      <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:items-center">
         <div>
           <div className="text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)]">{eventName}</div>
           {dateText ? <div className="mt-4 text-base text-[var(--muted)]">{dateText}</div> : null}
@@ -162,7 +162,7 @@ function MemberPreviewCard({
   return (
     <details className="app-disclosure border-t border-[var(--border)] pt-4">
       <summary className="cursor-pointer text-sm font-semibold text-[var(--foreground)]">{title}</summary>
-      <div className="mt-4 grid gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-center">
+      <div className="mt-4 grid gap-4 md:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] md:items-center">
         <div>
           <div className="text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)]">{nickname || "Nickname"}</div>
           <div className="mt-4 text-xl text-[var(--muted)]">{fullName || "Full name"}</div>
@@ -278,7 +278,7 @@ export function AdminWorkspace({
             }`}
           >
             {tab.label}
-            {tab.key === "queue" && pendingCount ? <span className="tabular-nums text-[0.7em] opacity-80">{pendingCount}</span> : null}
+            {tab.key === "queue" && pendingCount ? <span className="hidden tabular-nums text-[0.7em] opacity-80 sm:inline">{pendingCount}</span> : null}
           </button>
         ))}
       </nav>

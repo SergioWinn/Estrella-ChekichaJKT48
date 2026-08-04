@@ -184,7 +184,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
         sections.map(([monthLabel, monthRows]) => (
           <section key={monthLabel} className="motion-section space-y-5 border-t border-[var(--border)] pt-5 sm:pt-6">
             <div className="archive-month-label text-sm font-bold uppercase tracking-[0.16em] text-[var(--muted-strong)] md:text-base">{monthLabel}</div>
-            <div className="grid grid-cols-2 gap-2 md:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:gap-4">
               {monthRows.map((row, index) => {
                 const card = buildTimelineCardState(row);
                 const eventTeam = getEffectiveEventTeam(row.event_name, row.event_type, row.event_team);
@@ -192,25 +192,25 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                 return (
                     <article
                       key={row.id || `${row.event_name}-${row.start_time}`}
-                      className="timeline-slab motion-card motion-list-item app-card-strong relative grid min-w-0 grid-cols-1 items-start gap-3 p-3 md:grid-cols-[4rem_minmax(0,1fr)_11rem] md:items-center md:gap-5 md:p-5 lg:grid-cols-[4.5rem_minmax(0,1fr)_12.5rem]"
+                      className="timeline-slab motion-card motion-list-item app-card-strong relative grid min-w-0 grid-cols-1 items-start gap-3 p-3 xl:grid-cols-[4.5rem_minmax(0,1fr)_12.5rem] xl:items-center xl:gap-5 xl:p-5"
                       style={{ "--i": Math.min(index, 5) } as CSSProperties}
                     >
-                    <div className="hidden md:block absolute right-5 top-5 md:right-6 md:top-6">
+                    <div className="absolute right-6 top-6 hidden xl:block">
                       <span className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
                         {card.eventType}
                       </span>
                     </div>
-                    <div className="flex min-w-0 items-start justify-between gap-2 md:hidden">
+                    <div className="flex min-w-0 items-start justify-between gap-2 xl:hidden">
                       <CompactDate value={row.start_time} />
                       <span className="inline-flex min-w-0 truncate rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--accent)]">
                         {card.eventType}
                       </span>
                     </div>
-                    <div className="hidden md:block">
+                    <div className="hidden xl:block">
                       <DateRail value={row.start_time} />
                     </div>
                     <div className="min-w-0 space-y-3">
-                      <div className="min-w-0 md:pr-24">
+                      <div className="min-w-0 xl:pr-24">
                         <div className="min-w-0">
                           <h2 className="truncate text-[1.2rem] font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-[1.2rem] lg:text-[1.65rem]" title={row.event_name || "Untitled event"}>{row.event_name || "Untitled event"}</h2>
                           <div className="mt-2 flex min-w-0 flex-nowrap items-center gap-2 text-[0.8rem] font-semibold leading-[1.35] md:text-[0.95rem]">
@@ -230,7 +230,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                         ))}
                       </div>
                     </div>
-                    <div className="timeline-media min-w-0 overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[linear-gradient(180deg,var(--surface-hover),var(--surface))] p-2 sm:aspect-[4/3] sm:self-start md:aspect-[4/3] md:p-3">
+                    <div className="timeline-media min-w-0 overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[linear-gradient(180deg,var(--surface-hover),var(--surface))] p-2 sm:aspect-[4/3] sm:self-start md:max-h-40 md:p-3 xl:max-h-none">
                       {row.event_image_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img

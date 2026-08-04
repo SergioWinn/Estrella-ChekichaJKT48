@@ -13,8 +13,8 @@ export default function Loading() {
       <div className="grid gap-4 xl:grid-cols-[1.7fr_0.75fr]">
         <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-8">
           <div className="h-4 w-24 animate-pulse rounded bg-[var(--surface-strong)]" />
-          <div className="mt-4 h-8 w-96 animate-pulse rounded bg-[var(--surface-strong)]" />
-          <div className="mt-3 h-5 w-72 animate-pulse rounded bg-[var(--surface-strong)]" />
+          <div className="mt-4 h-8 w-full max-w-96 animate-pulse rounded bg-[var(--surface-strong)]" />
+          <div className="mt-3 h-5 w-full max-w-72 animate-pulse rounded bg-[var(--surface-strong)]" />
         </div>
         <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6">
           <div className="h-4 w-16 animate-pulse rounded bg-[var(--surface-strong)]" />

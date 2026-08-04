@@ -7,7 +7,7 @@
 
 :root {
   color-scheme: dark;
-  --z-dropdown: 10;
+  --z-dropdown: 35;
   --z-sticky: 20;
   --z-sticky-nav: 30;
   --z-modal-backdrop: 40;
@@ -72,6 +72,25 @@ summary {
 
 button:not(:disabled):active {
   transform: translateY(1px);
+}
+
+button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.site-nav-link,
+.site-support-link,
+.site-icon-button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),
+select,
+textarea,
+summary {
+  min-height: 44px;
 }
 
 button:disabled {
@@ -736,10 +755,6 @@ button {
     text-align: left;
   }
 
-  .archive-month-label {
-    position: static;
-  }
-
   .page-rail {
     border-left: 0;
     border-top: 1px solid var(--border);
@@ -793,6 +808,12 @@ button {
     margin-top: 0.42rem;
     font-size: 0.8rem;
     line-height: 1.35;
+  }
+}
+
+@media (max-width: 1023px) {
+  .archive-month-label {
+    position: static;
   }
 }
 

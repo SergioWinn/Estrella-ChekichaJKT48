@@ -40,10 +40,35 @@ function CompactDate({ value }: { value: string }) {
   const day = Number.isNaN(dt.getTime())
     ? "--"
     : new Intl.DateTimeFormat("en-GB", { day: "numeric", timeZone: "Asia/Jakarta" }).format(dt);
+  const month = Number.isNaN(dt.getTime())
+    ? "---"
+    : new Intl.DateTimeFormat("en-GB", { month: "short", timeZone: "Asia/Jakarta" }).format(dt).toUpperCase();
 
   return (
-    <div className="shrink-0 tabular-nums">
-      <span className="text-xl font-semibold tracking-[-0.05em] text-[var(--foreground)]">{day}</span>
+    <div className="timeline-mobile-date shrink-0 tabular-nums">
+      <span className="timeline-mobile-date-day text-3xl font-semibold tracking-[-0.06em] text-[var(--foreground)]">{day}</span>
+      <span className="timeline-mobile-date-month text-[10px] font-semibold tracking-[0.16em] text-[var(--muted-strong)]">{month}</span>
+    </div>
+  );
+}
+
+function MobileSchedule({ startTime, endTime }: { startTime: string; endTime?: string | null }) {
+  const dt = new Date(startTime);
+  const dateLabel = Number.isNaN(dt.getTime())
+    ? "Date unavailable"
+    : new Intl.DateTimeFormat("en-GB", {
+        weekday: "short",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        timeZone: "Asia/Jakarta",
+      }).format(dt);
+
+  return (
+    <div className="timeline-mobile-schedule min-w-0 md:hidden">
+      <span className="truncate text-[var(--foreground)]">{dateLabel}</span>
+      <span className="timeline-mobile-schedule-separator" aria-hidden="true">•</span>
+      <span className="truncate text-[var(--accent)]">{formatEventTime(startTime, endTime)} WIB</span>
     </div>
   );
 }
@@ -180,7 +205,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
         sections.map(([monthLabel, monthRows]) => (
           <section key={monthLabel} className="motion-section space-y-5 border-t border-[var(--border)] pt-5 sm:pt-6">
             <div className="archive-month-label text-sm font-bold uppercase tracking-[0.16em] text-[var(--muted-strong)] md:text-base">{monthLabel}</div>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
+            <div className="grid grid-cols-2 gap-2 md:gap-4">
               {monthRows.map((row, index) => {
                 const card = buildTimelineCardState(row);
                 const eventTeam = getEffectiveEventTeam(row.event_name, row.event_type, row.event_team);
@@ -188,7 +213,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                 return (
                     <article
                       key={row.id || `${row.event_name}-${row.start_time}`}
-                      className="timeline-slab motion-card motion-list-item app-card-strong relative grid min-w-0 grid-cols-1 items-start gap-3 p-3 sm:grid-cols-[minmax(0,1fr)_9rem] sm:gap-4 sm:p-4 md:grid-cols-[4rem_minmax(0,1fr)_11rem] md:items-center md:gap-5 md:p-5 lg:grid-cols-[4.5rem_minmax(0,1fr)_12.5rem]"
+                      className="timeline-slab motion-card motion-list-item app-card-strong relative grid min-w-0 grid-cols-1 items-start gap-3 p-3 md:grid-cols-[4rem_minmax(0,1fr)_11rem] md:items-center md:gap-5 md:p-5 lg:grid-cols-[4.5rem_minmax(0,1fr)_12.5rem]"
                       style={{ "--i": Math.min(index, 5) } as CSSProperties}
                     >
                     <div className="hidden md:block absolute right-5 top-5 md:right-6 md:top-6">
@@ -196,7 +221,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                         {card.eventType}
                       </span>
                     </div>
-                    <div className="flex min-w-0 items-center justify-between gap-2 sm:col-span-2 md:hidden">
+                    <div className="flex min-w-0 items-start justify-between gap-2 md:hidden">
                       <CompactDate value={row.start_time} />
                       <span className="inline-flex min-w-0 truncate rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--accent)]">
                         {card.eventType}
@@ -208,10 +233,11 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                     <div className="min-w-0 space-y-3">
                       <div className="min-w-0 md:pr-24">
                         <div className="min-w-0">
-                          <h2 className="truncate text-base font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-[1.2rem] lg:text-[1.65rem]">{row.event_name || "Untitled event"}</h2>
-                          <div className="mt-1 grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 text-[11px] md:mt-2 md:text-[0.95rem]">
+                          <h2 className="text-[1.2rem] font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-[1.2rem] lg:text-[1.65rem]">{row.event_name || "Untitled event"}</h2>
+                          <MobileSchedule startTime={row.start_time} endTime={row.end_time} />
+                          <div className="mt-2 grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 text-[11px] md:mt-2 md:text-[0.95rem]">
                             <EventTeamBadge team={eventTeam} eventType={row.event_type} compact />
-                            <span className="min-w-0 truncate text-[var(--muted-strong)]">{formatEventTime(row.start_time, row.end_time)} WIB</span>
+                            <span className="hidden min-w-0 truncate text-[var(--muted-strong)] md:block">{formatEventTime(row.start_time, row.end_time)} WIB</span>
                           </div>
                         </div>
                       </div>
@@ -226,7 +252,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                         ))}
                       </div>
                     </div>
-                    <div className="min-w-0 overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[linear-gradient(180deg,var(--surface-hover),var(--surface))] p-2 sm:aspect-[4/3] sm:self-start md:aspect-[4/3] md:p-3">
+                    <div className="timeline-media min-w-0 overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[linear-gradient(180deg,var(--surface-hover),var(--surface))] p-2 sm:aspect-[4/3] sm:self-start md:aspect-[4/3] md:p-3">
                       {row.event_image_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img

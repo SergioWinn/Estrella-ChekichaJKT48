@@ -183,9 +183,9 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
       {sections.length ? (
         sections.map(([monthLabel, monthRows], sectionIndex) => (
           <details key={monthLabel} open={sectionIndex === 0} className="app-disclosure motion-section border-t border-[var(--border)] pt-3 sm:pt-4">
-            <summary className="cursor-pointer rounded-lg px-1 py-3 text-sm font-bold uppercase tracking-[0.16em] text-[var(--muted-strong)] transition-colors hover:text-[var(--foreground)] md:text-base">
+            <summary className="timeline-month-summary cursor-pointer rounded-lg px-1 py-3 text-sm font-bold uppercase tracking-[0.16em] text-[var(--muted-strong)] transition-colors hover:text-[var(--foreground)] md:text-base">
               <span>{monthLabel}</span>
-              <span className="mr-3 rounded-md bg-[var(--surface-hover)] px-2 py-1 text-[10px] tracking-normal text-[var(--foreground-soft)] md:text-xs">
+              <span className="inline-flex justify-center rounded-md bg-[var(--surface-hover)] px-2 py-1 text-[10px] tracking-normal text-[var(--foreground-soft)] md:text-xs">
                 {monthRows.length} {monthRows.length === 1 ? "event" : "events"}
               </span>
             </summary>

@@ -521,6 +521,12 @@ button {
   border-radius: 1.5rem;
 }
 
+.app-disclosure > .timeline-month-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 6.75rem 1rem;
+  column-gap: var(--space-2xs);
+}
+
 .timeline-mobile-date {
   display: inline-flex;
   min-width: 3.75rem;

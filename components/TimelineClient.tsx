@@ -181,10 +181,15 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
       </section>
 
       {sections.length ? (
-        sections.map(([monthLabel, monthRows]) => (
-          <section key={monthLabel} className="motion-section space-y-5 border-t border-[var(--border)] pt-5 sm:pt-6">
-            <div className="archive-month-label text-sm font-bold uppercase tracking-[0.16em] text-[var(--muted-strong)] md:text-base">{monthLabel}</div>
-            <div className="grid grid-cols-2 gap-2 xl:gap-4">
+        sections.map(([monthLabel, monthRows], sectionIndex) => (
+          <details key={monthLabel} open={sectionIndex === 0} className="app-disclosure motion-section border-t border-[var(--border)] pt-3 sm:pt-4">
+            <summary className="cursor-pointer rounded-lg px-1 py-3 text-sm font-bold uppercase tracking-[0.16em] text-[var(--muted-strong)] transition-colors hover:text-[var(--foreground)] md:text-base">
+              <span>{monthLabel}</span>
+              <span className="mr-3 rounded-md bg-[var(--surface-hover)] px-2 py-1 text-[10px] tracking-normal text-[var(--foreground-soft)] md:text-xs">
+                {monthRows.length} {monthRows.length === 1 ? "event" : "events"}
+              </span>
+            </summary>
+            <div className="mt-3 grid grid-cols-2 gap-2 xl:mt-4 xl:gap-4">
               {monthRows.map((row, index) => {
                 const card = buildTimelineCardState(row);
                 const eventTeam = getEffectiveEventTeam(row.event_name, row.event_type, row.event_team);
@@ -249,7 +254,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                 );
               })}
             </div>
-          </section>
+          </details>
         ))
       ) : (
           <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-16 text-center text-sm text-[var(--muted)]">

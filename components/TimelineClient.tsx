@@ -14,7 +14,7 @@ import { EVENT_TEAM_OPTIONS, getEffectiveEventTeam } from "@/lib/v2-helpers.ts";
 import type { TimelineEvent } from "@/lib/types.ts";
 
 const FILTERS = ["All", "Roulette", "Birthday", "Graduation"] as const;
-const TEAM_FILTERS = ["All", ...EVENT_TEAM_OPTIONS] as const;
+type TeamFilter = "All" | (typeof EVENT_TEAM_OPTIONS)[number];
 
 function DateRail({ value }: { value: string }) {
   const dt = new Date(value);
@@ -48,27 +48,6 @@ function CompactDate({ value }: { value: string }) {
     <div className="timeline-mobile-date shrink-0 tabular-nums">
       <span className="timeline-mobile-date-day text-3xl font-semibold tracking-[-0.06em] text-[var(--foreground)]">{day}</span>
       <span className="timeline-mobile-date-month text-[10px] font-semibold tracking-[0.16em] text-[var(--muted-strong)]">{month}</span>
-    </div>
-  );
-}
-
-function MobileSchedule({ startTime, endTime }: { startTime: string; endTime?: string | null }) {
-  const dt = new Date(startTime);
-  const dateLabel = Number.isNaN(dt.getTime())
-    ? "Date unavailable"
-    : new Intl.DateTimeFormat("en-GB", {
-        weekday: "short",
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-        timeZone: "Asia/Jakarta",
-      }).format(dt);
-
-  return (
-    <div className="timeline-mobile-schedule min-w-0 md:hidden">
-      <span className="truncate text-[var(--foreground)]">{dateLabel}</span>
-      <span className="timeline-mobile-schedule-separator" aria-hidden="true">•</span>
-      <span className="truncate text-[var(--accent)]">{formatEventTime(startTime, endTime)} WIB</span>
     </div>
   );
 }
@@ -108,7 +87,7 @@ function MemberPill({
 export function TimelineClient({ events }: { events: TimelineEvent[] }) {
   const [filterType, setFilterType] = useState<(typeof FILTERS)[number]>("All");
   const [rouletteSeries, setRouletteSeries] = useState("All");
-  const [teamFilter, setTeamFilter] = useState<(typeof TEAM_FILTERS)[number]>("All");
+  const [teamFilter, setTeamFilter] = useState<TeamFilter>("All");
 
   const rouletteSeriesOptions = useMemo(() => getRouletteSeriesOptions(events), [events]);
   const teamBaseEvents = useMemo(() => filterTimelineEvents(events, filterType, rouletteSeries), [events, filterType, rouletteSeries]);
@@ -180,7 +159,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
               <span className="text-xs font-semibold text-[var(--muted-strong)]">Team</span>
               <select
                 value={activeTeamFilter}
-                onChange={(event) => setTeamFilter(event.target.value as (typeof TEAM_FILTERS)[number])}
+                onChange={(event) => setTeamFilter(event.target.value as TeamFilter)}
                 disabled={teamFilterLocked}
                 aria-disabled={teamFilterLocked}
                 className="app-input min-h-10 w-full truncate px-3 py-2 text-sm disabled:text-[var(--muted)]"
@@ -233,11 +212,10 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                     <div className="min-w-0 space-y-3">
                       <div className="min-w-0 md:pr-24">
                         <div className="min-w-0">
-                          <h2 className="text-[1.2rem] font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-[1.2rem] lg:text-[1.65rem]">{row.event_name || "Untitled event"}</h2>
-                          <MobileSchedule startTime={row.start_time} endTime={row.end_time} />
-                          <div className="mt-2 grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-2 text-[11px] md:mt-2 md:text-[0.95rem]">
+                          <h2 className="truncate text-[1.2rem] font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-[1.2rem] lg:text-[1.65rem]" title={row.event_name || "Untitled event"}>{row.event_name || "Untitled event"}</h2>
+                          <div className="mt-2 flex min-w-0 flex-nowrap items-center gap-2 text-[0.8rem] font-semibold leading-[1.35] md:text-[0.95rem]">
+                            <span className="min-w-0 truncate text-[var(--accent)]">{formatEventTime(row.start_time, row.end_time)} WIB</span>
                             <EventTeamBadge team={eventTeam} eventType={row.event_type} compact />
-                            <span className="hidden min-w-0 truncate text-[var(--muted-strong)] md:block">{formatEventTime(row.start_time, row.end_time)} WIB</span>
                           </div>
                         </div>
                       </div>

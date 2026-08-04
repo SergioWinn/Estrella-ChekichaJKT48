@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
+import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { SearchableSelect } from "@/components/SearchableSelect";
 import {
   createEventAction,
@@ -87,21 +88,14 @@ function memberOptionLabel(member: MemberRecord) {
   return `${member.nickname || "Unknown"} (${member.full_name || "No full name"})`;
 }
 
-const TIME_OPTIONS = Array.from({ length: (24 * 60) / TIME_STEP_MINUTES }, (_, index) => {
-  const totalMinutes = index * TIME_STEP_MINUTES;
+const EARLIEST_START_MINUTES = 13 * 60;
+const LATEST_START_MINUTES = 21 * 60 + 15;
+const TIME_OPTIONS = Array.from({ length: (LATEST_START_MINUTES - EARLIEST_START_MINUTES) / TIME_STEP_MINUTES + 1 }, (_, index) => {
+  const totalMinutes = EARLIEST_START_MINUTES + index * TIME_STEP_MINUTES;
   const hour = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
   const minute = String(totalMinutes % 60).padStart(2, "0");
   return `${hour}:${minute}`;
 });
-
-function AdminStatCard({ label, value, tone = "text-[var(--foreground)]" }: { label: string; tone?: string; value: number | string }) {
-  return (
-    <article className="motion-card app-card p-5">
-      <div className={`text-4xl font-semibold tracking-[-0.05em] ${tone}`}>{value}</div>
-      <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">{label}</p>
-    </article>
-  );
-}
 
 function EventPreviewCard({
   eventName,
@@ -119,8 +113,8 @@ function EventPreviewCard({
   footer?: string;
 }) {
   return (
-    <div className="border-t border-[var(--border)] pt-5">
-      <h4 className="text-sm font-semibold text-[var(--foreground)]">Event details</h4>
+    <details className="app-disclosure border-t border-[var(--border)] pt-4">
+      <summary className="cursor-pointer text-sm font-semibold text-[var(--foreground)]">Preview event</summary>
       <div className="mt-4 grid gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-center">
         <div>
           <div className="text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)]">{eventName}</div>
@@ -146,7 +140,7 @@ function EventPreviewCard({
           )}
         </div>
       </div>
-    </div>
+    </details>
   );
 }
 
@@ -166,8 +160,8 @@ function MemberPreviewCard({
   title: string;
 }) {
   return (
-    <div className="border-t border-[var(--border)] pt-5">
-      <h4 className="text-sm font-semibold text-[var(--foreground)]">{title}</h4>
+    <details className="app-disclosure border-t border-[var(--border)] pt-4">
+      <summary className="cursor-pointer text-sm font-semibold text-[var(--foreground)]">{title}</summary>
       <div className="mt-4 grid gap-4 md:grid-cols-[1.2fr_0.8fr] md:items-center">
         <div>
           <div className="text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)]">{nickname || "Nickname"}</div>
@@ -192,7 +186,7 @@ function MemberPreviewCard({
           )}
         </div>
       </div>
-    </div>
+    </details>
   );
 }
 
@@ -214,7 +208,7 @@ export function AdminWorkspace({
   const [activeTab, setActiveTab] = useState<AdminTabKey>("queue");
   const [createPresetId, setCreatePresetId] = useState(presets[0]?.id ?? "");
   const [createDate, setCreateDate] = useState(new Date().toISOString().slice(0, 10));
-  const [createTimeValue, setCreateTimeValue] = useState("09:00");
+  const [createTimeValue, setCreateTimeValue] = useState(TIME_OPTIONS[0]);
   const [createSlotMode, setCreateSlotMode] = useState("1");
   const [createEventTeam, setCreateEventTeam] = useState(coerceManualEventTeam(presets[0]?.event_team));
   const [createMemberA, setCreateMemberA] = useState("");
@@ -244,9 +238,6 @@ export function AdminWorkspace({
         .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime()),
     [events],
   );
-  const waitingSlotACount = queueRows.filter((event) => hasPendingSlotA(event)).length;
-  const waitingSlotBCount = queueRows.filter((event) => hasPendingSlotB(event)).length;
-
   const createEventType = selectedCreatePreset?.event_type || "Roulette";
   const createSingleMember = singleMemberEvent(createEventType);
   const editSingleMember = singleMemberEvent(editEventType);
@@ -260,11 +251,6 @@ export function AdminWorkspace({
   const createEventDateText = `${createDate || "No date"} | ${createTimeValue} WIB`;
   const memberOptions = useMemo(() => members.map((m) => ({ label: memberOptionLabel(m), value: m.id })), [members]);
 
-  useEffect(() => {
-    setEditEventName(selectedEvent?.event_name || "");
-    setEditEventTeam(coerceManualEventTeam(selectedEvent?.event_team));
-  }, [selectedEventKey, selectedEvent]);
-
   function setEditEventType(nextValue: string) {
     setEditState({ eventId: selectedEventKey, eventType: nextValue, slotMode: editSlotMode });
   }
@@ -274,102 +260,58 @@ export function AdminWorkspace({
   }
 
   return (
-    <div className="space-y-6">
-      <section className="grid gap-4 xl:grid-cols-[1.7fr_1fr]">
-        <div className="motion-section app-shell p-6 sm:p-8">
-          <h2 className="mt-4 max-w-4xl text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-6xl">
-            Operate the archive, not the public showcase.
-          </h2>
-          <p className="mt-6 max-w-4xl text-lg leading-9 text-[var(--muted)] sm:text-[1.45rem]">
-            Manage members, schedule archive rows, and resolve waiting roulette slots from one restricted workspace.
-          </p>
-        </div>
-        <div className="motion-section app-shell p-6">
-          <h3 className="text-lg font-semibold text-[var(--foreground)]">Restricted workspace</h3>
-          <p className="mt-3 text-xl leading-8 text-[var(--foreground-soft)]">
-            This page is visible only to accounts with the <span className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-base font-semibold text-[var(--foreground)]">admin</span> role.
-          </p>
-        </div>
-      </section>
+    <div className="space-y-4 sm:space-y-5">
+      {success ? <div role="status" aria-live="polite" className="app-status-message rounded-xl border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm font-semibold text-[var(--accent)]">{success}</div> : null}
+      {error ? <div role="alert" className="app-status-message rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
 
-      {success ? <div role="status" aria-live="polite" className="motion-section rounded-xl border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm font-semibold text-[var(--accent)]">{success}</div> : null}
-      {error ? <div role="alert" className="motion-section rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
-
-      <div className="rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-5 py-4 text-lg font-bold text-[var(--accent)]">
-        Admin role active
-      </div>
-
-      <section className="grid gap-4 md:grid-cols-3">
-        <AdminStatCard label="Waiting now" tone="text-[var(--danger)]" value={pendingCount} />
-        <AdminStatCard label="Event presets" value={presets.length} />
-        <AdminStatCard label="Members" value={members.length} />
-      </section>
-
-      <nav className="motion-section app-card flex flex-wrap gap-2 p-2" aria-label="Admin workspace sections">
+      <nav className="motion-section sticky top-2 z-[var(--z-sticky)] grid grid-cols-3 gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 lg:static" aria-label="Admin workspace sections">
         {ADMIN_TABS.map((tab) => (
           <button
             key={tab.key}
             type="button"
             onClick={() => setActiveTab(tab.key)}
             aria-pressed={activeTab === tab.key}
-            className={`min-h-10 rounded-full px-4 text-sm font-semibold transition-colors ${
+            className={`inline-flex min-h-11 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-2 text-xs font-semibold transition-colors sm:px-4 sm:text-sm ${
               activeTab === tab.key
                 ? "bg-[var(--accent)] text-[var(--accent-foreground)]"
                 : "text-[var(--muted)] hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)]"
             }`}
           >
             {tab.label}
+            {tab.key === "queue" && pendingCount ? <span className="tabular-nums text-[0.7em] opacity-80">{pendingCount}</span> : null}
           </button>
         ))}
       </nav>
 
       {activeTab === "queue" ? (
-        <section className="space-y-4">
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
-            <h3 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-5xl">Update Roulette Results</h3>
-            <p className="mt-5 max-w-4xl text-lg leading-9 text-[var(--muted)]">
-              Resolve waiting entries first. Slot assignment is the most time-sensitive admin task, so it stays at the front of this workspace.
-            </p>
-            <p className="mt-3 text-sm leading-6 text-[var(--muted-strong)]">
-              <strong className="font-semibold text-[var(--foreground)]">Roulette</strong> - a standard show/event session where which members attend is determined by lottery. Archive entries are logged after the result is known.
-            </p>
-            <div className="mt-5 border-t border-[var(--border)] pt-4 text-sm text-[var(--muted)]">
-              <strong className="text-[var(--foreground)]">How to fill results:</strong> choose the member for each waiting slot, then save that row. The row leaves this queue after every required slot is filled.
+        <section className="app-tab-panel space-y-4">
+          <header className="flex items-end justify-between gap-4 border-b border-[var(--border)] pb-4">
+            <div className="min-w-0">
+              <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">Fill results</h1>
+              <p className="mt-1 text-sm text-[var(--muted)]">Choose each winning member, then save.</p>
             </div>
-          </div>
-
-          <section className="grid gap-4 md:grid-cols-3">
-            <AdminStatCard label="Queue size" value={queueRows.length} />
-            <AdminStatCard label="Waiting slot A" value={waitingSlotACount} />
-            <AdminStatCard label="Waiting slot B" value={waitingSlotBCount} />
-          </section>
+            <span className="shrink-0 text-sm font-semibold text-[var(--muted-strong)]">{queueRows.length} waiting</span>
+          </header>
 
           {queueRows.length ? (
-            <section className="grid gap-6 xl:grid-cols-2">
+            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {queueRows.map((event) => {
-                const waitingA = hasPendingSlotA(event);
                 const waitingB = hasPendingSlotB(event) && !singleMemberEvent(event.event_type);
 
                 return (
-                  <form key={String(event.id || `${event.event_name}-${event.start_time}`)} action={updateQueueAction} className="motion-card space-y-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
+                  <form key={String(event.id || `${event.event_name}-${event.start_time}`)} action={updateQueueAction} className="motion-card space-y-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
                     <input type="hidden" name="event_id" value={event.id || ""} />
                     <input type="hidden" name="event_name" value={event.event_name || "Event"} />
                     <input type="hidden" name="slot_mode" value={event.slot_mode || 1} />
-                    <div className="flex items-center justify-between gap-3 border-b border-[var(--border)] pb-3 text-sm text-[var(--muted)]">
-                      <span>Complete this row now.</span>
-                      <span className="font-semibold text-[var(--foreground)]">{waitingB ? "2 members needed" : "1 member needed"}</span>
-                    </div>
-                    <div className="grid gap-4 md:grid-cols-[1fr_8rem] md:items-start">
-                      <div>
-                        <div className="text-xs font-semibold text-[var(--accent)]">Waiting draw</div>
-                        <div className="mt-4 text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)]">{event.event_name || "Untitled event"}</div>
-                        <div className="mt-5 flex flex-wrap items-center gap-2 text-lg text-[var(--muted)]"><EventTeamBadge team={event.event_team} eventType={event.event_type} /><span>{formatEventDate(event.start_time)} | {formatEventTime(event.start_time, event.end_time)} WIB</span></div>
-                        <div className="mt-5 flex flex-wrap gap-2">
-                          {waitingA ? <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-2 text-sm font-bold uppercase tracking-[0.08em] text-[var(--foreground)]">Slot A waiting for roulette</span> : null}
-                          {waitingB ? <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-2 text-sm font-bold uppercase tracking-[0.08em] text-[var(--foreground)]">Slot B waiting for roulette</span> : null}
+                    <div className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,1fr)_6rem] md:items-start">
+                      <div className="min-w-0">
+                        <div className="flex min-w-0 items-start justify-between gap-3">
+                          <h2 className="truncate text-xl font-semibold text-[var(--foreground)] sm:text-2xl" title={event.event_name || "Untitled event"}>{event.event_name || "Untitled event"}</h2>
+                          <span className="shrink-0 rounded-md bg-[var(--surface-hover)] px-2 py-1 text-xs font-semibold text-[var(--foreground-soft)]">{waitingB ? "2 slots" : "1 slot"}</span>
                         </div>
+                        <div className="mt-2 flex min-w-0 flex-wrap items-center gap-2 text-sm text-[var(--muted)]"><EventTeamBadge team={event.event_team} eventType={event.event_type} /><span>{formatEventDate(event.start_time)} · {formatEventTime(event.start_time, event.end_time)} WIB</span></div>
                       </div>
-                      <div className="flex h-36 items-center justify-center overflow-hidden rounded-[1.25rem] border border-[var(--border)] bg-[var(--panel)]">
+                      <div className="hidden h-24 items-center justify-center overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--panel)] md:flex">
                         {event.event_image_url ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={event.event_image_url} alt={event.event_name || "Event banner"} className="h-full w-full object-contain" />
@@ -379,35 +321,32 @@ export function AdminWorkspace({
                       </div>
                     </div>
 
-                    <div className="space-y-3">
-                      <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot A</label>
-                      <SearchableSelect
-                        name="member_id_a"
-                        defaultValue={event.member_id_a || ""}
-                        options={memberOptions}
-                        placeholder={singleMemberEvent(event.event_type) ? "None (Member waiting)" : "None (Waiting for roulette)"}
-                      />
-                      <p className="text-sm text-[var(--muted)]">Pick the member shown in the roulette result for the first slot.</p>
+                    <div className="grid gap-3">
+                      <div className="space-y-2">
+                        <label className="block text-sm font-semibold text-[var(--muted-strong)]">Slot A member</label>
+                        <SearchableSelect
+                          name="member_id_a"
+                          defaultValue={event.member_id_a || ""}
+                          options={memberOptions}
+                          placeholder="Choose member"
+                        />
+                      </div>
+                      {waitingB ? (
+                        <div className="space-y-2">
+                          <label className="block text-sm font-semibold text-[var(--muted-strong)]">Slot B member</label>
+                          <SearchableSelect
+                            name="member_id_b"
+                            defaultValue={event.member_id_b || ""}
+                            options={memberOptions}
+                            placeholder="Choose member"
+                          />
+                        </div>
+                      ) : (
+                        <input type="hidden" name="member_id_b" value={event.member_id_b || ""} />
+                      )}
                     </div>
 
-                    {waitingB ? (
-                      <div className="space-y-3">
-                        <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot B</label>
-                        <SearchableSelect
-                          name="member_id_b"
-                          defaultValue={event.member_id_b || ""}
-                          options={memberOptions}
-                          placeholder="None (Waiting for roulette)"
-                        />
-                        <p className="text-sm text-[var(--muted)]">Only fill slot B when this event has two winning members.</p>
-                      </div>
-                    ) : (
-                      <input type="hidden" name="member_id_b" value={event.member_id_b || ""} />
-                    )}
-
-                    <button className="min-h-12 w-full whitespace-nowrap rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)]">
-                      Save roulette result
-                    </button>
+                    <PendingSubmitButton pendingLabel="Saving result..." className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Save result</PendingSubmitButton>
                   </form>
                 );
               })}
@@ -423,16 +362,11 @@ export function AdminWorkspace({
       ) : null}
 
       {activeTab === "events" ? (
-        <section className="space-y-4">
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
-            <h3 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-5xl">Create or edit archive rows</h3>
-            <p className="mt-5 max-w-4xl text-lg leading-9 text-[var(--muted)]">
-              Use the event tools below to schedule a new row or correct an existing one without losing context.
-            </p>
-            <div className="mt-5 border-t border-[var(--border)] pt-4 text-sm text-[var(--muted)]">
-              <strong className="text-[var(--foreground)]">Create before you fill:</strong> add a row when an event is missing, then use <strong>Fill Results</strong> to assign the roulette members after the draw is known.
-            </div>
-          </div>
+        <section className="app-tab-panel space-y-4">
+          <header className="border-b border-[var(--border)] pb-4">
+            <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">Events</h1>
+            <p className="mt-1 text-sm text-[var(--muted)]">Create a missing row or edit an existing one.</p>
+          </header>
 
           <div className="grid gap-6 xl:grid-cols-2">
             <section className="motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
@@ -541,9 +475,7 @@ export function AdminWorkspace({
                   dateText={createEventDateText}
                   footer={createSingleMember ? "Single-member event" : `${createSlotMode} slot mode`}
                 />
-                <button className="min-h-12 w-full whitespace-nowrap rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)]">
-                  Create event row
-                </button>
+                <PendingSubmitButton pendingLabel="Creating event..." className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create event row</PendingSubmitButton>
               </form>
             </section>
 
@@ -554,7 +486,13 @@ export function AdminWorkspace({
                   <div className="space-y-2">
                     <label className="block text-sm font-semibold text-[var(--muted)]">Saved event row</label>
                     <p className="text-sm text-[var(--muted)]">Search the timeline details in the dropdown label if several rows use the same event name.</p>
-                    <select aria-label="Saved event row" value={selectedEventKey} onChange={(event) => setSelectedEventId(event.target.value)} className="app-input min-h-12 w-full px-4 py-3 text-lg">
+                    <select aria-label="Saved event row" value={selectedEventKey} onChange={(event) => {
+                      const nextEvent = events.find((item) => String(item.id || "") === event.target.value) ?? null;
+                      setSelectedEventId(event.target.value);
+                      setEditEventName(nextEvent?.event_name || "");
+                      setEditEventTeam(coerceManualEventTeam(nextEvent?.event_team));
+                      setEditState(null);
+                    }} className="app-input min-h-12 w-full px-4 py-3 text-lg">
                       {events.map((event) => (
                         <option key={String(event.id || event.start_time)} value={String(event.id || "")}>{eventOptionLabel(event)}</option>
                       ))}
@@ -658,9 +596,7 @@ export function AdminWorkspace({
                         dateText={`${formatEventDate(selectedEvent.start_time)} | ${formatEventTime(selectedEvent.start_time, selectedEvent.end_time)} WIB`}
                         footer={editSingleMember ? "Single-member event" : `Current mode: ${editSlotMode} slot`}
                       />
-                      <button className="min-h-12 w-full whitespace-nowrap rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)]">
-                        Save event changes
-                      </button>
+                      <PendingSubmitButton pendingLabel="Saving changes..." className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Save event changes</PendingSubmitButton>
                     </form>
                     <form action={deleteEventAction} className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-4">
                       <input type="hidden" name="event_id" value={selectedEvent.id || ""} />
@@ -669,7 +605,7 @@ export function AdminWorkspace({
                         <input type="checkbox" name="confirm_delete" />
                         I understand this event row will be deleted permanently
                       </label>
-                      <button className="mt-4 rounded-xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)]">Delete this event row</button>
+                      <PendingSubmitButton pendingLabel="Deleting event..." className="mt-4 min-h-11 rounded-xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--danger-soft)]">Delete this event row</PendingSubmitButton>
                     </form>
                   </div>
                 </>
@@ -682,16 +618,11 @@ export function AdminWorkspace({
       ) : null}
 
       {activeTab === "members" ? (
-        <section className="space-y-4">
-          <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 sm:p-8">
-            <h3 className="mt-4 text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-5xl">Manage collector roster</h3>
-            <p className="mt-5 max-w-4xl text-lg leading-9 text-[var(--muted)]">
-              Add a new member quickly or open the edit tool only when you need to change existing records.
-            </p>
-            <div className="mt-5 border-t border-[var(--border)] pt-4 text-sm text-[var(--muted)]">
-              <strong className="text-[var(--foreground)]">Member records drive both admin and collection screens:</strong> keep nickname, full name, generation, and avatar accurate so users can find the right cheki slot.
-            </div>
-          </div>
+        <section className="app-tab-panel space-y-4">
+          <header className="border-b border-[var(--border)] pb-4">
+            <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">Members</h1>
+            <p className="mt-1 text-sm text-[var(--muted)]">Add a member or update an existing record.</p>
+          </header>
 
           <div className="grid gap-6 xl:grid-cols-2">
             <section className="motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
@@ -738,9 +669,7 @@ export function AdminWorkspace({
                   generasi={newGenerasi}
                   avatarUrl={newAvatarUrl}
                 />
-                <button className="min-h-12 w-full whitespace-nowrap rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)]">
-                  Create member
-                </button>
+                <PendingSubmitButton pendingLabel="Creating member..." className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create member</PendingSubmitButton>
               </form>
             </section>
 
@@ -802,9 +731,7 @@ export function AdminWorkspace({
                         generasi={String(selectedMember.generasi || 3)}
                         avatarUrl={selectedMember.avatar_url || undefined}
                       />
-                      <button className="min-h-12 w-full whitespace-nowrap rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-3 text-lg font-semibold text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)]">
-                        Save member changes
-                      </button>
+                      <PendingSubmitButton pendingLabel="Saving changes..." className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Save member changes</PendingSubmitButton>
                     </form>
                     <form action={deleteMemberAction} className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-4">
                       <input type="hidden" name="member_id" value={selectedMember.id} />
@@ -813,7 +740,7 @@ export function AdminWorkspace({
                         <input type="checkbox" name="confirm_delete" />
                         I understand this member record will be deleted permanently
                       </label>
-                      <button className="mt-4 rounded-xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)]">Delete this member</button>
+                      <PendingSubmitButton pendingLabel="Deleting member..." className="mt-4 min-h-11 rounded-xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--danger-soft)]">Delete this member</PendingSubmitButton>
                     </form>
                   </div>
                 </>

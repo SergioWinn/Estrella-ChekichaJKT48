@@ -32,9 +32,10 @@
   --text-display: clamp(2.8rem, 4vw, 4.8rem);
   --text-display-s: clamp(2.2rem, 3vw, 3.6rem);
 
-  --dur-fast: 140ms;
-  --dur-short: 220ms;
-  --dur-mid: 320ms;
+  --dur-fast: 120ms;
+  --dur-short: 180ms;
+  --dur-mid: 220ms;
+  --dur-loading: 1800ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);

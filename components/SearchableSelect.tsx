@@ -125,20 +125,24 @@ export function SearchableSelect({
           if (!open) setHighlightedIndex(0);
           setOpen(!open);
         }}
-        className="flex min-h-12 w-full items-center rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-left text-lg text-[var(--foreground)] transition hover:border-[var(--border-strong)]"
+        className="flex min-h-12 w-full items-center rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-left text-lg text-[var(--foreground)] transition-colors hover:border-[var(--border-strong)]"
       >
         <span className={selected ? "text-[var(--foreground)]" : "text-[var(--muted)]"}>
           {selected?.label || placeholder}
         </span>
-        <span className="ml-auto shrink-0 text-[var(--muted)] transition-transform" aria-hidden="true">
-          <svg className={`size-4 transition-transform ${open ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24">
+        <span className="ml-auto shrink-0 text-[var(--muted)]" aria-hidden="true">
+          <svg className={`search-select-chevron size-4 ${open ? "search-select-chevron--open" : ""}`} fill="none" viewBox="0 0 24 24">
             <path d="M6 9l6 6 6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" />
           </svg>
         </span>
       </button>
 
-      {open ? (
-        <div className="absolute left-0 right-0 top-full z-[var(--z-dropdown)] mt-1 max-h-64 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-dropdown)]">
+        <div
+          className="search-select-panel absolute left-0 right-0 top-full z-[var(--z-dropdown)] mt-1 max-h-64 overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow-dropdown)]"
+          data-open={open ? "true" : "false"}
+          aria-hidden={!open}
+          inert={!open}
+        >
           <div className="border-b border-[var(--border)] p-2">
             <input
               ref={inputRef}
@@ -168,7 +172,7 @@ export function SearchableSelect({
                   data-highlighted={index === highlightedIndex ? true : undefined}
                   onClick={() => handleSelect(option)}
                   onMouseEnter={() => setHighlightedIndex(index)}
-                  className={`flex w-full items-center px-4 py-2.5 text-left text-sm transition hover:bg-[var(--surface-hover)] ${
+                  className={`flex w-full items-center px-4 py-2.5 text-left text-sm transition-colors hover:bg-[var(--surface-hover)] ${
                     index === highlightedIndex
                       ? "bg-[var(--surface-hover)]"
                       : ""
@@ -186,7 +190,6 @@ export function SearchableSelect({
             )}
           </div>
         </div>
-      ) : null}
     </div>
   );
 }

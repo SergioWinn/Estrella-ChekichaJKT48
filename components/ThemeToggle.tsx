@@ -35,15 +35,26 @@ export function ThemeToggle() {
       onClick={() => {
         const currentTheme = resolveTheme();
         const nextTheme: Theme = currentTheme === "dark" ? "light" : "dark";
-        applyTheme(nextTheme);
-        window.localStorage.setItem(STORAGE_KEY, nextTheme);
-        setTheme(nextTheme);
+        const commitTheme = () => {
+          applyTheme(nextTheme);
+          window.localStorage.setItem(STORAGE_KEY, nextTheme);
+          setTheme(nextTheme);
+        };
+        const documentWithTransition = document as Document & { startViewTransition?: (callback: () => void) => void };
+
+        if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && documentWithTransition.startViewTransition) {
+          documentWithTransition.startViewTransition(commitTheme);
+        } else {
+          commitTheme();
+        }
       }}
       className="inline-flex size-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)]"
       aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
       title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
     >
-      {theme === "dark" ? <SunIcon className="size-4 text-[var(--accent)]" /> : <MoonIcon className="size-4 text-[var(--accent)]" />}
+      <span key={theme} className="theme-toggle-icon">
+        {theme === "dark" ? <SunIcon className="size-4 text-[var(--accent)]" /> : <MoonIcon className="size-4 text-[var(--accent)]" />}
+      </span>
     </button>
   );
 }

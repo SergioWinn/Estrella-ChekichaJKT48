@@ -39,8 +39,9 @@ Tailwind spacing utilities only when they resolve to multiples of 4 px.
 ## Motion
 
 - Easings: `--ease-out`, `--ease-in`, `--ease-in-out`
-- Reveal pattern: fade + slide only on list items and cards
-- Reduced-motion fallback: opacity-only, <= 150 ms
+- Product motion: 120 ms controls, 180 ms menus/disclosures, 220 ms modals
+- Lists and pages load without decorative choreography
+- Reduced-motion fallback: immediate state changes, <= 10 ms
 
 ## Microinteractions stance
 

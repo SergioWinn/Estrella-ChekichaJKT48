@@ -8,6 +8,7 @@ import { useSearchParams } from "next/navigation";
 
 import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { FilterPill } from "@/components/FilterPill";
+import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { CloseIcon } from "@/components/UiIcons";
 import { SectionHeader } from "@/components/SectionHeader";
 import { useDebouncedValue } from "@/components/useDebouncedValue";
@@ -49,11 +50,14 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
     <dialog
       ref={dialogRef}
       aria-labelledby="member-history-title"
-      className="m-auto max-h-[min(80dvh,42rem)] w-[calc(100%_-_2rem)] max-w-2xl overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--panel)] p-0 text-[var(--foreground)] shadow-2xl backdrop:bg-[var(--overlay)] backdrop:backdrop-blur-sm"
+      className="app-modal-dialog m-auto max-h-[min(80dvh,42rem)] w-[calc(100%_-_2rem)] max-w-2xl overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--panel)] p-0 text-[var(--foreground)] shadow-2xl"
       onClick={(event) => {
         if (event.target === event.currentTarget) event.currentTarget.close();
       }}
-      onClose={onClose}
+      onClose={() => {
+        const delay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 180;
+        window.setTimeout(onClose, delay);
+      }}
     >
       <div className="flex max-h-[min(80dvh,42rem)] flex-col">
         <div className="flex items-start justify-between gap-4 border-b border-[var(--border)] p-4 sm:p-5">
@@ -149,6 +153,7 @@ export function CollectionClient({
     const modeParam = searchParams.get("mode");
     return modeParam === "add" || modeParam === "manage";
   });
+  const [deskClosing, setDeskClosing] = useState(false);
   const [addFilter, setAddFilter] = useState<(typeof FILTER_OPTIONS)[number]>("All");
   const [addQuery, setAddQuery] = useState("");
   const [visibleSlotCount, setVisibleSlotCount] = useState(SLOT_PAGE_SIZE);
@@ -239,6 +244,20 @@ export function CollectionClient({
   const totalQuantity = entries.reduce((sum, entry) => sum + Number(entry.quantity || 0), 0);
   const uniqueMembers = new Set(entries.map((entry) => entry.member_id)).size;
 
+  function openDesk() {
+    setDeskClosing(false);
+    setDeskOpen(true);
+  }
+
+  function closeDesk() {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDeskOpen(false);
+      setDeskClosing(false);
+      return;
+    }
+    setDeskClosing(true);
+  }
+
   return (
     <div className="space-y-6">
       <section className="motion-section app-shell p-5 sm:p-6">
@@ -248,8 +267,8 @@ export function CollectionClient({
         />
       </section>
 
-      {success ? <div role="status" aria-live="polite" className="motion-section rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm font-semibold text-[var(--accent)]">{success}</div> : null}
-      {error ? <div role="alert" className="motion-section rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
+      {success ? <div role="status" aria-live="polite" className="app-status-message rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm font-semibold text-[var(--accent)]">{success}</div> : null}
+      {error ? <div role="alert" className="app-status-message rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
 
       <section className="motion-section app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
@@ -270,8 +289,8 @@ export function CollectionClient({
             </div>
             <button
               type="button"
-              onClick={() => setDeskOpen(true)}
-              className="min-h-10 rounded-full bg-[var(--accent)] px-5 text-sm font-semibold text-[var(--accent-foreground)] transition hover:bg-[var(--accent-strong)]"
+              onClick={openDesk}
+              className="min-h-10 rounded-full bg-[var(--accent)] px-5 text-sm font-semibold text-[var(--accent-foreground)] transition-colors hover:bg-[var(--accent-strong)]"
             >
               Open collection desk
             </button>
@@ -342,7 +361,16 @@ export function CollectionClient({
       {selectedMember ? <MemberHistoryDialog member={selectedMember} onClose={() => setSelectedMemberId(null)} /> : null}
 
       {deskOpen ? (
-        <div className="collection-desk-overlay fixed inset-0 z-[var(--z-modal-backdrop)] flex items-start justify-center overflow-y-auto px-4 py-6 backdrop-blur-sm" onClick={() => setDeskOpen(false)}>
+        <div
+          className={`collection-desk-overlay fixed inset-0 z-[var(--z-modal-backdrop)] flex items-start justify-center overflow-y-auto px-4 py-6 ${deskClosing ? "collection-desk-overlay--closing" : ""}`}
+          onClick={closeDesk}
+          onAnimationEnd={(event) => {
+            if (event.target === event.currentTarget && deskClosing) {
+              setDeskOpen(false);
+              setDeskClosing(false);
+            }
+          }}
+        >
           <div
             role="dialog"
             aria-modal="true"
@@ -359,7 +387,7 @@ export function CollectionClient({
               </div>
               <button
                 type="button"
-                onClick={() => setDeskOpen(false)}
+                onClick={closeDesk}
                 className="inline-flex size-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)]"
                 aria-label="Close collection desk"
               >
@@ -454,9 +482,7 @@ export function CollectionClient({
                                   />
                                 </div>
                               </div>
-                              <button className="min-h-11 rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-bold text-[var(--accent-foreground)] transition hover:bg-[var(--accent-strong)] md:text-[0.95rem]">
-                                Add to shelf
-                              </button>
+                              <PendingSubmitButton pendingLabel="Adding..." className="min-h-11 rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-bold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)] md:text-[0.95rem]">Add to shelf</PendingSubmitButton>
                             </form>
                           ))}
                         </div>
@@ -521,11 +547,11 @@ export function CollectionClient({
                                className="app-input min-h-11 w-full px-4 py-3 text-sm md:text-[0.95rem]"
                             />
                           </div>
-                          <button className="self-end whitespace-nowrap rounded-xl border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] transition-colors hover:bg-[var(--accent-soft)] md:text-[0.95rem]">Save quantity</button>
+                          <PendingSubmitButton pendingLabel="Saving..." className="self-end whitespace-nowrap rounded-xl border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--accent-soft)] md:text-[0.95rem]">Save quantity</PendingSubmitButton>
                         </form>
                         <form action={deleteCollectionEntryAction}>
                           <input type="hidden" name="entry_id" value={entry.id} />
-                          <button className="whitespace-nowrap rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--danger)] transition-colors hover:bg-[var(--surface-hover)] md:text-[0.95rem]">Remove entry</button>
+                          <PendingSubmitButton pendingLabel="Removing..." className="whitespace-nowrap rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--surface-hover)] md:text-[0.95rem]">Remove entry</PendingSubmitButton>
                         </form>
                       </div>
                     </article>

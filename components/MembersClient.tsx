@@ -134,11 +134,14 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
         <dialog
           ref={dialogRef}
           aria-labelledby="member-detail-title"
-          className="m-auto max-h-[100dvh] w-full max-w-none overflow-visible bg-transparent p-3 text-[var(--foreground)] backdrop:bg-[var(--overlay)] backdrop:backdrop-blur-sm sm:p-6"
+          className="app-modal-dialog m-auto max-h-[100dvh] w-full max-w-none overflow-visible bg-transparent p-3 text-[var(--foreground)] sm:p-6"
           onClick={(event) => {
             if (event.target === event.currentTarget) event.currentTarget.close();
           }}
-          onClose={() => setSelectedMemberId(null)}
+          onClose={() => {
+            const delay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 180;
+            window.setTimeout(() => setSelectedMemberId(null), delay);
+          }}
         >
           <div
             className="relative mx-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-3 shadow-[var(--shadow-modal)] sm:max-h-[calc(100dvh-3rem)] sm:p-5"

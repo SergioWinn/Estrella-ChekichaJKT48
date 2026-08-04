@@ -6,6 +6,7 @@ import "./globals.css";
 
 import { AuthIcon, LogoutIcon, SupportIcon } from "@/components/UiIcons";
 import { SiteNav } from "@/components/SiteNav";
+import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { logoutAction } from "@/lib/v2-actions.ts";
 import { getSessionContext } from "@/lib/v2-server.ts";
@@ -82,7 +83,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                       href="https://x.com/estrellawin19"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-semibold text-[var(--foreground)] transition hover:text-[var(--accent)]"
+                      className="font-semibold text-[var(--foreground)] transition-colors hover:text-[var(--accent)]"
                     >
                       @estrellawin19
                     </a>
@@ -100,13 +101,14 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 <ThemeToggle />
                 {user ? (
                   <form action={logoutAction}>
-                    <button
+                    <PendingSubmitButton
+                      pendingLabel="Logging out..."
+                      ariaLabel="Logout"
+                      iconOnly
                       className="site-icon-button inline-flex size-10 items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]"
-                      aria-label="Logout"
-                      title="Logout"
                     >
                       <LogoutIcon className="size-5" />
-                    </button>
+                    </PendingSubmitButton>
                   </form>
                 ) : (
                   <Link
@@ -129,7 +131,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                     href="https://x.com/estrellawin19"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-semibold text-[var(--foreground)] transition hover:text-[var(--accent)]"
+                    className="font-semibold text-[var(--foreground)] transition-colors hover:text-[var(--accent)]"
                   >
                     @estrellawin19
                   </a>

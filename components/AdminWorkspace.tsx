@@ -88,7 +88,7 @@ function memberOptionLabel(member: MemberRecord) {
   return `${member.nickname || "Unknown"} (${member.full_name || "No full name"})`;
 }
 
-const EARLIEST_START_MINUTES = 13 * 60;
+const EARLIEST_START_MINUTES = 12 * 60 + 45;
 const LATEST_START_MINUTES = 21 * 60 + 15;
 const TIME_OPTIONS = Array.from({ length: (LATEST_START_MINUTES - EARLIEST_START_MINUTES) / TIME_STEP_MINUTES + 1 }, (_, index) => {
   const totalMinutes = EARLIEST_START_MINUTES + index * TIME_STEP_MINUTES;

@@ -674,7 +674,7 @@ export function AdminWorkspace({
             </details>
 
             <details name="member-admin-action" className="app-disclosure motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
-              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Edit / delete member</summary>
+              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Edit member</summary>
               {selectedMember ? (
                 <>
                     <div className="space-y-2">

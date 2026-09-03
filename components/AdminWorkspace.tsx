@@ -679,12 +679,16 @@ export function AdminWorkspace({
                 <>
                     <div className="space-y-2">
                       <label className="block text-sm font-semibold text-[var(--muted)]">Member record</label>
-                      <SearchableSelect
-                        options={memberOptions}
-                        value={selectedMember?.id || ""}
-                        onChange={setSelectedMemberId}
-                        placeholder="Search nickname or full name"
-                      />
+                      <select
+                        aria-label="Member record"
+                        value={selectedMember.id}
+                        onChange={(event) => setSelectedMemberId(event.target.value)}
+                        className="app-input min-h-12 w-full px-4 py-3 text-lg"
+                      >
+                        {members.map((member) => (
+                          <option key={member.id} value={member.id}>{memberOptionLabel(member)}</option>
+                        ))}
+                      </select>
                     </div>
                   <div key={selectedMember.id} className="space-y-4">
                     <p className="text-sm text-[var(--muted)]">Pick a member first, then save edits below. Deleting is permanent unless you recreate the record.</p>

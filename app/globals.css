@@ -718,8 +718,8 @@ button {
   border: 1px solid var(--border);
   border-radius: 2rem;
   background: var(--page-hero-surface-gradient);
-  opacity: calc(0.72 + var(--archive-camera) * 0.28);
-  transform: translateY(calc(var(--archive-camera) * 2rem)) scale(calc(0.92 + var(--archive-camera) * 0.12));
+  opacity: calc(0.84 + var(--archive-camera) * 0.16);
+  transform: translateY(calc(var(--archive-camera) * 0.6rem)) scale(calc(0.97 + var(--archive-camera) * 0.04));
   box-shadow: 0 28px 80px oklch(from var(--background-alt) l c h / 0.3);
 }
 
@@ -741,8 +741,7 @@ button {
 .archive-opening-copy {
   z-index: 2;
   max-width: 43rem;
-  opacity: calc(1 - var(--archive-camera) * 0.16);
-  transform: translateY(calc(var(--archive-camera) * -2rem)) scale(calc(1 - var(--archive-camera) * 0.06));
+  transform: translateY(calc(var(--archive-camera) * -0.65rem));
   transform-origin: left center;
 }
 
@@ -770,7 +769,7 @@ button {
   border-radius: 1.5rem;
   background: var(--panel);
   box-shadow: 0 36px 90px oklch(from var(--background-alt) l c h / 0.42);
-  transform: perspective(80rem) translateY(calc(var(--archive-camera) * 1rem)) scale(calc(0.94 + var(--archive-camera) * 0.11)) rotateX(calc(var(--archive-camera) * -1deg));
+  transform: perspective(80rem) translateY(calc(var(--archive-camera) * -0.45rem)) scale(calc(0.985 + var(--archive-camera) * 0.03)) rotateX(calc(var(--archive-camera) * -0.35deg));
   transform-origin: center;
 }
 

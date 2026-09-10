@@ -1,4 +1,4 @@
-/* Hallmark · genre: modern-minimal · macrostructure: Workbench · design-system: design.md · designed-as-app */
+/* Hallmark · genre: modern-minimal · macrostructure: Command Deck · design-system: design.md · designed-as-app */
 
 import { SectionHeader } from "@/components/SectionHeader";
 import { CollectionClient } from "@/components/CollectionClient.tsx";
@@ -24,7 +24,6 @@ export default async function CollectionPage({
     <div className="page-wrap">
       <header className="workbench-intro">
         <SectionHeader
-          label="Collection"
           title="Manage your saved cheki without leaving the archive."
           description="Review what is already on your shelf, then open the desk only when you need to add or correct a saved slot."
           titleClassName="text-[clamp(2.5rem,4vw,4rem)]"

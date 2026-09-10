@@ -1,221 +1,157 @@
-/* Hallmark · genre: modern-minimal · macrostructure: Stat-Led · design-system: design.md · designed-as-app */
+/* Hallmark · genre: modern-minimal · macrostructure: Live Surface · design-system: design.md · designed-as-app */
 
 import type { CSSProperties } from "react";
+import Link from "next/link";
+
 import { EventTeamBadge } from "@/components/EventTeamBadge";
+import { OverviewScrollController } from "@/components/OverviewScrollController";
 import { buildOverviewSnapshot, loadOverviewRows } from "@/lib/archive-data.ts";
 import { formatEventDate } from "@/lib/format.ts";
 import { buildHomepageCopy } from "@/lib/homepage-copy.ts";
-import { SectionHeader } from "@/components/SectionHeader";
 import { EVENT_TEAM_OPTIONS } from "@/lib/v2-helpers.ts";
 
 export const dynamic = "force-dynamic";
 
-function QuickCountCard({
-  label,
-  value,
-  copy,
-  tone = "text-[var(--foreground)]",
-}: {
-  copy: string;
-  label: string;
-  tone?: string;
-  value: string | number;
-}) {
-  return (
-    <article className="motion-card data-band">
-      <div className={`tabular-nums text-4xl font-medium tracking-[-0.05em] ${tone}`}>{value}</div>
-      <p className="mt-2 text-sm font-semibold text-[var(--muted-strong)]">{label}</p>
-      <p className="mt-2 text-sm text-[var(--muted)]">{copy}</p>
-    </article>
-  );
-}
-
-function buildStaggerStyle(index: number): CSSProperties {
-  return { "--i": Math.min(index, 5) } as CSSProperties;
-}
-
 export default async function Page() {
-  const rows = await loadOverviewRows();
-  const snapshot = buildOverviewSnapshot(rows);
+  const snapshot = buildOverviewSnapshot(await loadOverviewRows());
   const copy = buildHomepageCopy(snapshot);
-  const visibleLeaderboard = snapshot.leaderboard.slice(0, 5);
-  const visibleRecentAssignments = snapshot.recent_assignments.slice(0, 5);
+  const leaderboard = snapshot.leaderboard.slice(0, 5);
+  const recent = snapshot.recent_assignments.slice(0, 5);
+  const focusRows = [
+    ["Show and event sessions", snapshot.show_event_sessions, "The core archive, excluding birthday and graduation records."],
+    ["Birthday sessions", snapshot.birthday_sessions, "Single-member birthday records kept as their own archive lane."],
+    ["Graduation sessions", snapshot.graduation_sessions, "Graduation records stay visible without changing team totals."],
+    ["Assigned show and event slots", snapshot.assigned_show_event_slots, "Filled slots that power member ranking and recent activity."],
+  ] as const;
 
   return (
-    <div className="page-wrap">
-      <section className="motion-section page-hero">
-        <div className="page-hero-grid">
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <div className="kicker">Estrella archive desk</div>
-              <div className="site-meta-strip flex flex-wrap items-center gap-2.5 text-[10px] font-medium uppercase tracking-[0.18em] text-[var(--muted-strong)]">
-                <span>Archive monitor</span>
-                <span className="hidden h-1 w-1 rounded-full bg-[var(--border-strong)] sm:block" />
-                <span>Since January 2026</span>
-                <span className="hidden h-1 w-1 rounded-full bg-[var(--border-strong)] sm:block" />
-                <span>JKT48 cheki records</span>
-              </div>
+    <div className="overview-scroll" data-archive-experience>
+      <OverviewScrollController />
+
+      <section className="archive-act archive-opening" data-archive-act>
+        <div className="archive-opening-backdrop" aria-hidden="true" />
+        <div className="archive-opening-grid">
+          <header className="archive-opening-copy">
+            <p className="kicker">Live archive overview</p>
+            <h1>One clear view of the JKT48 cheki archive.</h1>
+            <p>Sessions, members, teams, and unfinished draws from January 2026 onward.</p>
+          </header>
+
+          <div className="archive-console" aria-label="Current archive status">
+            <div className="archive-console-bar">
+              <span>ESTRELLA / OVERVIEW</span>
+              <span className="archive-live"><i aria-hidden="true" /> Snapshot ready</span>
             </div>
-            <SectionHeader
-              title="Chekicha Archive Monitor"
-              description="Track resolved sessions, member appearances, and collector records from January 2026 onward."
-              titleClassName="max-w-4xl text-[clamp(2.6rem,5vw,4.8rem)]"
-              descriptionClassName="max-w-3xl text-base leading-8"
-            />
-            <div className="stat-ribbon">
-              <div className="stat-ribbon-item">
-                <div className="tabular-nums text-2xl font-medium tracking-[-0.04em] text-[var(--foreground)]">{snapshot.show_event_sessions}</div>
-                <p className="mt-1 text-sm text-[var(--muted-strong)]">Show and event sessions</p>
-              </div>
-              <div className="stat-ribbon-item">
-                <div className="tabular-nums text-2xl font-medium tracking-[-0.04em] text-[var(--foreground)]">{copy.latestShowEventCopy}</div>
-                <p className="mt-1 text-sm text-[var(--muted-strong)]">Latest session</p>
-              </div>
-              <div className="stat-ribbon-item">
-                <div className="text-2xl font-medium tracking-[-0.04em] text-[var(--foreground)]">{copy.topMemberName}</div>
-                <p className="mt-1 text-sm text-[var(--muted-strong)]">Top member</p>
-              </div>
-              <div className="stat-ribbon-item">
-                <div className="tabular-nums text-2xl font-medium tracking-[-0.04em] text-[var(--accent)]">{copy.waitingCopy}</div>
-                <p className="mt-1 text-sm text-[var(--muted-strong)]">Open draws</p>
-              </div>
+            <dl className="archive-console-ledger">
+              <div><dt>Latest session</dt><dd>{copy.latestShowEventCopy}</dd></div>
+              <div><dt>Most frequent member</dt><dd>{copy.topMemberName}</dd></div>
+              <div><dt>Open draws</dt><dd className={snapshot.pending_slots ? "archive-warning" : undefined}>{copy.waitingCopy}</dd></div>
+            </dl>
+            <div className="archive-console-total">
+              <span>Show and event sessions</span>
+              <strong>{snapshot.show_event_sessions}</strong>
             </div>
           </div>
-          <aside className="page-rail">
-            <div className="kicker">System</div>
-            <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
-              Overview, audit timeline, member browser, collector shelf, and admin workspace in one archive shell.
-            </p>
-          </aside>
         </div>
       </section>
 
-      <section className="grid items-stretch gap-4 xl:grid-cols-[1.2fr_1fr]">
-        <article className="motion-section app-shell flex h-full min-h-0 flex-col p-5">
-            <SectionHeader
-              label="Leaderboard"
-              title="Members who appear most often"
-              className="min-h-[7.75rem] sm:min-h-[8.5rem]"
-              titleClassName="text-2xl sm:text-3xl"
-              description="Showing the top 5 members with two or more appearances. Ties keep the same rank number and follow the latest show or event assignment."
-            />
-            <div className="mt-5 grid gap-3">
-              {visibleLeaderboard.length ? (
-                visibleLeaderboard.map((row) => (
-                  <div key={row.member_id} className="motion-list-item flex min-h-[5.75rem] items-center justify-between gap-3 border-t border-[var(--border)] py-4" style={buildStaggerStyle(row.rank - 1)}>
-                    <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-                      <div className="min-w-12 text-xl font-semibold text-[var(--accent)]">#{row.rank}</div>
-                      <div className="flex size-12 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)] sm:size-14">
-                      {row.avatar_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={row.avatar_url} alt={row.nickname} className="h-full w-full object-cover" />
-                      ) : (
-                        <span className="text-lg font-bold text-[var(--foreground)]">{row.nickname.slice(0, 1).toUpperCase()}</span>
-                      )}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="truncate text-lg font-semibold text-[var(--foreground)]">{row.nickname}</div>
-                        <div className="truncate text-sm text-[var(--muted)]">{row.generasi ? `Gen ${row.generasi}` : "Generation unknown"}</div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="tabular-nums text-2xl font-semibold text-[var(--foreground)]">{row.count}</div>
-                      <div className="text-xs uppercase tracking-[0.16em] text-[var(--muted)]">times</div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="border-t border-[var(--border)] py-4 text-sm text-[var(--muted)]">No members with 2+ show/event appearances yet.</div>
-              )}
+      <section id="archive-focus" className="archive-act archive-focus" data-archive-act data-archive-focus data-active="0">
+        <div className="archive-sticky-stage">
+          <div className="archive-focus-heading">
+            <p className="kicker">Archive composition</p>
+            <h2>Every number has a lane.</h2>
+            <p>Move through the snapshot without losing the whole.</p>
+          </div>
+          <div className="archive-focus-surface">
+            <div className="archive-focus-index" aria-hidden="true">
+              {focusRows.map((row, index) => <span key={row[0]}>{String(index + 1).padStart(2, "0")}</span>)}
             </div>
-          </article>
-          <article className="motion-section app-shell flex h-full min-h-0 flex-col p-5">
-            <SectionHeader
-              label="Recent"
-              title="Latest assigned members"
-              className="min-h-[7.75rem] sm:min-h-[8.5rem]"
-              titleClassName="text-2xl sm:text-3xl"
-              description="Showing the latest 5 filled assignments. Both slots from the same event can appear if both were filled."
-            />
-            <div className="mt-5 grid gap-3">
-              {visibleRecentAssignments.length ? (
-                visibleRecentAssignments.map((row, index) => (
-                  <div key={`${row.member_id}-${row.start_time}-${index}`} className="motion-list-item flex min-h-[5.75rem] items-center justify-between gap-3 border-t border-[var(--border)] py-4" style={buildStaggerStyle(index)}>
-                    <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-                      <div className="flex size-12 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)] sm:size-14">
-                        {row.avatar_url ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={row.avatar_url} alt={row.nickname} className="h-full w-full object-cover" />
-                        ) : (
-                          <span className="text-base font-bold text-[var(--foreground)]">{row.nickname.slice(0, 1).toUpperCase()}</span>
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="truncate text-lg font-semibold text-[var(--foreground)]">{row.nickname}</div>
-                        <div className="truncate text-sm text-[var(--muted)]">{row.event_name}</div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="tabular-nums text-base font-semibold text-[var(--foreground)] sm:text-lg">{formatEventDate(row.start_dt)}</div>
-                      <div className="text-xs uppercase tracking-[0.16em] text-[var(--muted)]">date</div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="border-t border-[var(--border)] py-4 text-sm text-[var(--muted)]">Recent show and event assignments will appear here.</div>
-              )}
+            <div className="archive-focus-track">
+              {focusRows.map(([label, value, description], index) => (
+                <article key={label} className="archive-focus-row" data-focus-index={index}>
+                  <p>{label}</p><strong>{value}</strong><span>{description}</span>
+                </article>
+              ))}
             </div>
-          </article>
-      </section>
-
-      <section className="motion-section app-shell p-5 sm:p-6">
-        <SectionHeader
-          label="Breakdown"
-          title="How the archive is divided right now"
-          titleClassName="text-2xl sm:text-3xl"
-          description="Small numbers only. No extra chart noise."
-        />
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <QuickCountCard label={copy.quickCounts[0]!.label} value={copy.quickCounts[0]!.value} copy={copy.quickCounts[0]!.copy} tone="text-[var(--accent)]" />
-          <QuickCountCard label={copy.quickCounts[1]!.label} value={copy.quickCounts[1]!.value} copy={copy.quickCounts[1]!.copy} tone="text-[var(--warning)]" />
-          <QuickCountCard label={copy.quickCounts[2]!.label} value={copy.quickCounts[2]!.value} copy={copy.quickCounts[2]!.copy} tone="text-[var(--muted-strong)]" />
-          <QuickCountCard label={copy.quickCounts[3]!.label} value={copy.quickCounts[3]!.value} copy={copy.quickCounts[3]!.copy} tone="text-[var(--accent-strong)]" />
+          </div>
         </div>
       </section>
-      <section className="motion-section app-shell p-5 sm:p-6">
-        <SectionHeader
-          label="Teams"
-          title="Performing team split"
-          titleClassName="text-2xl sm:text-3xl"
-          description="Show/event rows only. Birthday and graduation stay outside team counts."
-        />
-        <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          {EVENT_TEAM_OPTIONS.map((team) => (
-            <article key={team} className="motion-card flex min-h-32 flex-col justify-between rounded-[8px] border border-[var(--border)] bg-[var(--surface)] p-4">
-              <div>
-                <div className="tabular-nums text-4xl font-medium leading-none tracking-[-0.05em] text-[var(--foreground)]">{snapshot.team_counts[team] || 0}</div>
-                <div className="mt-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">sessions</div>
-              </div>
-              <div className="mt-5 flex justify-start">
+
+      <section className="archive-act archive-people" data-archive-act>
+        <header className="archive-section-heading">
+          <p className="kicker">People in the archive</p>
+          <h2>Frequency on one side. Recency on the other.</h2>
+        </header>
+        <div className="archive-people-grid">
+          <section className="archive-member-lane" aria-labelledby="frequent-members">
+            <div className="archive-lane-heading"><h3 id="frequent-members">Most frequent</h3><span>2+ appearances</span></div>
+            {leaderboard.length ? leaderboard.map((member) => (
+              <article className="archive-person-row" key={member.member_id}>
+                <span className="archive-rank">#{member.rank}</span>
+                <span className="archive-avatar">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {member.avatar_url ? <img src={member.avatar_url} alt="" /> : member.nickname.slice(0, 1).toUpperCase()}
+                </span>
+                <span className="archive-person-name"><strong>{member.nickname}</strong><small>{member.generasi ? `Generation ${member.generasi}` : "Generation unknown"}</small></span>
+                <span className="archive-person-value"><strong>{member.count}</strong><small>times</small></span>
+              </article>
+            )) : <p className="archive-empty">Rankings begin after a member appears at least twice.</p>}
+          </section>
+
+          <section className="archive-member-lane archive-member-lane-late" aria-labelledby="recent-members">
+            <div className="archive-lane-heading"><h3 id="recent-members">Latest assigned</h3><span>Newest first</span></div>
+            {recent.length ? recent.map((member, index) => (
+              <article className="archive-person-row" key={`${member.member_id}-${member.start_time}-${index}`}>
+                <span className="archive-avatar">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  {member.avatar_url ? <img src={member.avatar_url} alt="" /> : member.nickname.slice(0, 1).toUpperCase()}
+                </span>
+                <span className="archive-person-name"><strong>{member.nickname}</strong><small>{member.event_name}</small></span>
+                <span className="archive-person-value"><strong>{formatEventDate(member.start_dt)}</strong><small>date</small></span>
+              </article>
+            )) : <p className="archive-empty">Recent assignments will appear here.</p>}
+          </section>
+        </div>
+      </section>
+
+      <section id="team-aperture" className="archive-act archive-teams" data-archive-act>
+        <div className="archive-sticky-stage archive-team-stage">
+          <header className="archive-team-heading">
+            <p className="kicker">The archive aperture</p>
+            <h2>Five teams. One shared record.</h2>
+            <p>Birthday and graduation sessions remain outside this ledger.</p>
+          </header>
+          <div className="archive-team-axis" aria-hidden="true"><span /></div>
+          <div className="archive-team-total" aria-label={`${snapshot.show_event_sessions} show and event sessions across all teams`}>
+            <strong>{snapshot.show_event_sessions}</strong>
+            <span>sessions across all teams</span>
+          </div>
+          <div className="archive-team-rail">
+            {EVENT_TEAM_OPTIONS.map((team, index) => (
+              <article className="archive-team-panel" style={{ "--team-shift": `${(index - 2) * 16}vw` } as CSSProperties} key={team}>
+                <div className="archive-team-count"><strong>{snapshot.team_counts[team] || 0}</strong><span>sessions</span></div>
                 <EventTeamBadge team={team} eventType="Roulette" compact />
-              </div>
-            </article>
-          ))}
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="motion-section app-shell p-5 sm:p-6">
-        <SectionHeader
-          label="Attention"
-          title="Open draws still waiting in the archive"
-          titleClassName="text-2xl sm:text-3xl"
-          description="Operational detail stays visible, but secondary."
-        />
-        <p className="mt-4 max-w-3xl text-lg leading-8 text-[var(--foreground-soft)]">
-          {copy.waitingCopy}. Use the admin or timeline pages when you want to resolve unfinished rows.
-        </p>
+      <section className="archive-act archive-resolution" data-archive-act>
+        <div className="archive-resolution-copy">
+          <p className="kicker">Continue from here</p>
+          <h2>Find the member you came for.</h2>
+          <p>{copy.waitingCopy}. The member browser connects each name to its recent archive history.</p>
+        </div>
+        <form action="/members" method="get" className="archive-search">
+          <label htmlFor="overview-member-search">Member name</label>
+          <div>
+            <input id="overview-member-search" name="q" type="search" placeholder="Try a nickname" autoComplete="off" />
+            <button type="submit">Find member</button>
+          </div>
+        </form>
+        <Link href="/timeline" className="archive-timeline-link">Or browse the complete timeline <span aria-hidden="true">→</span></Link>
       </section>
     </div>
   );
 }
-

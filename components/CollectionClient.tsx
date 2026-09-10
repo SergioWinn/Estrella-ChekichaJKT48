@@ -270,7 +270,7 @@ export function CollectionClient({
       {success ? <div role="status" aria-live="polite" className="app-status-message rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm font-semibold text-[var(--accent)]">{success}</div> : null}
       {error ? <div role="alert" className="app-status-message rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
 
-      <section className="motion-section app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
+      <section className="motion-section grid gap-4 border-t border-[var(--border)] pt-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
           <div className="motion-card app-card p-4 md:p-5">
             <div className="tabular-nums text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-4xl">{memberCollections.length}</div>
@@ -290,7 +290,7 @@ export function CollectionClient({
             <button
               type="button"
               onClick={openDesk}
-              className="min-h-10 rounded-full bg-[var(--accent)] px-5 text-sm font-semibold text-[var(--accent-foreground)] transition-colors hover:bg-[var(--accent-strong)]"
+              className="min-h-11 whitespace-nowrap rounded-lg bg-[var(--accent)] px-5 text-sm font-semibold text-[var(--accent-foreground)] transition-colors hover:bg-[var(--accent-strong)]"
             >
               Open collection desk
             </button>
@@ -482,7 +482,7 @@ export function CollectionClient({
                                   />
                                 </div>
                               </div>
-                              <PendingSubmitButton pendingLabel="Adding..." className="min-h-11 rounded-xl bg-[var(--accent)] px-5 py-3 text-sm font-bold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)] md:text-[0.95rem]">Add to shelf</PendingSubmitButton>
+                              <PendingSubmitButton pendingLabel="Adding…" className="min-h-11 rounded-lg bg-[var(--accent)] px-5 py-3 text-sm font-bold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)] md:text-[0.95rem]">Add to shelf</PendingSubmitButton>
                             </form>
                           ))}
                         </div>
@@ -496,7 +496,7 @@ export function CollectionClient({
                         <button
                           type="button"
                           onClick={() => setVisibleSlotCount((count) => count + SLOT_PAGE_SIZE)}
-                          className="min-h-11 self-start whitespace-nowrap rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-5 text-sm font-semibold text-[var(--foreground)] transition-colors hover:bg-[var(--accent-soft)]"
+                          className="min-h-11 self-start whitespace-nowrap rounded-lg border border-[var(--border)] bg-[var(--surface-hover)] px-5 text-sm font-semibold text-[var(--foreground)] transition-colors hover:bg-[var(--accent-soft)]"
                         >
                           Load more slots
                         </button>
@@ -547,11 +547,11 @@ export function CollectionClient({
                                className="app-input min-h-11 w-full px-4 py-3 text-sm md:text-[0.95rem]"
                             />
                           </div>
-                          <PendingSubmitButton pendingLabel="Saving..." className="w-full self-end whitespace-nowrap rounded-xl border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--accent-soft)] sm:w-auto md:text-[0.95rem]">Save quantity</PendingSubmitButton>
+                          <PendingSubmitButton pendingLabel="Saving…" className="w-full self-end whitespace-nowrap rounded-lg border border-[var(--border)] bg-[var(--surface-hover)] px-4 py-3 text-sm font-semibold text-[var(--foreground)] hover:bg-[var(--accent-soft)] sm:w-auto md:text-[0.95rem]">Save quantity</PendingSubmitButton>
                         </form>
                         <form action={deleteCollectionEntryAction} className="w-full sm:w-auto">
                           <input type="hidden" name="entry_id" value={entry.id} />
-                          <PendingSubmitButton pendingLabel="Removing..." className="w-full whitespace-nowrap rounded-xl border border-[var(--danger-border)] bg-[var(--danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--surface-hover)] sm:w-auto md:text-[0.95rem]">Remove entry</PendingSubmitButton>
+                          <PendingSubmitButton pendingLabel="Removing…" className="w-full whitespace-nowrap rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] px-4 py-3 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--surface-hover)] sm:w-auto md:text-[0.95rem]">Remove entry</PendingSubmitButton>
                         </form>
                       </div>
                     </article>

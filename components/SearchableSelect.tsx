@@ -13,7 +13,7 @@ export function SearchableSelect({
   value,
   defaultValue,
   onChange,
-  placeholder = "Search...",
+  placeholder = "Search…",
   ariaLabel,
   className = "",
 }: {

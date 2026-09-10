@@ -24,8 +24,8 @@ interface MemberBrowserItem extends MemberRecord {
   totalCheki: number;
 }
 
-export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
-  const [query, setQuery] = useState("");
+export function MembersClient({ members, initialQuery = "" }: { members: MemberBrowserItem[]; initialQuery?: string }) {
+  const [query, setQuery] = useState(initialQuery);
   const [status, setStatus] = useState<(typeof STATUS_OPTIONS)[number]>("All");
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -56,7 +56,7 @@ export function MembersClient({ members }: { members: MemberBrowserItem[] }) {
 
   return (
     <div className="space-y-6">
-      <section className="motion-section app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
+      <section className="motion-section grid gap-4 border-t border-[var(--border)] pt-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
           <div className="motion-card app-card p-4 md:p-5">
             <div className="tabular-nums text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-4xl">{visibleMembers.length}</div>

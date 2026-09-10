@@ -103,7 +103,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
 
   return (
     <div className="space-y-6">
-      <section className="motion-section app-shell grid gap-4 p-4 md:p-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
+      <section className="motion-section grid gap-4 border-t border-[var(--border)] pt-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
           <div className="motion-card app-card p-4 md:p-5">
             <div className="tabular-nums text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-4xl">{filtered.length}</div>

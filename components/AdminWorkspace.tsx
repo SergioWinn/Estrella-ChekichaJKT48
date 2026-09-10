@@ -346,7 +346,7 @@ export function AdminWorkspace({
                       )}
                     </div>
 
-                    <PendingSubmitButton pendingLabel="Saving result..." className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Save result</PendingSubmitButton>
+                    <PendingSubmitButton pendingLabel="Saving result…" className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Save result</PendingSubmitButton>
                   </form>
                 );
               })}
@@ -475,7 +475,7 @@ export function AdminWorkspace({
                   dateText={createEventDateText}
                   footer={createSingleMember ? "Single-member event" : `${createSlotMode} slot mode`}
                 />
-                <PendingSubmitButton pendingLabel="Creating event..." className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create event row</PendingSubmitButton>
+                <PendingSubmitButton pendingLabel="Creating event…" className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create event row</PendingSubmitButton>
               </form>
             </details>
 
@@ -596,7 +596,7 @@ export function AdminWorkspace({
                         dateText={`${formatEventDate(selectedEvent.start_time)} | ${formatEventTime(selectedEvent.start_time, selectedEvent.end_time)} WIB`}
                         footer={editSingleMember ? "Single-member event" : `Current mode: ${editSlotMode} slot`}
                       />
-                      <PendingSubmitButton pendingLabel="Saving changes..." className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Save event changes</PendingSubmitButton>
+                      <PendingSubmitButton pendingLabel="Saving changes…" className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Save event changes</PendingSubmitButton>
                     </form>
                     <form action={deleteEventAction} className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-4">
                       <input type="hidden" name="event_id" value={selectedEvent.id || ""} />
@@ -605,7 +605,7 @@ export function AdminWorkspace({
                         <input type="checkbox" name="confirm_delete" />
                         I understand this event row will be deleted permanently
                       </label>
-                      <PendingSubmitButton pendingLabel="Deleting event..." className="mt-4 min-h-11 rounded-xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--danger-soft)]">Delete this event row</PendingSubmitButton>
+                      <PendingSubmitButton pendingLabel="Deleting event…" className="mt-4 min-h-11 rounded-lg border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--danger-soft)]">Delete this event row</PendingSubmitButton>
                     </form>
                   </div>
                 </>
@@ -669,7 +669,7 @@ export function AdminWorkspace({
                   generasi={newGenerasi}
                   avatarUrl={newAvatarUrl}
                 />
-                <PendingSubmitButton pendingLabel="Creating member..." className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create member</PendingSubmitButton>
+                <PendingSubmitButton pendingLabel="Creating member…" className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create member</PendingSubmitButton>
               </form>
             </details>
 
@@ -735,7 +735,7 @@ export function AdminWorkspace({
                         generasi={String(selectedMember.generasi || 3)}
                         avatarUrl={selectedMember.avatar_url || undefined}
                       />
-                      <PendingSubmitButton pendingLabel="Saving changes..." className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Save member changes</PendingSubmitButton>
+                      <PendingSubmitButton pendingLabel="Saving changes…" className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Save member changes</PendingSubmitButton>
                     </form>
                     <form action={deleteMemberAction} className="rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-4">
                       <input type="hidden" name="member_id" value={selectedMember.id} />
@@ -744,7 +744,7 @@ export function AdminWorkspace({
                         <input type="checkbox" name="confirm_delete" />
                         I understand this member record will be deleted permanently
                       </label>
-                      <PendingSubmitButton pendingLabel="Deleting member..." className="mt-4 min-h-11 rounded-xl border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--danger-soft)]">Delete this member</PendingSubmitButton>
+                      <PendingSubmitButton pendingLabel="Deleting member…" className="mt-4 min-h-11 rounded-lg border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--danger-soft)]">Delete this member</PendingSubmitButton>
                     </form>
                   </div>
                 </>

@@ -102,7 +102,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
                 {user ? (
                   <form action={logoutAction}>
                     <PendingSubmitButton
-                      pendingLabel="Logging out..."
+                      pendingLabel="Logging out…"
                       ariaLabel="Logout"
                       iconOnly
                       className="site-icon-button inline-flex size-10 items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]"

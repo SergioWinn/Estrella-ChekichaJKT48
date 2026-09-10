@@ -1,4 +1,4 @@
-/* Hallmark · genre: modern-minimal · macrostructure: Workbench · design-system: design.md · designed-as-app */
+/* Hallmark · genre: modern-minimal · macrostructure: Command Deck · design-system: design.md · designed-as-app */
 
 import { MembersClient } from "@/components/MembersClient";
 import { SectionHeader } from "@/components/SectionHeader";
@@ -6,7 +6,8 @@ import { buildMemberArchive, loadMemberArchiveRows, loadMembers } from "@/lib/ar
 
 export const dynamic = "force-dynamic";
 
-export default async function MembersPage() {
+export default async function MembersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
+  const { q = "" } = await searchParams;
   const [members, archiveRows] = await Promise.all([loadMembers(), loadMemberArchiveRows()]);
   const { limitedHistoryMap, totalMap } = buildMemberArchive(archiveRows);
   const browserItems = members.map((member) => ({
@@ -19,7 +20,6 @@ export default async function MembersPage() {
     <div className="page-wrap">
       <header className="workbench-intro">
         <SectionHeader
-          label="Members"
           title="Find a member, then open their recent history."
           description="Search by nickname, full name, team, or generation. Open a card to check the same archive trail the older Streamlit view exposed."
           titleClassName="text-[clamp(2.5rem,4vw,4rem)]"
@@ -31,7 +31,7 @@ export default async function MembersPage() {
           </p>
         </aside>
       </header>
-      <MembersClient members={browserItems} />
+      <MembersClient members={browserItems} initialQuery={q} />
     </div>
   );
 }

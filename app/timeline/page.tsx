@@ -1,4 +1,4 @@
-/* Hallmark · genre: modern-minimal · macrostructure: Workbench · design-system: design.md · designed-as-app */
+/* Hallmark · genre: modern-minimal · macrostructure: Command Deck · design-system: design.md · designed-as-app */
 
 import { TimelineClient } from "@/components/TimelineClient";
 import { SectionHeader } from "@/components/SectionHeader";
@@ -13,7 +13,6 @@ export default async function TimelinePage() {
     <div className="page-wrap">
       <header className="workbench-intro">
         <SectionHeader
-          label="Timeline"
           title="Browse every archived event in date order."
           description="Start with sessions that still have waiting slots, then move backward through completed roulette, birthday, and graduation rows."
           titleClassName="text-[clamp(2.5rem,4vw,4rem)]"

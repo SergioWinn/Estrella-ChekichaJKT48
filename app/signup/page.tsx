@@ -1,5 +1,7 @@
 ﻿import Link from "next/link";
 
+/* Hallmark · genre: modern-minimal · macrostructure: Quiet Letter · design-system: design.md · designed-as-content */
+
 import { SectionHeader } from "@/components/SectionHeader";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { signupAction } from "@/lib/v2-actions.ts";
@@ -16,10 +18,9 @@ export default async function SignupPage({
 
   return (
     <div className="mx-auto max-w-5xl page-wrap">
-      <section className="auth-panel grid gap-6 p-5 sm:p-6 lg:grid-cols-[1.08fr_0.92fr] lg:p-8">
+      <section className="grid gap-8 py-5 sm:py-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
         <div className="letter-intro">
           <SectionHeader
-            label="Create access"
             title="Start a private cheki shelf."
             description="The collector flow stays lightweight: username plus password, with no public email display and no extra onboarding clutter."
             titleClassName="text-[clamp(2.2rem,4vw,3.7rem)]"
@@ -39,7 +40,7 @@ export default async function SignupPage({
             <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Username</span><input name="username" autoComplete="username" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
             <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Password</span><input name="password" type="password" autoComplete="new-password" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
             <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Confirm password</span><input name="confirmPassword" type="password" autoComplete="new-password" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
-            <PendingSubmitButton pendingLabel="Creating account..." className="min-h-11 w-full rounded-[1rem] bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create account</PendingSubmitButton>
+            <PendingSubmitButton pendingLabel="Creating account…" className="min-h-11 w-full rounded-lg bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create account</PendingSubmitButton>
           </form>
           <p className="mt-4 text-sm text-[var(--muted)]">
             Already have an account?{" "}

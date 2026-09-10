@@ -28,7 +28,7 @@ modern-minimal
 - Display: Geist, weight 600, style normal
 - Body: Geist, weight 400
 - Mono: IBM Plex Mono, weight 500
-- Display tracking: -0.045em
+- Display tracking: -0.04em
 - Type scale anchor: `--text-display` = `clamp(2.8rem, 4vw, 4.8rem)`
 
 ## Spacing
@@ -66,7 +66,7 @@ Tailwind spacing utilities only when they resolve to multiples of 4 px.
 - The accent colour and its small footprint
 - The unified Geist display/body system
 - The tighter rectangular border language
-- The section heading rhythm with stacked kicker above the title
+- Section headings led by clear titles; reserve kickers for one contextual note per page
 
 ## What pages MAY differ on
 

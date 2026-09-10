@@ -1,4 +1,4 @@
-/* Hallmark · genre: modern-minimal · macrostructure: Workbench · design-system: design.md · designed-as-app */
+/* Hallmark · genre: modern-minimal · macrostructure: Command Deck · design-system: design.md · designed-as-app */
 
 import { AdminWorkspace } from "@/components/AdminWorkspace.tsx";
 import { countPendingSlots } from "@/lib/archive-data.ts";

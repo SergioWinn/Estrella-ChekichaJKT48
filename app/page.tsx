@@ -1,10 +1,8 @@
 /* Hallmark · genre: modern-minimal · macrostructure: Live Surface · design-system: design.md · designed-as-app */
 
-import type { CSSProperties } from "react";
 import Link from "next/link";
 
 import { EventTeamBadge } from "@/components/EventTeamBadge";
-import { OverviewScrollController } from "@/components/OverviewScrollController";
 import { buildOverviewSnapshot, loadOverviewRows } from "@/lib/archive-data.ts";
 import { formatEventDate } from "@/lib/format.ts";
 import { buildHomepageCopy } from "@/lib/homepage-copy.ts";
@@ -25,10 +23,8 @@ export default async function Page() {
   ] as const;
 
   return (
-    <div className="overview-scroll" data-archive-experience>
-      <OverviewScrollController />
-
-      <section className="archive-act archive-opening" data-archive-act>
+    <div className="overview-scroll">
+      <section className="archive-act archive-opening">
         <div className="archive-opening-backdrop" aria-hidden="true" />
         <div className="archive-opening-grid">
           <header className="archive-opening-copy">
@@ -55,7 +51,7 @@ export default async function Page() {
         </div>
       </section>
 
-      <section id="archive-focus" className="archive-act archive-focus" data-archive-act data-archive-focus data-active="0">
+      <section id="archive-focus" className="archive-act archive-focus">
         <div className="archive-sticky-stage">
           <div className="archive-focus-heading">
             <p className="kicker">Archive composition</p>
@@ -77,7 +73,7 @@ export default async function Page() {
         </div>
       </section>
 
-      <section className="archive-act archive-people" data-archive-act>
+      <section className="archive-act archive-people">
         <header className="archive-section-heading">
           <p className="kicker">People in the archive</p>
           <h2>Frequency on one side. Recency on the other.</h2>
@@ -114,7 +110,7 @@ export default async function Page() {
         </div>
       </section>
 
-      <section id="team-aperture" className="archive-act archive-teams" data-archive-act>
+      <section id="team-aperture" className="archive-act archive-teams">
         <div className="archive-sticky-stage archive-team-stage">
           <header className="archive-team-heading">
             <p className="kicker">The archive aperture</p>
@@ -127,8 +123,8 @@ export default async function Page() {
             <span>sessions across all teams</span>
           </div>
           <div className="archive-team-rail">
-            {EVENT_TEAM_OPTIONS.map((team, index) => (
-              <article className="archive-team-panel" style={{ "--team-shift": `${(index - 2) * 16}vw` } as CSSProperties} key={team}>
+            {EVENT_TEAM_OPTIONS.map((team) => (
+              <article className="archive-team-panel" key={team}>
                 <div className="archive-team-count"><strong>{snapshot.team_counts[team] || 0}</strong><span>sessions</span></div>
                 <EventTeamBadge team={team} eventType="Roulette" compact />
               </article>
@@ -137,7 +133,7 @@ export default async function Page() {
         </div>
       </section>
 
-      <section className="archive-act archive-resolution" data-archive-act>
+      <section className="archive-act archive-resolution">
         <div className="archive-resolution-copy">
           <p className="kicker">Continue from here</p>
           <h2>Find the member you came for.</h2>

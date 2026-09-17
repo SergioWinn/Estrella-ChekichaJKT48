@@ -692,10 +692,8 @@ button {
   to { opacity: 1; transform: scale(1) rotate(0); }
 }
 
-/* Scroll Craft · live-surface overview */
+/* Overview */
 .overview-scroll {
-  --archive-p: 0;
-  --archive-open: 0;
   display: grid;
   gap: 0;
   isolation: isolate;
@@ -707,8 +705,7 @@ button {
 }
 
 .archive-opening {
-  --archive-camera: 0;
-  min-height: 145svh;
+  padding-block: clamp(3rem, 8vw, 8rem);
 }
 
 .archive-opening-backdrop {
@@ -718,16 +715,13 @@ button {
   border: 1px solid var(--border);
   border-radius: 2rem;
   background: var(--page-hero-surface-gradient);
-  opacity: calc(0.84 + var(--archive-camera) * 0.16);
-  transform: translateY(calc(var(--archive-camera) * 0.6rem)) scale(calc(0.97 + var(--archive-camera) * 0.04));
+  opacity: 0.92;
   box-shadow: 0 28px 80px oklch(from var(--background-alt) l c h / 0.3);
 }
 
 .archive-opening-grid,
 .archive-sticky-stage {
-  position: sticky;
-  top: 8rem;
-  min-height: calc(100svh - 10rem);
+  position: relative;
 }
 
 .archive-opening-grid {
@@ -741,8 +735,6 @@ button {
 .archive-opening-copy {
   z-index: 2;
   max-width: 43rem;
-  transform: translateY(calc(var(--archive-camera) * -0.65rem));
-  transform-origin: left center;
 }
 
 .archive-opening-copy h1 {
@@ -769,8 +761,6 @@ button {
   border-radius: 1.5rem;
   background: var(--panel);
   box-shadow: 0 36px 90px oklch(from var(--background-alt) l c h / 0.42);
-  transform: perspective(80rem) translateY(calc(var(--archive-camera) * -0.45rem)) scale(calc(0.985 + var(--archive-camera) * 0.03)) rotateX(calc(var(--archive-camera) * -0.35deg));
-  transform-origin: center;
 }
 
 .archive-console::before {
@@ -865,8 +855,8 @@ button {
 }
 
 .archive-focus {
-  min-height: 320svh;
   border-block: 1px solid var(--border);
+  padding-block: clamp(5rem, 10vw, 10rem);
 }
 
 .archive-sticky-stage {
@@ -944,9 +934,6 @@ button {
   gap: 1rem;
   border-right: 1px solid var(--border);
   padding: clamp(1rem, 2vw, 2rem);
-  opacity: 0.27;
-  transform: translateY(1rem);
-  transition: opacity 180ms var(--ease-out), transform 220ms var(--ease-out), background-color 180ms var(--ease-out);
 }
 
 .archive-focus-row:last-child {
@@ -975,15 +962,6 @@ button {
   line-height: 1.6;
 }
 
-.archive-focus[data-active="0"] [data-focus-index="0"],
-.archive-focus[data-active="1"] [data-focus-index="1"],
-.archive-focus[data-active="2"] [data-focus-index="2"],
-.archive-focus[data-active="3"] [data-focus-index="3"] {
-  background: var(--accent-soft);
-  opacity: 1;
-  transform: translateY(0);
-}
-
 .archive-people {
   padding: clamp(7rem, 13vw, 14rem) clamp(1rem, 3vw, 3rem) clamp(9rem, 17vw, 18rem);
 }
@@ -999,8 +977,6 @@ button {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(2rem, 7vw, 8rem);
-  opacity: calc(0.4 + var(--archive-p) * 0.6);
-  transform: translateY(calc((1 - var(--archive-p)) * 1.5rem));
 }
 
 .archive-member-lane-late {
@@ -1108,16 +1084,13 @@ button {
 }
 
 .archive-teams {
-  --archive-open: 1;
-  --archive-panels: 1;
-  --archive-total: 0;
-  min-height: 420svh;
   border-block: 1px solid var(--border);
   background: var(--background-alt);
+  padding-block: clamp(5rem, 10vw, 10rem);
 }
 
 .archive-team-stage {
-  min-height: calc(100svh - 8rem);
+  gap: clamp(2rem, 5vw, 5rem);
 }
 
 .archive-team-heading {
@@ -1126,7 +1099,6 @@ button {
   justify-items: center;
   gap: 1rem;
   text-align: center;
-  transform: translateY(calc(var(--archive-open) * -4rem)) scale(calc(1 - var(--archive-open) * 0.08));
 }
 
 .archive-team-heading h2 {
@@ -1138,95 +1110,49 @@ button {
 }
 
 .archive-team-axis {
-  position: absolute;
-  inset: 50% auto auto 50%;
-  width: min(36rem, 80vw);
-  height: min(36rem, 80vw);
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  opacity: calc(0.14 + var(--archive-open) * 0.7);
-  transform: translate(-50%, -42%) scale(calc(0.42 + var(--archive-open) * 0.58));
-}
-
-.archive-team-axis::before,
-.archive-team-axis::after,
-.archive-team-axis span {
-  content: "";
-  position: absolute;
-  background: var(--border-strong);
-}
-
-.archive-team-axis::before {
-  inset: 50% 0 auto;
-  height: 1px;
-}
-
-.archive-team-axis::after {
-  inset: 0 auto 0 50%;
-  width: 1px;
-}
-
-.archive-team-axis span {
-  inset: 50% auto auto 50%;
-  width: 0.6rem;
-  height: 0.6rem;
-  border-radius: 50%;
-  background: var(--accent);
-  transform: translate(-50%, -50%);
+  display: none;
 }
 
 .archive-team-rail {
-  position: absolute;
-  inset: auto 50% clamp(1.5rem, 5vh, 4.5rem);
+  position: relative;
   z-index: 4;
-  display: flex;
-  width: min(23rem, 72vw);
-  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem;
+  width: 100%;
 }
 
 .archive-team-total {
-  position: absolute;
-  inset: auto 50% clamp(1.5rem, 5vh, 4.5rem) auto;
-  z-index: 5;
-  display: grid;
-  width: min(23rem, 72vw);
-  min-height: 9rem;
-  align-content: space-between;
-  border: 1px solid var(--border-strong);
-  background: var(--panel);
-  padding: 1.25rem;
-  opacity: var(--archive-total);
-  transform: translateX(50%);
-}
-
-.archive-team-total strong {
-  font-family: var(--font-display);
-  font-size: clamp(3rem, 6vw, 5.8rem);
-  font-weight: 500;
-  letter-spacing: -0.07em;
-  line-height: 0.8;
-}
-
-.archive-team-total span {
-  color: var(--muted);
-  font-size: 0.75rem;
+  display: none;
 }
 
 .archive-team-panel {
   display: grid;
-  min-width: min(23rem, 72vw);
   min-height: 9rem;
   align-content: space-between;
   border: 1px solid var(--border-strong);
   background: var(--panel);
   padding: 1.25rem;
   box-shadow: 0 24px 60px oklch(from var(--background) l c h / 0.38);
-  opacity: var(--archive-panels);
-  transform: translateX(calc(var(--team-shift) * var(--archive-open))) translateY(calc((1 - var(--archive-open)) * 1.2rem));
 }
 
 .archive-team-panel + .archive-team-panel {
-  margin-left: calc(min(23rem, 72vw) * -1);
+  margin-left: 0;
+}
+
+@keyframes archive-reveal {
+  from {
+    opacity: 0.86;
+    transform: translateY(0.75rem);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .archive-act:not(.archive-opening) {
+    animation: archive-reveal 1ms var(--ease-out) both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 20%;
+  }
 }
 
 .archive-team-count {
@@ -1362,10 +1288,6 @@ button {
 
   .archive-people-grid {
     gap: 2rem;
-  }
-
-  .archive-team-panel {
-    transform: translateX(calc(var(--team-shift) * var(--archive-open) * 0.6)) translateY(calc((1 - var(--archive-open)) * 1.2rem));
   }
 
   .archive-timeline-link {

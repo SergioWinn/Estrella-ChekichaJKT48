@@ -13,8 +13,6 @@ const FIXED_SETLIST_TEAMS: Array<{ keywords: string[]; team: EventTeam }> = [
 ];
 
 export const GENERATION_OPTIONS = [3, 6, 7, 8, 9, 10, 11, 12, 13, 14] as const;
-export const TIME_STEP_MINUTES = 15;
-
 const JAKARTA_OFFSET_MINUTES = 7 * 60;
 
 export interface AuthProfile {

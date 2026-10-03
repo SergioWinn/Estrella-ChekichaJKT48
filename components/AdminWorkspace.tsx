@@ -16,7 +16,7 @@ import {
   updateQueueAction,
 } from "@/lib/v2-actions.ts";
 import { formatEventDate, formatEventTime } from "@/lib/format.ts";
-import { GENERATION_OPTIONS, STATUS_OPTIONS, TIME_STEP_MINUTES, getEffectiveEventTeam, getFixedEventTeam, singleMemberEvent } from "@/lib/v2-helpers.ts";
+import { GENERATION_OPTIONS, STATUS_OPTIONS, getEffectiveEventTeam, getFixedEventTeam, singleMemberEvent } from "@/lib/v2-helpers.ts";
 import type { ChekichaRow, EventPreset, MemberRecord } from "@/lib/types.ts";
 
 const MANUAL_EVENT_TEAM_OPTIONS = ["LOVE", "DREAM", "PASSION"] as const;
@@ -88,14 +88,8 @@ function memberOptionLabel(member: MemberRecord) {
   return `${member.nickname || "Unknown"} (${member.full_name || "No full name"})`;
 }
 
-const EARLIEST_START_MINUTES = 12 * 60 + 45;
-const LATEST_START_MINUTES = 21 * 60 + 15;
-const TIME_OPTIONS = Array.from({ length: (LATEST_START_MINUTES - EARLIEST_START_MINUTES) / TIME_STEP_MINUTES + 1 }, (_, index) => {
-  const totalMinutes = EARLIEST_START_MINUTES + index * TIME_STEP_MINUTES;
-  const hour = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
-  const minute = String(totalMinutes % 60).padStart(2, "0");
-  return `${hour}:${minute}`;
-});
+const EARLIEST_START_TIME = "12:45";
+const LATEST_START_TIME = "21:15";
 
 function EventPreviewCard({
   eventName,
@@ -208,7 +202,7 @@ export function AdminWorkspace({
   const [activeTab, setActiveTab] = useState<AdminTabKey>("queue");
   const [createPresetId, setCreatePresetId] = useState(presets[0]?.id ?? "");
   const [createDate, setCreateDate] = useState(new Date().toISOString().slice(0, 10));
-  const [createTimeValue, setCreateTimeValue] = useState(TIME_OPTIONS[0]);
+  const [createTimeValue, setCreateTimeValue] = useState(EARLIEST_START_TIME);
   const [createSlotMode, setCreateSlotMode] = useState("1");
   const [createEventTeam, setCreateEventTeam] = useState(coerceManualEventTeam(presets[0]?.event_team));
   const [createMemberA, setCreateMemberA] = useState("");
@@ -378,13 +372,7 @@ export function AdminWorkspace({
                 </div>
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-[var(--muted)]">Time</label>
-                  <select aria-label="Event start time" name="start_time_value" value={createTimeValue} onChange={(event) => setCreateTimeValue(event.target.value)} className="app-input min-h-12 w-full px-4 py-3 text-lg">
-                    {TIME_OPTIONS.map((value) => (
-                      <option key={value} value={value}>{value}</option>
-                    ))}
-                  </select>
-                  <input type="hidden" name="start_hour" value={createTimeValue.slice(0, 2)} />
-                  <input type="hidden" name="start_minute" value={createTimeValue.slice(3, 5)} />
+                  <input aria-label="Event start time" type="time" name="start_time_value" min={EARLIEST_START_TIME} max={LATEST_START_TIME} step="60" value={createTimeValue} onChange={(event) => setCreateTimeValue(event.target.value)} required className="app-input min-h-12 w-full px-4 py-3 text-lg" />
                 </div>
                 <p className="text-sm text-[var(--muted)]">Scheduled for {createDate || "no date yet"} at {createTimeValue}</p>
                 <p className="text-sm text-[var(--muted)]">Leave slot fields empty if the roulette draw has not happened yet.</p>
@@ -508,13 +496,7 @@ export function AdminWorkspace({
                       </div>
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Time</label>
-                        <select aria-label="Event start time" name="start_time_value" defaultValue={eventTimeValue(selectedEvent.start_time)} className="app-input min-h-12 w-full px-4 py-3 text-lg">
-                          {TIME_OPTIONS.map((value) => (
-                            <option key={value} value={value}>{value}</option>
-                          ))}
-                        </select>
-                        <input type="hidden" name="start_hour" value={eventTimeValue(selectedEvent.start_time).slice(0, 2)} />
-                        <input type="hidden" name="start_minute" value={eventTimeValue(selectedEvent.start_time).slice(3, 5)} />
+                        <input aria-label="Event start time" type="time" name="start_time_value" min={EARLIEST_START_TIME} max={LATEST_START_TIME} step="60" defaultValue={eventTimeValue(selectedEvent.start_time)} required className="app-input min-h-12 w-full px-4 py-3 text-lg" />
                       </div>
                       <p className="text-sm text-[var(--muted)]">Scheduled for {eventDateValue(selectedEvent.start_time)} at {eventTimeValue(selectedEvent.start_time)} WIB</p>
                       <div className="grid gap-3 sm:grid-cols-2">

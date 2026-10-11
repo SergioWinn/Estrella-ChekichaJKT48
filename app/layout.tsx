@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 
 import "./globals.css";
+import "./archive.css";
 
 import { AuthIcon, LogoutIcon, SupportIcon } from "@/components/UiIcons";
 import { SiteNav } from "@/components/SiteNav";

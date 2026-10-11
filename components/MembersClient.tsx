@@ -36,6 +36,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
   const rankingRef = useRef<HTMLOListElement>(null);
   const [rankingPaused, setRankingPaused] = useState(false);
   const debouncedQuery = useDebouncedValue(query);
+  const rankingEntries = leaderboard.slice(0, 20);
 
   const visibleMembers = useMemo(
     () =>
@@ -65,17 +66,18 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let frame: number;
     let previous = 0;
-    let direction = 1;
     let offset = rail.scrollLeft;
     function move(time: number) {
       const elapsed = previous ? Math.min(time - previous, 50) : 0;
       previous = time;
       if (rail && !reducedMotion.matches && !rail.matches(":hover, :focus-within")) {
-        const end = rail.scrollWidth - rail.clientWidth;
-        if (rail.scrollLeft >= end) direction = -1;
-        if (rail.scrollLeft <= 0) direction = 1;
-        offset = Math.max(0, Math.min(end, offset + direction * elapsed * 0.025));
-        rail.scrollLeft = offset;
+        const first = rail.firstElementChild as HTMLElement;
+        const copy = rail.querySelector<HTMLElement>('[data-ranking-copy="true"]');
+        const cycle = copy ? copy.offsetLeft - first.offsetLeft : 0;
+        if (cycle > rail.clientWidth) {
+          offset = (offset + elapsed * 0.025) % cycle;
+          rail.scrollLeft = offset;
+        }
       } else if (rail) {
         offset = rail.scrollLeft;
       }
@@ -91,7 +93,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
         <header className="member-ranking-heading">
           <div>
             <h2 id="ranking-title">Most frequent cheki members</h2>
-            <p>Top 10 · Cheki show/event · Excludes birthday & graduation</p>
+            <p>Top 20 · Cheki show/event · Excludes birthday & graduation</p>
           </div>
           {leaderboard.length ? (
             <button type="button" className="member-ranking-toggle" aria-label={rankingPaused ? "Resume sliding" : "Pause sliding"} title={rankingPaused ? "Resume sliding" : "Pause sliding"} aria-pressed={rankingPaused} onClick={() => setRankingPaused((paused) => !paused)}>
@@ -102,12 +104,13 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
           ) : null}
         </header>
         {leaderboard.length ? (
-          <ol ref={rankingRef} className="member-ranking-list" tabIndex={0} aria-label="Top 10 show/event cheki ranking. Scroll to see more members." onPointerDown={() => setRankingPaused(true)} onWheel={() => setRankingPaused(true)}>
-            {leaderboard.slice(0, 10).map((entry) => {
+          <ol ref={rankingRef} className="member-ranking-list" tabIndex={0} aria-label="Top 20 show/event cheki ranking. Scroll to see more members." onPointerDown={() => setRankingPaused(true)} onWheel={() => setRankingPaused(true)}>
+            {[...rankingEntries, ...rankingEntries].map((entry, index) => {
               const member = members.find((item) => item.id === entry.member_id);
+              const isCopy = index >= rankingEntries.length;
               return (
-                <li key={entry.member_id}>
-                  <button type="button" disabled={!member} onClick={() => setSelectedMemberId(entry.member_id)} aria-haspopup="dialog" className="member-ranking-button">
+                <li key={`${entry.member_id}-${index}`} data-ranking-copy={isCopy} aria-hidden={isCopy || undefined}>
+                  <button type="button" tabIndex={isCopy ? -1 : undefined} disabled={!member} onClick={() => setSelectedMemberId(entry.member_id)} aria-haspopup="dialog" className="member-ranking-button">
                     <span className="member-ranking-place">#{entry.rank}</span>
                     <span className="member-ranking-name">{member?.nickname || entry.nickname}</span>
                     <span className="member-ranking-count"><strong>{entry.count}</strong> times</span>

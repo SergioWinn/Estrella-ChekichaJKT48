@@ -13,8 +13,8 @@ import { logoutAction } from "@/lib/v2-actions.ts";
 import { getSessionContext } from "@/lib/v2-server.ts";
 
 export const metadata: Metadata = {
-  title: "Chekicha Archive Monitor",
-  description: "Monitor JKT48 cheki records collected from January 2026 onward.",
+  title: "JKT48 Cheki Archive by @estrellawin19",
+  description: "Explore JKT48 cheki timelines, member statistics, and your collection. Archived by @estrellawin19 since January 2026.",
   icons: {
     icon: "/icon.svg",
     apple: "/apple-icon.png",
@@ -49,9 +49,13 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <div className="site-frame mx-auto min-h-screen max-w-[110rem] px-4 py-4 sm:px-6 lg:px-8">
           <header className="site-header archive-header app-shell">
-            <Link href="/" className="archive-wordmark">Estrella<span>JKT48 cheki archive</span></Link>
+            <div className="archive-brand">
+              <Link href="/" className="archive-wordmark">JKT48 Cheki Archive</Link>
+              <p className="archive-brand-purpose">Timeline · Member stats · Collection</p>
+              <p className="archive-brand-credit">by <a href="https://x.com/estrellawin19" target="_blank" rel="noopener noreferrer">@estrellawin19</a></p>
+            </div>
             <SiteNav links={links} />
-            <div className="flex items-center gap-2">
+            <div className="archive-header-actions flex items-center gap-2">
               <ThemeToggle />
               {user ? (
                 <form action={logoutAction}>

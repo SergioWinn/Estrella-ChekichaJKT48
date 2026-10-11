@@ -12,7 +12,7 @@ modern-minimal
 - Marketing pages: Ledger Hero with a masthead strip, one dominant metric deck, and alternating dense archive bands.
 - App pages: Command Deck with a compact header, short page title, inline summaries and filters immediately above the primary data.
 - Home opens the timeline. `/timeline` remains an alias. Navigation: Timeline, Members, My collection; Admin is role-specific.
-- Members owns the top-ten show/event slot ranking in a horizontally scrolling rail. It slides gently back and forth, pauses on hover, focus or manual interaction, and supports a pause control and reduced motion. Ties share ranks; birthday and graduation are excluded. Member event totals include all event types and count each event once.
+- Members owns the top-ten show/event slot ranking in a horizontally scrolling rail with a hidden scrollbar. It slides gently back and forth, pauses on hover, focus or manual interaction, and supports a pause control and reduced motion. Ties share ranks; birthday and graduation are excluded. Member event totals include all event types and count each event once.
 - Credits and support live in the footer. No oversized intros, decorative archive sections, or explanatory workflow panels on public app pages.
 - Content pages: Quiet Letter with a tall intro column, one restrained form slab, and generous negative space.
 
@@ -65,7 +65,7 @@ Tailwind spacing utilities only when they resolve to multiples of 4 px.
 
 ## What pages MUST share
 
-- The wordmark and archive-monitor framing
+- The JKT48 Cheki Archive wordmark, timeline/member stats/collection description, and linked by @estrellawin19 credit
 - The accent colour and its small footprint
 - The unified Geist display/body system
 - The tighter rectangular border language

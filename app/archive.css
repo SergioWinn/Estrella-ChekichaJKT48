@@ -33,9 +33,9 @@
 .member-ranking-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs); margin-bottom: var(--space-xs); }
 .member-ranking-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(14rem, 18rem); gap: var(--space-xs); overflow-x: auto; scrollbar-width: none; list-style: none; padding: var(--space-3xs); }
 .member-ranking-list::-webkit-scrollbar { display: none; }
-.member-ranking-toggle { min-height: 2.75rem; padding: var(--space-2xs) var(--space-xs); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--muted); font-size: var(--text-xs); white-space: nowrap; }
-.member-ranking-toggle:hover { background: var(--surface-hover); }
-.member-ranking-toggle:active { background: var(--accent-soft); }
+.member-ranking-toggle { display: inline-flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; flex-shrink: 0; border-radius: var(--radius-sm); color: var(--muted); }
+.member-ranking-toggle:hover { color: var(--foreground); }
+.member-ranking-toggle:active { color: var(--accent); }
 .member-ranking-toggle:focus-visible, .member-ranking-list:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
 .member-ranking-button { display: flex; width: 100%; align-items: center; gap: var(--space-xs); padding: var(--space-xs); border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); text-align: left; }
 .member-ranking-button:hover { background: var(--surface-hover); }

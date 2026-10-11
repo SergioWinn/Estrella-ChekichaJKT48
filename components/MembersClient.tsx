@@ -94,8 +94,10 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
             <p>Top 10 · Cheki show/event · Excludes birthday & graduation</p>
           </div>
           {leaderboard.length ? (
-            <button type="button" className="member-ranking-toggle" aria-pressed={rankingPaused} onClick={() => setRankingPaused((paused) => !paused)}>
-              {rankingPaused ? "Resume sliding" : "Pause sliding"}
+            <button type="button" className="member-ranking-toggle" aria-label={rankingPaused ? "Resume sliding" : "Pause sliding"} title={rankingPaused ? "Resume sliding" : "Pause sliding"} aria-pressed={rankingPaused} onClick={() => setRankingPaused((paused) => !paused)}>
+              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                {rankingPaused ? <path d="m8 5 11 7-11 7Z" /> : <path d="M6 5h4v14H6zm8 0h4v14h-4z" />}
+              </svg>
             </button>
           ) : null}
         </header>
@@ -108,7 +110,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                   <button type="button" disabled={!member} onClick={() => setSelectedMemberId(entry.member_id)} aria-haspopup="dialog" className="member-ranking-button">
                     <span className="member-ranking-place">#{entry.rank}</span>
                     <span className="member-ranking-name">{member?.nickname || entry.nickname}</span>
-                    <span className="member-ranking-count"><strong>{entry.count}</strong> slots</span>
+                    <span className="member-ranking-count"><strong>{entry.count}</strong> times</span>
                   </button>
                 </li>
               );
@@ -163,7 +165,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                 </div>
                 <div className="w-full min-w-0 flex-1">
                   <h2 className="truncate text-base font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-lg">{member.nickname || "Unknown member"}</h2>
-                  <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{member.totalCheki}</strong> events</p>
+                  <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{member.totalCheki}</strong> times</p>
                   <div className="mt-1.5">
                     <span className="rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:text-xs">
                       {member.status || "Unknown team"}
@@ -231,10 +233,10 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                       Generation {selectedMember.generasi || "?"}
                     </span>
                     <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--accent)] sm:px-3 sm:py-1.5 sm:text-xs">
-                      Total events {selectedMember.totalCheki}
+                      Total {selectedMember.totalCheki} times
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--muted)]">Show/event cheki slots: {leaderboard.find((entry) => entry.member_id === selectedMember.id)?.count ?? "Fewer than 2"}. Total events include birthday and graduation.</p>
+                  <p className="text-sm text-[var(--muted)]">Show/event cheki: {leaderboard.find((entry) => entry.member_id === selectedMember.id)?.count ?? "Fewer than 2"} times. Total includes birthday and graduation.</p>
                   <p className="text-xs leading-6 text-[var(--muted-strong)] sm:text-sm">
                     Most recent assigned event: {selectedMember.history[0] ? formatEventDate(selectedMember.history[0].start_time) : "No history yet"}
                   </p>

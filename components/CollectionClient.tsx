@@ -10,7 +10,6 @@ import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { FilterPill } from "@/components/FilterPill";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { CloseIcon } from "@/components/UiIcons";
-import { SectionHeader } from "@/components/SectionHeader";
 import { useDebouncedValue } from "@/components/useDebouncedValue";
 import { addCollectionAction, deleteCollectionEntryAction, updateCollectionQuantityAction } from "@/lib/v2-actions.ts";
 import { formatEventDate, formatEventTime } from "@/lib/format.ts";
@@ -260,39 +259,25 @@ export function CollectionClient({
 
   return (
     <div className="space-y-6">
-      <section className="motion-section app-shell p-5 sm:p-6">
-        <SectionHeader
-          title="Your cheki shelf comes first."
-          description={`Signed in as @${username} with ${totalQuantity} total cheki across ${uniqueMembers} tracked members.`}
-        />
-      </section>
+      <div className="archive-summary">
+        <span>@{username}</span><span><strong>{totalQuantity}</strong> cheki owned</span><span><strong>{uniqueMembers}</strong> members</span>
+      </div>
 
       {success ? <div role="status" aria-live="polite" className="app-status-message rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm font-semibold text-[var(--accent)]">{success}</div> : null}
       {error ? <div role="alert" className="app-status-message rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
 
-      <section className="motion-section grid gap-4 border-t border-[var(--border)] pt-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-          <div className="motion-card app-card p-4 md:p-5">
-            <div className="tabular-nums text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-4xl">{memberCollections.length}</div>
-            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Members shown</p>
-          </div>
-          <div className="motion-card app-card p-4 md:p-5">
-            <div className="tabular-nums text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-4xl">{visibleQuantity}</div>
-            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Cheki shown</p>
-          </div>
-        </div>
+      <section className="archive-controls">
         <div className="motion-card app-card grid gap-4 p-4 md:p-5">
           <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(12rem,16rem)] lg:items-start lg:gap-4">
             <div>
               <p className="text-sm font-semibold text-[var(--muted-strong)]">Filter collection</p>
-              <p className="mt-2 max-w-[32rem] text-sm leading-6 text-[var(--muted)]">Narrow saved cheki by event type or member status.</p>
             </div>
             <button
               type="button"
               onClick={openDesk}
               className="min-h-11 whitespace-nowrap rounded-lg bg-[var(--accent)] px-5 text-sm font-semibold text-[var(--accent-foreground)] transition-colors hover:bg-[var(--accent-strong)]"
             >
-              Open collection desk
+              Add / manage cheki
             </button>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
@@ -320,6 +305,7 @@ export function CollectionClient({
         </div>
       </section>
 
+      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleQuantity} cheki across {memberCollections.length} members match your filters.</p>
       {memberCollections.length ? (
         <section className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {memberCollections.map((member, index) => (

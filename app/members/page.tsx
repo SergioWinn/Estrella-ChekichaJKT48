@@ -1,8 +1,7 @@
 /* Hallmark · genre: modern-minimal · macrostructure: Command Deck · design-system: design.md · designed-as-app */
 
 import { MembersClient } from "@/components/MembersClient";
-import { SectionHeader } from "@/components/SectionHeader";
-import { buildMemberArchive, loadMemberArchiveRows, loadMembers } from "@/lib/archive-data.ts";
+import { buildMemberArchive, buildOverviewSnapshot, loadMemberArchiveRows, loadMembers } from "@/lib/archive-data.ts";
 
 export const dynamic = "force-dynamic";
 
@@ -10,6 +9,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
   const { q = "" } = await searchParams;
   const [members, archiveRows] = await Promise.all([loadMembers(), loadMemberArchiveRows()]);
   const { limitedHistoryMap, totalMap } = buildMemberArchive(archiveRows);
+  const { leaderboard } = buildOverviewSnapshot(archiveRows);
   const browserItems = members.map((member) => ({
     ...member,
     history: limitedHistoryMap[member.id] ?? [],
@@ -17,21 +17,15 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
   }));
 
   return (
-    <div className="page-wrap">
-      <header className="workbench-intro">
-        <SectionHeader
-          title="Find a member, then open their recent history."
-          description="Search by nickname, full name, team, or generation. Open a card to check the same archive trail the older Streamlit view exposed."
-          titleClassName="text-[clamp(2.5rem,4vw,4rem)]"
-        />
-        <aside className="workbench-note">
-          <div className="kicker">Scan before opening</div>
-          <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
-            This route favors quick scanning first. The modal history stays secondary until a member is actually selected.
-          </p>
-        </aside>
+    <div className="page-wrap archive-workspace">
+      <header className="archive-page-heading">
+        <div>
+          <p className="kicker">Members & statistics</p>
+          <h1>Who appears most often?</h1>
+          <p>Compare cheki frequency, then open a member to see their event history.</p>
+        </div>
       </header>
-      <MembersClient members={browserItems} initialQuery={q} />
+      <MembersClient members={browserItems} leaderboard={leaderboard} initialQuery={q} />
     </div>
   );
 }

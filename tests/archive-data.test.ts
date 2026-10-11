@@ -163,3 +163,17 @@ test("buildMemberArchive groups duplicate slots once per event and caps recent h
   assert.equal(limitedHistoryMap.double[0].event_name, "Newest");
   assert.equal(limitedHistoryMap.double.at(-1)?.event_name, "Event 2");
 });
+
+
+test("member ranking works with history rows without member relations and counts both show slots", () => {
+  const rows = [
+    { id: "show", start_time: "2026-10-10T10:00:00+07:00", event_type: "Roulette", slot_mode: 2, member_id_a: "member", member_id_b: "member" },
+    { id: "birthday", start_time: "2026-10-09T10:00:00+07:00", event_type: "Birthday", member_id_a: "member" },
+    { id: "graduation", start_time: "2026-10-08T10:00:00+07:00", event_type: "Graduation", member_id_a: "other" },
+  ];
+  const { leaderboard } = buildOverviewSnapshot(rows);
+  assert.deepEqual(leaderboard.map(({ member_id, count, rank }) => ({ member_id, count, rank })), [
+    { member_id: "member", count: 2, rank: 1 },
+  ]);
+  assert.equal(buildMemberArchive(rows).totalMap.member, 2);
+});

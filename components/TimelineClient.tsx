@@ -99,32 +99,17 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
   const pendingCount = useMemo(() => countPendingSlots(events), [events]);
   const sections = useMemo(() => groupTimelineByMonth(filtered), [filtered]);
   const filterNote = useMemo(() => buildTimelineFilterNote(filterType, rouletteSeries, activeTeamFilter), [filterType, rouletteSeries, activeTeamFilter]);
-  const pendingLabel = pendingCount === 1 ? "1 row still needs a member assignment." : pendingCount > 1 ? `${pendingCount} rows still need member assignments.` : "All archived rows already have full member coverage.";
-
   return (
     <div className="space-y-6">
-      <section className="motion-section grid gap-4 border-t border-[var(--border)] pt-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-          <div className="motion-card app-card p-4 md:p-5">
-            <div className="tabular-nums text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-4xl">{filtered.length}</div>
-            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Events shown</p>
-            <p className="mt-3 max-w-[22rem] text-sm leading-6 text-[var(--muted)]">
-              {filtered.length === events.length ? "Showing the full archive across every saved month." : `Showing ${filtered.length} results from the active archive filters.`}
-            </p>
-          </div>
-          <div className="motion-card app-card p-4 md:p-5">
-            <div className={`tabular-nums text-3xl font-semibold tracking-[-0.05em] md:text-4xl ${pendingCount ? "text-[var(--accent)]" : "text-[var(--foreground)]"}`}>{pendingCount}</div>
-            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Open slots</p>
-            <p className="mt-3 max-w-[22rem] text-sm leading-6 text-[var(--muted)]">{pendingLabel}</p>
-          </div>
-        </div>
+      <div className="archive-summary" aria-live="polite">
+        <span><strong>{filtered.length}</strong> events shown</span>
+        <span><strong>{pendingCount}</strong> unassigned slots</span>
+      </div>
+      <section className="archive-controls">
         <div className="motion-card app-card grid gap-4 p-4 md:p-5">
           <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,18rem)] lg:items-start lg:gap-4">
             <div>
               <div className="kicker">Filter</div>
-              <p className="mt-2 max-w-[32rem] text-sm leading-6 text-[var(--muted)]">
-                Start with the event type, then tighten the list by series or team when you need a narrower audit slice.
-              </p>
             </div>
             <div className="text-sm leading-6 text-[var(--foreground-soft)] lg:text-right" aria-live="polite">{filterNote}</div>
           </div>

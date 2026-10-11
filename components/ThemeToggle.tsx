@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { MoonIcon, SunIcon } from "@/components/UiIcons";
 
@@ -27,7 +27,12 @@ function applyTheme(theme: Theme) {
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>(() => resolveTheme());
+  const [theme, setTheme] = useState<Theme>("dark");
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Read browser preferences after hydration to match the server render.
+    setTheme(resolveTheme());
+  }, []);
 
   return (
     <button

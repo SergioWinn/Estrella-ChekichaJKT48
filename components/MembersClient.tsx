@@ -11,7 +11,7 @@ import { useDebouncedValue } from "@/components/useDebouncedValue";
 import { memberMatchesQuery } from "@/lib/archive-data.ts";
 import { formatEventDate } from "@/lib/format.ts";
 import { STATUS_OPTIONS as MEMBER_STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
-import type { MemberHistoryEntry, MemberRecord } from "@/lib/types.ts";
+import type { MemberHistoryEntry, MemberRecord, OverviewLeaderboardEntry } from "@/lib/types.ts";
 
 const STATUS_OPTIONS = ["All", ...MEMBER_STATUS_OPTIONS] as const;
 
@@ -24,7 +24,11 @@ interface MemberBrowserItem extends MemberRecord {
   totalCheki: number;
 }
 
-export function MembersClient({ members, initialQuery = "" }: { members: MemberBrowserItem[]; initialQuery?: string }) {
+export function MembersClient({ members, leaderboard, initialQuery = "" }: {
+  members: MemberBrowserItem[];
+  leaderboard: OverviewLeaderboardEntry[];
+  initialQuery?: string;
+}) {
   const [query, setQuery] = useState(initialQuery);
   const [status, setStatus] = useState<(typeof STATUS_OPTIONS)[number]>("All");
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
@@ -43,7 +47,6 @@ export function MembersClient({ members, initialQuery = "" }: { members: MemberB
     [debouncedQuery, members, status],
   );
 
-  const membersWithHistory = visibleMembers.filter((member) => member.totalCheki > 0).length;
   const selectedMember = useMemo(
     () => visibleMembers.find((member) => member.id === selectedMemberId) ?? members.find((member) => member.id === selectedMemberId) ?? null,
     [members, selectedMemberId, visibleMembers],
@@ -56,22 +59,33 @@ export function MembersClient({ members, initialQuery = "" }: { members: MemberB
 
   return (
     <div className="space-y-6">
-      <section className="motion-section grid gap-4 border-t border-[var(--border)] pt-5 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.28fr)] xl:items-start">
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-          <div className="motion-card app-card p-4 md:p-5">
-            <div className="tabular-nums text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-4xl">{visibleMembers.length}</div>
-            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">Members shown</p>
-          </div>
-          <div className="motion-card app-card p-4 md:p-5">
-            <div className="tabular-nums text-3xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-4xl">{membersWithHistory}</div>
-            <p className="mt-1 text-sm font-semibold text-[var(--muted-strong)]">With history</p>
-          </div>
-        </div>
+      <section id="ranking" className="member-ranking" aria-labelledby="ranking-title">
+        <header>
+          <h2 id="ranking-title">Most frequent cheki members</h2>
+          <p>Top 5 / Show/event slots only, with at least 2 appearances. Birthday and graduation excluded; tied counts share a rank.</p>
+        </header>
+        {leaderboard.length ? (
+          <ol className="member-ranking-list">
+            {leaderboard.slice(0, 5).map((entry) => {
+              const member = members.find((item) => item.id === entry.member_id);
+              return (
+                <li key={entry.member_id}>
+                  <button type="button" disabled={!member} onClick={() => setSelectedMemberId(entry.member_id)} aria-haspopup="dialog" className="member-ranking-button">
+                    <span className="member-ranking-place">#{entry.rank}</span>
+                    <span className="member-ranking-name">{member?.nickname || entry.nickname}</span>
+                    <span className="member-ranking-count"><strong>{entry.count}</strong> slots</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ol>
+        ) : <p className="text-sm text-[var(--muted)]">Rankings begin after a member appears in at least two show/event slots.</p>}
+      </section>
+      <section className="archive-controls" aria-label="Find a member">
         <div className="motion-card app-card grid gap-4 p-4 md:p-5">
           <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,18rem)] lg:items-start lg:gap-4">
             <div>
               <p className="text-sm font-semibold text-[var(--muted-strong)]">Search members</p>
-              <p className="mt-2 max-w-[32rem] text-sm leading-6 text-[var(--muted)]">Search nickname, full name, team, or generation.</p>
             </div>
             <input
               value={query}
@@ -91,18 +105,20 @@ export function MembersClient({ members, initialQuery = "" }: { members: MemberB
         </div>
       </section>
 
+      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} members / Open a member for statistics and recent history.</p>
       {visibleMembers.length ? (
         <section className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {visibleMembers.map((member, index) => (
             <button
               key={member.id}
               type="button"
+              aria-haspopup="dialog"
               onClick={() => setSelectedMemberId(member.id)}
                 className="motion-card motion-list-item app-card p-3 text-left transition-colors hover:bg-[var(--surface-hover)] sm:p-4"
               style={buildStaggerStyle(index)}
             >
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="flex size-14 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-strong)] sm:size-16">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-strong)] sm:size-16">
                   {member.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={member.avatar_url} alt={member.nickname || "Member avatar"} className="h-full w-full object-cover" />
@@ -110,8 +126,9 @@ export function MembersClient({ members, initialQuery = "" }: { members: MemberB
                     <span className="text-lg font-bold text-[var(--foreground)]">{(member.nickname || "?").slice(0, 1).toUpperCase()}</span>
                   )}
                 </div>
-                <div className="min-w-0 flex-1">
+                <div className="w-full min-w-0 flex-1">
                   <h2 className="truncate text-base font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-lg">{member.nickname || "Unknown member"}</h2>
+                  <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{member.totalCheki}</strong> events</p>
                   <div className="mt-1.5">
                     <span className="rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:text-xs">
                       {member.status || "Unknown team"}
@@ -179,9 +196,10 @@ export function MembersClient({ members, initialQuery = "" }: { members: MemberB
                       Generation {selectedMember.generasi || "?"}
                     </span>
                     <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--accent)] sm:px-3 sm:py-1.5 sm:text-xs">
-                      Total entries {selectedMember.totalCheki}
+                      Total events {selectedMember.totalCheki}
                     </span>
                   </div>
+                  <p className="text-sm text-[var(--muted)]">Show/event cheki slots: {leaderboard.find((entry) => entry.member_id === selectedMember.id)?.count ?? "Fewer than 2"}. Total events include birthday and graduation.</p>
                   <p className="text-xs leading-6 text-[var(--muted-strong)] sm:text-sm">
                     Most recent assigned event: {selectedMember.history[0] ? formatEventDate(selectedMember.history[0].start_time) : "No history yet"}
                   </p>

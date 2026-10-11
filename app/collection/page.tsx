@@ -1,6 +1,5 @@
 /* Hallmark · genre: modern-minimal · macrostructure: Command Deck · design-system: design.md · designed-as-app */
 
-import { SectionHeader } from "@/components/SectionHeader";
 import { CollectionClient } from "@/components/CollectionClient.tsx";
 import { loadCollectionEntriesForUser, loadCollectibleSlotsForUser, requireUser } from "@/lib/v2-server.ts";
 
@@ -21,19 +20,13 @@ export default async function CollectionPage({
   ]);
 
   return (
-    <div className="page-wrap">
-      <header className="workbench-intro">
-        <SectionHeader
-          title="Manage your saved cheki without leaving the archive."
-          description="Review what is already on your shelf, then open the desk only when you need to add or correct a saved slot."
-          titleClassName="text-[clamp(2.5rem,4vw,4rem)]"
-        />
-        <aside className="workbench-note">
-          <div className="kicker">Collector workflow</div>
-          <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
-            The shelf stays scan-first. Add and manage actions stay inside the desk so the archive grid remains the primary surface.
-          </p>
-        </aside>
+    <div className="page-wrap archive-workspace">
+      <header className="archive-page-heading">
+        <div>
+          <p className="kicker">Your personal archive</p>
+          <h1>My collection</h1>
+          <p>Keep track of your cheki and add the ones you own.</p>
+        </div>
       </header>
       <CollectionClient
         collectibleSlots={collectibleSlots}

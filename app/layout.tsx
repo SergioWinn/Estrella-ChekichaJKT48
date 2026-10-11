@@ -35,120 +35,41 @@ const themeInitScript = `(() => {
 
 export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const { user, profile } = await getSessionContext();
-  const links = user
-    ? profile?.role === "admin"
-      ? [
-          { href: "/", label: "Overview" },
-          { href: "/timeline", label: "Timeline" },
-          { href: "/members", label: "Members" },
-          { href: "/collection", label: "Collection" },
-          { href: "/admin", label: "Admin" },
-        ]
-      : [
-          { href: "/", label: "Overview" },
-          { href: "/timeline", label: "Timeline" },
-          { href: "/members", label: "Members" },
-          { href: "/collection", label: "Collection" },
-        ]
-    : [
-        { href: "/", label: "Overview" },
-        { href: "/timeline", label: "Timeline" },
-        { href: "/members", label: "Members" },
-      ];
+  const links = [
+    { href: "/", label: "Timeline" },
+    { href: "/members", label: "Members" },
+    { href: "/collection", label: "My collection" },
+    ...(profile?.role === "admin" ? [{ href: "/admin", label: "Admin" }] : []),
+  ];
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <div className="site-frame mx-auto min-h-screen max-w-[110rem] px-4 py-4 sm:px-6 lg:px-8">
-          <header className="site-header app-shell mb-5 px-4 py-3 sm:px-5 lg:sticky lg:top-4 lg:z-[var(--z-sticky-nav)]">
-            <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
-              <div className="flex flex-col gap-2">
-                <Link href="/" className="kicker w-fit">
-                  Estrella archive desk
+          <header className="site-header archive-header app-shell">
+            <Link href="/" className="archive-wordmark">Estrella<span>JKT48 cheki archive</span></Link>
+            <SiteNav links={links} />
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
+              {user ? (
+                <form action={logoutAction}>
+                  <PendingSubmitButton pendingLabel="Logging out..." ariaLabel="Logout" iconOnly className="site-icon-button inline-flex size-10 items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)]">
+                    <LogoutIcon className="size-5" />
+                  </PendingSubmitButton>
+                </form>
+              ) : (
+                <Link href="/login" className="site-icon-button inline-flex size-10 items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)]" aria-label="Login or signup" title="Login or signup">
+                  <AuthIcon className="size-5" />
                 </Link>
-                <div className="site-meta-strip flex flex-wrap items-center gap-2.5 text-[10px] font-medium uppercase tracking-[0.18em] text-[var(--muted-strong)]">
-                  <span>Archive monitor</span>
-                  <span className="hidden h-1 w-1 rounded-full bg-[var(--border-strong)] sm:block" />
-                  <span>Since January 2026</span>
-                  <span className="hidden h-1 w-1 rounded-full bg-[var(--border-strong)] sm:block" />
-                  <span>JKT48 cheki records</span>
-                </div>
-              </div>
-              <div className="site-actions order-first flex items-center justify-between gap-2 sm:order-none sm:justify-start xl:ml-4">
-                <div className="site-credits hidden items-center gap-3 text-sm text-[var(--muted)] xl:flex">
-                  <p>
-                    Developed by{" "}
-                    <a
-                      href="https://x.com/estrellawin19"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="font-semibold text-[var(--foreground)] transition-colors hover:text-[var(--accent)]"
-                    >
-                      @estrellawin19
-                    </a>
-                  </p>
-                </div>
-                <a
-                  href="https://tako.id/Sportagame19Win"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="site-support-link hidden min-h-10 items-center gap-2 whitespace-nowrap border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 font-medium text-[var(--foreground-soft)] transition-colors hover:bg-[var(--surface-hover)] lg:inline-flex"
-                >
-                  <SupportIcon className="size-3.5 text-[var(--accent)]" />
-                  Support via Tako
-                </a>
-                <ThemeToggle />
-                {user ? (
-                  <form action={logoutAction}>
-                    <PendingSubmitButton
-                      pendingLabel="Logging out…"
-                      ariaLabel="Logout"
-                      iconOnly
-                      className="site-icon-button inline-flex size-10 items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]"
-                    >
-                      <LogoutIcon className="size-5" />
-                    </PendingSubmitButton>
-                  </form>
-                ) : (
-                  <Link
-                    href="/login"
-                    className="site-icon-button inline-flex size-10 items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]"
-                    aria-label="Open login or signup"
-                    title="Login or signup"
-                  >
-                    <AuthIcon className="size-5" />
-                  </Link>
-                )}
-              </div>
-            </div>
-            <div className="mt-3 flex flex-col gap-3 border-t border-[var(--border)] pt-3 xl:flex-row xl:items-center xl:justify-between">
-              <SiteNav links={links} />
-              <div className="site-credits flex flex-col items-start gap-2 text-sm text-[var(--muted)] sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 xl:hidden">
-                <p>
-                  Developed by{" "}
-                  <a
-                    href="https://x.com/estrellawin19"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold text-[var(--foreground)] transition-colors hover:text-[var(--accent)]"
-                  >
-                    @estrellawin19
-                  </a>
-                </p>
-                <a
-                  href="https://tako.id/Sportagame19Win"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="site-support-link inline-flex min-h-10 items-center gap-2 whitespace-nowrap border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 font-medium text-[var(--foreground-soft)] transition-colors hover:bg-[var(--surface-hover)]"
-                >
-                  <SupportIcon className="size-3.5 text-[var(--accent)]" />
-                  Support via Tako
-                </a>
-              </div>
+              )}
             </div>
           </header>
           <main>{children}</main>
+          <footer className="archive-footer">
+            <p>Developed by <a href="https://x.com/estrellawin19" target="_blank" rel="noopener noreferrer">@estrellawin19</a></p>
+            <a href="https://tako.id/Sportagame19Win" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 whitespace-nowrap"><SupportIcon className="size-3.5" />Support via Tako</a>
+          </footer>
         </div>
       </body>
     </html>

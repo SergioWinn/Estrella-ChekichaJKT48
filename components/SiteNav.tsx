@@ -10,7 +10,8 @@ interface NavLink {
 }
 
 export function SiteNav({ links }: { links: NavLink[] }) {
-  const pathname = usePathname();
+  const currentPath = usePathname();
+  const pathname = currentPath === "/timeline" ? "/" : currentPath;
   const [open, setOpen] = useState(false);
   const activeLink = links.find((link) => link.href === pathname) ?? links[0];
   const navRef = useRef<HTMLElement | null>(null);
@@ -64,6 +65,7 @@ export function SiteNav({ links }: { links: NavLink[] }) {
             <Link
               key={link.href}
               href={link.href}
+              aria-current={isActive ? "page" : undefined}
               onClick={() => setOpen(false)}
               className={`site-nav-link inline-flex min-h-10 items-center justify-center border px-3 py-2 text-sm font-medium tracking-[-0.02em] whitespace-nowrap transition-colors sm:min-h-11 sm:px-4 ${
                 isActive

@@ -10,7 +10,10 @@ modern-minimal
 ## Macrostructure family
 
 - Marketing pages: Ledger Hero with a masthead strip, one dominant metric deck, and alternating dense archive bands.
-- App pages: Command Deck with a compressed top rail, one dominant tool surface, and secondary slabs for filters or summaries.
+- App pages: Command Deck with a compact header, short page title, inline summaries and filters immediately above the primary data.
+- Home opens the timeline. `/timeline` remains an alias. Navigation: Timeline, Members, My collection; Admin is role-specific.
+- Members owns the top-five show/event slot ranking. Ties share ranks; birthday and graduation are excluded. Member event totals include all event types and count each event once.
+- Credits and support live in the footer. No oversized intros, decorative archive sections, or explanatory workflow panels on public app pages.
 - Content pages: Quiet Letter with a tall intro column, one restrained form slab, and generous negative space.
 
 ## Theme

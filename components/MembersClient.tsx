@@ -33,6 +33,8 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
   const [status, setStatus] = useState<(typeof STATUS_OPTIONS)[number]>("All");
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const rankingRef = useRef<HTMLOListElement>(null);
+  const [rankingPaused, setRankingPaused] = useState(false);
   const debouncedQuery = useDebouncedValue(query);
 
   const visibleMembers = useMemo(
@@ -57,16 +59,49 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
     if (selectedMember && dialog && !dialog.open) dialog.showModal();
   }, [selectedMember]);
 
+  useEffect(() => {
+    const rail = rankingRef.current;
+    if (!rail || rankingPaused || selectedMember) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let frame: number;
+    let previous = 0;
+    let direction = 1;
+    let offset = rail.scrollLeft;
+    function move(time: number) {
+      const elapsed = previous ? Math.min(time - previous, 50) : 0;
+      previous = time;
+      if (rail && !reducedMotion.matches && !rail.matches(":hover, :focus-within")) {
+        const end = rail.scrollWidth - rail.clientWidth;
+        if (rail.scrollLeft >= end) direction = -1;
+        if (rail.scrollLeft <= 0) direction = 1;
+        offset = Math.max(0, Math.min(end, offset + direction * elapsed * 0.025));
+        rail.scrollLeft = offset;
+      } else if (rail) {
+        offset = rail.scrollLeft;
+      }
+      frame = requestAnimationFrame(move);
+    }
+    frame = requestAnimationFrame(move);
+    return () => cancelAnimationFrame(frame);
+  }, [rankingPaused, selectedMember, leaderboard.length]);
+
   return (
     <div className="space-y-6">
       <section id="ranking" className="member-ranking" aria-labelledby="ranking-title">
-        <header>
-          <h2 id="ranking-title">Most frequent cheki members</h2>
-          <p>Top 5 / Show/event slots only, with at least 2 appearances. Birthday and graduation excluded; tied counts share a rank.</p>
+        <header className="member-ranking-heading">
+          <div>
+            <h2 id="ranking-title">Most frequent cheki members</h2>
+            <p>Top 10 · Cheki show/event · Excludes birthday & graduation</p>
+          </div>
+          {leaderboard.length ? (
+            <button type="button" className="member-ranking-toggle" aria-pressed={rankingPaused} onClick={() => setRankingPaused((paused) => !paused)}>
+              {rankingPaused ? "Resume sliding" : "Pause sliding"}
+            </button>
+          ) : null}
         </header>
         {leaderboard.length ? (
-          <ol className="member-ranking-list">
-            {leaderboard.slice(0, 5).map((entry) => {
+          <ol ref={rankingRef} className="member-ranking-list" tabIndex={0} aria-label="Top 10 show/event cheki ranking. Scroll to see more members." onPointerDown={() => setRankingPaused(true)} onWheel={() => setRankingPaused(true)}>
+            {leaderboard.slice(0, 10).map((entry) => {
               const member = members.find((item) => item.id === entry.member_id);
               return (
                 <li key={entry.member_id}>
@@ -79,7 +114,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
               );
             })}
           </ol>
-        ) : <p className="text-sm text-[var(--muted)]">Rankings begin after a member appears in at least two show/event slots.</p>}
+        ) : <p className="text-sm text-[var(--muted)]">No show/event ranking available yet.</p>}
       </section>
       <section className="archive-controls" aria-label="Find a member">
         <div className="motion-card app-card grid gap-4 p-4 md:p-5">

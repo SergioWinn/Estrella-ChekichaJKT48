@@ -30,7 +30,7 @@
 .member-ranking { scroll-margin-top: var(--space-lg); border-block: 1px solid var(--border); padding-block: var(--space-md); }
 .member-ranking h2 { font-size: var(--text-lg); font-weight: 600; }
 .member-ranking header p { max-width: 70ch; font-size: var(--text-xs); color: var(--muted); margin-block: var(--space-2xs) var(--space-sm); }
-.member-ranking-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-xs); margin-bottom: var(--space-xs); }
+.member-ranking-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: var(--space-xs); margin-bottom: var(--space-xs); }
 .member-ranking-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(14rem, 18rem); gap: var(--space-xs); overflow-x: auto; scrollbar-width: none; list-style: none; padding: var(--space-3xs); }
 .member-ranking-list::-webkit-scrollbar { display: none; }
 .member-ranking-toggle { display: inline-flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; flex-shrink: 0; border-radius: var(--radius-sm); color: var(--muted); }

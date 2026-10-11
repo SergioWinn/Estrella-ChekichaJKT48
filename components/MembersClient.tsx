@@ -171,7 +171,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
         </div>
       </section>
 
-      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} members / Show/event cheki counts and last dates.</p>
+      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} members / All cheki types, including birthday & graduation.</p>
       {visibleMembers.length ? (
         <section className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {visibleMembers.map((member, index) => (
@@ -194,8 +194,8 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                 </div>
                 <div className="w-full min-w-0 flex-1">
                   <h2 className="truncate text-base font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-lg">{member.nickname || "Unknown member"}</h2>
-                  <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{member.showEventCheki}</strong> times</p>
-                  <p className="mt-1 text-xs text-[var(--muted)]">Last cheki: <span className="text-[var(--foreground-soft)]">{member.lastShowEventTime ? formatEventDate(member.lastShowEventTime) : "Not recorded"}</span></p>
+                  <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{member.totalCheki}</strong> times</p>
+                  <p className="mt-1 text-xs text-[var(--muted)]">Last cheki: <span className="text-[var(--foreground-soft)]">{member.history[0] ? formatEventDate(member.history[0].start_time) : "Not recorded"}</span></p>
                   <div className="mt-1.5">
                     <span className="rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:text-xs">
                       {member.status || "Unknown team"}
@@ -305,12 +305,12 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                       Generation {selectedMember.generasi || "?"}
                     </span>
                     <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--accent)] sm:px-3 sm:py-1.5 sm:text-xs">
-                      Total {selectedMember.totalCheki} times
+                      All types {selectedMember.totalCheki} times
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--muted)]">Show/event cheki: {selectedMember.showEventCheki} times. Last cheki: {selectedMember.lastShowEventTime ? formatEventDate(selectedMember.lastShowEventTime) : "Not recorded"}. Total includes birthday and graduation.</p>
+                  <p className="text-sm text-[var(--muted)]">Show/event only: {selectedMember.showEventCheki} times. Last show/event cheki: {selectedMember.lastShowEventTime ? formatEventDate(selectedMember.lastShowEventTime) : "Not recorded"}.</p>
                   <p className="text-xs leading-6 text-[var(--muted-strong)] sm:text-sm">
-                    Most recent assigned event: {selectedMember.history[0] ? formatEventDate(selectedMember.history[0].start_time) : "No history yet"}
+                    Last cheki (all types): {selectedMember.history[0] ? formatEventDate(selectedMember.history[0].start_time) : "Not recorded"}. Includes birthday & graduation.
                   </p>
                 </div>
               </div>

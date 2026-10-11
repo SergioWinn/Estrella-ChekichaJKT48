@@ -248,7 +248,10 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                 )) : <p className="p-3 text-sm text-[var(--muted)]">No members found.</p>}
               </div>
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-                <p aria-live="polite" className="text-sm text-[var(--muted)]">{comparisonIds.length} selected · Choose at least 2.</p>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <p aria-live="polite" className="text-sm text-[var(--muted)]">{comparisonIds.length} selected · Choose at least 2.</p>
+                  <button type="button" disabled={!comparisonIds.length} onClick={() => setComparisonIds([])} className="min-h-11 whitespace-nowrap rounded-lg px-2 text-sm text-[var(--accent)] underline underline-offset-4 hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:text-[var(--muted)] disabled:no-underline disabled:opacity-50">Clear selection</button>
+                </div>
                 <button type="button" disabled={comparisonIds.length < 2} onClick={() => setComparisonReady(true)} className="min-h-11 rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-50">Sort selected</button>
               </div>
             </>

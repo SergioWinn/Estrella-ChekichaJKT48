@@ -12,7 +12,7 @@ modern-minimal
 - Marketing pages: Ledger Hero with a masthead strip, one dominant metric deck, and alternating dense archive bands.
 - App pages: Command Deck with a compact header, short page title, inline summaries and filters immediately above the primary data.
 - Home opens the timeline. `/timeline` remains an alias. Navigation: Timeline, Members, My collection; Admin is role-specific.
-- Members owns the top-twenty show/event slot ranking in a horizontally scrolling rail with a hidden scrollbar. It loops gently from the last member back to #1, pauses on hover, focus or manual interaction, and supports a pause control and reduced motion. Visual copies are hidden from assistive technology and keyboard navigation. Ties share ranks; birthday and graduation are excluded. Member event totals include all event types and count each event once.
+- Members owns the top-twenty show/event slot ranking in a horizontally scrolling rail with a hidden scrollbar. It loops gently from the last member back to #1, pauses on hover, keyboard focus, holding or manual scrolling, and resumes automatically when interaction ends. Reduced motion disables animation. There is no pause button. Visual copies are hidden from assistive technology and keyboard navigation. Ties share ranks; birthday and graduation are excluded. Member event totals include all event types and count each event once.
 - Credits and support live in the footer. No oversized intros, decorative archive sections, or explanatory workflow panels on public app pages.
 - Content pages: Quiet Letter with a tall intro column, one restrained form slab, and generous negative space.
 

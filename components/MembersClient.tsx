@@ -34,7 +34,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const rankingRef = useRef<HTMLOListElement>(null);
-  const [rankingPaused, setRankingPaused] = useState(false);
+  const rankingInteraction = useRef({ pointerHeld: false, touchHeld: false, wheelUntil: 0 });
   const debouncedQuery = useDebouncedValue(query);
   const rankingEntries = leaderboard.slice(0, 20);
 
@@ -62,15 +62,26 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
 
   useEffect(() => {
     const rail = rankingRef.current;
-    if (!rail || rankingPaused || selectedMember) return;
+    if (!rail || selectedMember) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const hoverAvailable = window.matchMedia("(hover: hover)");
+    const interaction = rankingInteraction.current;
+    function releasePointer() { interaction.pointerHeld = false; }
+    function releaseTouch(event: TouchEvent) { interaction.touchHeld = event.touches.length > 0; }
+    window.addEventListener("pointerup", releasePointer);
+    window.addEventListener("pointercancel", releasePointer);
+    window.addEventListener("touchend", releaseTouch);
+    window.addEventListener("touchcancel", releaseTouch);
     let frame: number;
     let previous = 0;
     let offset = rail.scrollLeft;
     function move(time: number) {
       const elapsed = previous ? Math.min(time - previous, 50) : 0;
       previous = time;
-      if (rail && !reducedMotion.matches && !rail.matches(":hover, :focus-within")) {
+      const paused = interaction.pointerHeld || interaction.touchHeld || time < interaction.wheelUntil;
+      const hovered = hoverAvailable.matches && rail?.matches(":hover");
+      const keyboardFocused = rail?.matches(":focus-visible") || rail?.querySelector(":focus-visible");
+      if (rail && !reducedMotion.matches && !paused && !hovered && !keyboardFocused) {
         const first = rail.firstElementChild as HTMLElement;
         const copy = rail.querySelector<HTMLElement>('[data-ranking-copy="true"]');
         const cycle = copy ? copy.offsetLeft - first.offsetLeft : 0;
@@ -84,8 +95,16 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
       frame = requestAnimationFrame(move);
     }
     frame = requestAnimationFrame(move);
-    return () => cancelAnimationFrame(frame);
-  }, [rankingPaused, selectedMember, leaderboard.length]);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("pointerup", releasePointer);
+      window.removeEventListener("pointercancel", releasePointer);
+      window.removeEventListener("touchend", releaseTouch);
+      window.removeEventListener("touchcancel", releaseTouch);
+      interaction.pointerHeld = false;
+      interaction.touchHeld = false;
+    };
+  }, [selectedMember, leaderboard.length]);
 
   return (
     <div className="space-y-6">
@@ -95,16 +114,9 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
             <h2 id="ranking-title">Most frequent cheki members</h2>
             <p>Top 20 · Cheki show/event · Excludes birthday & graduation</p>
           </div>
-          {leaderboard.length ? (
-            <button type="button" className="member-ranking-toggle" aria-label={rankingPaused ? "Resume sliding" : "Pause sliding"} title={rankingPaused ? "Resume sliding" : "Pause sliding"} aria-pressed={rankingPaused} onClick={() => setRankingPaused((paused) => !paused)}>
-              <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                {rankingPaused ? <path d="m8 5 11 7-11 7Z" /> : <path d="M6 5h4v14H6zm8 0h4v14h-4z" />}
-              </svg>
-            </button>
-          ) : null}
         </header>
         {leaderboard.length ? (
-          <ol ref={rankingRef} className="member-ranking-list" tabIndex={0} aria-label="Top 20 show/event cheki ranking. Scroll to see more members." onPointerDown={() => setRankingPaused(true)} onWheel={() => setRankingPaused(true)}>
+          <ol ref={rankingRef} className="member-ranking-list" tabIndex={0} aria-label="Top 20 show/event cheki ranking. Scroll to see more members." onPointerDown={() => { rankingInteraction.current.pointerHeld = true; }} onTouchStart={() => { rankingInteraction.current.touchHeld = true; }} onWheel={() => { rankingInteraction.current.wheelUntil = performance.now() + 200; }}>
             {[...rankingEntries, ...rankingEntries].map((entry, index) => {
               const member = members.find((item) => item.id === entry.member_id);
               const isCopy = index >= rankingEntries.length;

@@ -3,6 +3,7 @@ import type {
   ChekichaRow,
   MemberHistoryEntry,
   MemberRecord,
+  MemberChekiStats,
   MemberRelation,
   OverviewAssignment,
   OverviewLeaderboardEntry,
@@ -201,12 +202,23 @@ export function memberMatchesQuery(member: MemberRecord, query: string): boolean
 
 export function buildMemberArchive(rows: MemberHistoryEntry[]) {
   const historyMap: Record<string, MemberHistoryEntry[]> = {};
+  const showEventStatsMap: Record<string, MemberChekiStats> = {};
 
   for (const row of rows) {
     const memberIds = new Set([row.member_id_a, row.member_id_b].filter(Boolean) as string[]);
     for (const memberId of memberIds) {
       historyMap[memberId] ??= [];
       historyMap[memberId].push(row);
+      if (isShowEvent(row.event_type)) {
+        const count = Number(row.member_id_a === memberId) + Number((row.slot_mode || 1) === 2 && row.member_id_b === memberId);
+        if (!count) continue;
+        const stats = showEventStatsMap[memberId] ??= { showEventCheki: 0, lastShowEventTime: null };
+        stats.showEventCheki += count;
+        const timestamp = Date.parse(row.start_time);
+        if (Number.isFinite(timestamp) && (!stats.lastShowEventTime || timestamp > Date.parse(stats.lastShowEventTime))) {
+          stats.lastShowEventTime = row.start_time;
+        }
+      }
     }
   }
 
@@ -217,7 +229,16 @@ export function buildMemberArchive(rows: MemberHistoryEntry[]) {
     limitedHistoryMap[memberId] = memberRows.slice(0, 12);
   }
 
-  return { limitedHistoryMap, totalMap };
+  return { limitedHistoryMap, totalMap, showEventStatsMap };
+}
+
+export function compareMembersByLastCheki(left: MemberRecord & MemberChekiStats, right: MemberRecord & MemberChekiStats): number {
+  if (!left.lastShowEventTime && right.lastShowEventTime) return -1;
+  if (left.lastShowEventTime && !right.lastShowEventTime) return 1;
+  const dateOrder = left.lastShowEventTime && right.lastShowEventTime
+    ? Date.parse(left.lastShowEventTime) - Date.parse(right.lastShowEventTime)
+    : 0;
+  return dateOrder || (left.full_name || left.nickname || "").localeCompare(right.full_name || right.nickname || "");
 }
 
 export async function loadOverviewRows(): Promise<ChekichaRow[]> {

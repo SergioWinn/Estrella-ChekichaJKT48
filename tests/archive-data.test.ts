@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { buildMemberArchive, buildOverviewSnapshot } from "../lib/archive-data.ts";
+import { buildMemberArchive, buildOverviewSnapshot, compareMembersByLastCheki } from "../lib/archive-data.ts";
 
 test("buildOverviewSnapshot counts sessions, pending slots, ranks ties, and limits recent assignments", () => {
   const rows = [
@@ -176,4 +176,34 @@ test("member ranking works with history rows without member relations and counts
     { member_id: "member", count: 2, rank: 1 },
   ]);
   assert.equal(buildMemberArchive(rows).totalMap.member, 2);
+});
+
+test("show/event comparison counts active slots and finds latest dates without special events or history limits", () => {
+  const rows = [
+    { id: "old", start_time: "2026-01-01T12:00:00+07:00", event_type: "Roulette", member_id_a: "a" },
+    { id: "birthday", start_time: "2026-10-11T12:00:00+07:00", event_type: "Birthday", member_id_a: "a" },
+    { id: "graduation", start_time: "2026-10-10T12:00:00+07:00", event_type: "Graduation", member_id_a: "special-only" },
+    { id: "double", start_time: "2026-02-01T12:00:00+07:00", event_type: "Roulette", slot_mode: 2, member_id_a: "a", member_id_b: "a" },
+    { id: "earlier", start_time: "2026-01-30T12:00:00+07:00", event_type: "Roulette", slot_mode: 1, member_id_a: "a", member_id_b: "inactive-slot" },
+    { id: "bad-date", start_time: "invalid", event_type: "Roulette", member_id_a: "a" },
+    ...Array.from({ length: 13 }, (_, index) => ({ id: `history-${index}`, start_time: "2026-01-02T12:00:00+07:00", event_type: "Roulette", member_id_a: "b" })),
+  ];
+  const { showEventStatsMap, limitedHistoryMap } = buildMemberArchive(rows);
+  assert.deepEqual(showEventStatsMap.a, { showEventCheki: 5, lastShowEventTime: "2026-02-01T12:00:00+07:00" });
+  assert.equal(showEventStatsMap.b.showEventCheki, 13);
+  assert.equal(limitedHistoryMap.b.length, 12);
+  assert.equal(showEventStatsMap["special-only"], undefined);
+  assert.equal(showEventStatsMap["inactive-slot"], undefined);
+});
+
+test("longest-since-cheki sort puts unrecorded members first, dates ascending and tied names alphabetically", () => {
+  const members = [
+    { id: "recent", nickname: "Recent", showEventCheki: 1, lastShowEventTime: "2026-10-01T12:00:00+07:00" },
+    { id: "old-b", nickname: "B", showEventCheki: 2, lastShowEventTime: "2026-01-01T05:00:00Z" },
+    { id: "never-z", nickname: "Z", showEventCheki: 0, lastShowEventTime: null },
+    { id: "old-a", nickname: "A", showEventCheki: 3, lastShowEventTime: "2026-01-01T12:00:00+07:00" },
+    { id: "never-a", nickname: "A", showEventCheki: 0, lastShowEventTime: null },
+  ];
+  assert.deepEqual(members.toSorted(compareMembersByLastCheki).map((member) => member.id), ["never-a", "never-z", "old-a", "old-b", "recent"]);
+  assert.equal(members[0].id, "recent");
 });

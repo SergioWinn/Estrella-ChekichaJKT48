@@ -8,12 +8,14 @@ export const dynamic = "force-dynamic";
 export default async function MembersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q = "" } = await searchParams;
   const [members, archiveRows] = await Promise.all([loadMembers(), loadMemberArchiveRows()]);
-  const { limitedHistoryMap, totalMap } = buildMemberArchive(archiveRows);
+  const { limitedHistoryMap, totalMap, showEventStatsMap } = buildMemberArchive(archiveRows);
   const { leaderboard } = buildOverviewSnapshot(archiveRows);
   const browserItems = members.map((member) => ({
     ...member,
     history: limitedHistoryMap[member.id] ?? [],
     totalCheki: totalMap[member.id] ?? 0,
+    showEventCheki: showEventStatsMap[member.id]?.showEventCheki ?? 0,
+    lastShowEventTime: showEventStatsMap[member.id]?.lastShowEventTime ?? null,
   }));
 
   return (
@@ -21,8 +23,8 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
       <header className="archive-page-heading">
         <div>
           <p className="kicker">Members & statistics</p>
-          <h1>Who appears most often?</h1>
-          <p>Compare cheki frequency, then open a member to see their event history.</p>
+          <h1>Member cheki archive</h1>
+          <p>Browse member history and show/event frequency, or select members to compare their last cheki.</p>
         </div>
       </header>
       <MembersClient members={browserItems} leaderboard={leaderboard} initialQuery={q} />

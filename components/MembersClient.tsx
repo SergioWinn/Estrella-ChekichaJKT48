@@ -8,10 +8,10 @@ import { FilterPill } from "@/components/FilterPill";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { CloseIcon } from "@/components/UiIcons";
 import { useDebouncedValue } from "@/components/useDebouncedValue";
-import { memberMatchesQuery } from "@/lib/archive-data.ts";
+import { compareMembersByLastCheki, memberMatchesQuery } from "@/lib/archive-data.ts";
 import { formatEventDate } from "@/lib/format.ts";
 import { STATUS_OPTIONS as MEMBER_STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
-import type { MemberHistoryEntry, MemberRecord, OverviewLeaderboardEntry } from "@/lib/types.ts";
+import type { MemberChekiStats, MemberHistoryEntry, MemberRecord, OverviewLeaderboardEntry } from "@/lib/types.ts";
 
 const STATUS_OPTIONS = ["All", ...MEMBER_STATUS_OPTIONS] as const;
 
@@ -19,7 +19,7 @@ function buildStaggerStyle(index: number): CSSProperties {
   return { "--i": Math.min(index, 5) } as CSSProperties;
 }
 
-interface MemberBrowserItem extends MemberRecord {
+interface MemberBrowserItem extends MemberRecord, MemberChekiStats {
   history: MemberHistoryEntry[];
   totalCheki: number;
 }
@@ -31,6 +31,10 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [status, setStatus] = useState<(typeof STATUS_OPTIONS)[number]>("All");
+  const [comparisonQuery, setComparisonQuery] = useState("");
+  const [comparisonIds, setComparisonIds] = useState<string[]>([]);
+  const [comparisonReady, setComparisonReady] = useState(false);
+  const comparisonDialogRef = useRef<HTMLDialogElement>(null);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const rankingRef = useRef<HTMLOListElement>(null);
@@ -49,6 +53,9 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
         .toSorted((a, b) => (a.full_name || a.nickname || "").localeCompare(b.full_name || b.nickname || "")),
     [debouncedQuery, members, status],
   );
+
+  const comparisonChoices = members.filter((member) => memberMatchesQuery(member, comparisonQuery));
+  const comparisonResults = members.filter((member) => comparisonIds.includes(member.id)).toSorted(compareMembersByLastCheki);
 
   const selectedMember = useMemo(
     () => visibleMembers.find((member) => member.id === selectedMemberId) ?? members.find((member) => member.id === selectedMemberId) ?? null,
@@ -78,7 +85,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
     function move(time: number) {
       const elapsed = previous ? Math.min(time - previous, 50) : 0;
       previous = time;
-      const paused = interaction.pointerHeld || interaction.touchHeld || time < interaction.wheelUntil;
+      const paused = comparisonDialogRef.current?.open || interaction.pointerHeld || interaction.touchHeld || time < interaction.wheelUntil;
       const hovered = hoverAvailable.matches && rail?.matches(":hover");
       const keyboardFocused = rail?.matches(":focus-visible") || rail?.querySelector(":focus-visible");
       if (rail && !reducedMotion.matches && !paused && !hovered && !keyboardFocused) {
@@ -147,6 +154,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
               className="app-input min-h-10 w-full px-3 py-2 text-sm placeholder:text-[var(--muted)]"
             />
           </div>
+          <button type="button" aria-haspopup="dialog" className="min-h-11 justify-self-start rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm hover:bg-[var(--surface-hover)]" onClick={() => { setComparisonReady(false); comparisonDialogRef.current?.showModal(); }}>Compare members</button>
           <div className="flex flex-wrap gap-2">
             {STATUS_OPTIONS.map((option) => (
               <FilterPill key={option} onClick={() => setStatus(option)} active={status === option}>
@@ -157,7 +165,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
         </div>
       </section>
 
-      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} members / Open a member for statistics and recent history.</p>
+      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} members / Show/event cheki counts and last dates.</p>
       {visibleMembers.length ? (
         <section className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {visibleMembers.map((member, index) => (
@@ -180,7 +188,8 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                 </div>
                 <div className="w-full min-w-0 flex-1">
                   <h2 className="truncate text-base font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-lg">{member.nickname || "Unknown member"}</h2>
-                  <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{member.totalCheki}</strong> times</p>
+                  <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{member.showEventCheki}</strong> times</p>
+                  <p className="mt-1 text-xs text-[var(--muted)]">Last cheki: <span className="text-[var(--foreground-soft)]">{member.lastShowEventTime ? formatEventDate(member.lastShowEventTime) : "Not recorded"}</span></p>
                   <div className="mt-1.5">
                     <span className="rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:text-xs">
                       {member.status || "Unknown team"}
@@ -198,6 +207,48 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
             <span>Try a different search term or team filter.</span>
           </div>
       )}
+
+      <dialog
+        ref={comparisonDialogRef}
+        aria-labelledby="comparison-title"
+        className="app-modal-dialog m-auto max-h-[100dvh] w-full max-w-none overflow-visible bg-transparent p-3 text-[var(--foreground)] sm:p-6"
+        onClick={(event) => { if (event.target === event.currentTarget) event.currentTarget.close(); }}
+      >
+        <div className="relative mx-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-xl overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 shadow-[var(--shadow-modal)] sm:max-h-[calc(100dvh-3rem)] sm:p-6" onClick={(event) => event.stopPropagation()}>
+          <button type="button" aria-label="Close comparison" onClick={() => comparisonDialogRef.current?.close()} className="absolute right-3 top-3 inline-flex size-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:bg-[var(--surface-hover)]"><CloseIcon className="size-4" /></button>
+          <h2 id="comparison-title" className="pr-12 text-xl font-semibold tracking-[-0.03em]">Compare members</h2>
+          <p className="mt-2 pr-8 text-sm text-[var(--muted)]">Show/event cheki only. Excludes birthday & graduation.</p>
+          {comparisonReady ? (
+            <>
+              <p className="mt-5 text-sm text-[var(--muted)]">Not recorded first, then oldest last cheki.</p>
+              <table className="mt-3 w-full table-fixed text-left text-xs sm:text-sm">
+                <thead className="text-[var(--muted)]"><tr><th scope="col" className="w-[38%] p-2">Member</th><th scope="col" className="w-[42%] p-2">Last cheki</th><th scope="col" className="w-[20%] p-2 text-right">Times</th></tr></thead>
+                <tbody>{comparisonResults.map((member) => (
+                  <tr key={member.id} className="border-t border-[var(--border)]"><th scope="row" className="break-words p-2 font-semibold">{member.nickname || member.full_name}</th><td className="p-2 text-[var(--muted-strong)]">{member.lastShowEventTime ? formatEventDate(member.lastShowEventTime) : "Not recorded"}</td><td className="p-2 text-right">{member.showEventCheki}</td></tr>
+                ))}</tbody>
+              </table>
+              <button type="button" className="mt-5 min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm hover:bg-[var(--surface-hover)]" onClick={() => setComparisonReady(false)}>Edit selection</button>
+            </>
+          ) : (
+            <>
+              <input value={comparisonQuery} onChange={(event) => setComparisonQuery(event.target.value)} aria-label="Find members to compare" placeholder="Find members to compare" className="app-input mt-5 min-h-11 w-full px-3 py-2 text-sm" />
+              <div className="mt-3 max-h-[40dvh] overflow-y-auto rounded-xl border border-[var(--border)]">
+                {comparisonChoices.length ? comparisonChoices.map((member) => (
+                  <label key={member.id} className="flex min-h-12 cursor-pointer items-center gap-3 border-b border-[var(--border)] px-3 py-2 last:border-0 hover:bg-[var(--surface-hover)]">
+                    <input type="checkbox" checked={comparisonIds.includes(member.id)} onChange={(event) => setComparisonIds((ids) => event.target.checked ? [...ids, member.id] : ids.filter((id) => id !== member.id))} className="size-4 shrink-0 accent-[var(--accent)]" />
+                    <span className="min-w-0 flex-1 break-words text-sm">{member.nickname || member.full_name}</span>
+                    <span className="shrink-0 text-xs text-[var(--muted)]">{member.showEventCheki} times</span>
+                  </label>
+                )) : <p className="p-3 text-sm text-[var(--muted)]">No members found.</p>}
+              </div>
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                <p aria-live="polite" className="text-sm text-[var(--muted)]">{comparisonIds.length} selected · Choose at least 2.</p>
+                <button type="button" disabled={comparisonIds.length < 2} onClick={() => setComparisonReady(true)} className="min-h-11 rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-50">Sort selected</button>
+              </div>
+            </>
+          )}
+        </div>
+      </dialog>
 
       {selectedMember ? (
         <dialog
@@ -251,7 +302,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                       Total {selectedMember.totalCheki} times
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--muted)]">Show/event cheki: {leaderboard.find((entry) => entry.member_id === selectedMember.id)?.count ?? "Fewer than 2"} times. Total includes birthday and graduation.</p>
+                  <p className="text-sm text-[var(--muted)]">Show/event cheki: {selectedMember.showEventCheki} times. Last cheki: {selectedMember.lastShowEventTime ? formatEventDate(selectedMember.lastShowEventTime) : "Not recorded"}. Total includes birthday and graduation.</p>
                   <p className="text-xs leading-6 text-[var(--muted-strong)] sm:text-sm">
                     Most recent assigned event: {selectedMember.history[0] ? formatEventDate(selectedMember.history[0].start_time) : "No history yet"}
                   </p>

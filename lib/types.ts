@@ -71,6 +71,11 @@ export interface MemberRecord {
   status?: string | null;
 }
 
+export interface MemberChekiStats {
+  showEventCheki: number;
+  lastShowEventTime: string | null;
+}
+
 export interface MemberHistoryEntry extends ChekichaRow {
   id: string;
 }

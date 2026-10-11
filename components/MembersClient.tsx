@@ -1,5 +1,7 @@
 "use client";
 
+/* Hallmark · pre-emit critique: P4 H5 E4 S4 R5 V4 */
+
 import type { CSSProperties } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -142,19 +144,23 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
       </section>
       <section className="archive-controls" aria-label="Find a member">
         <div className="motion-card app-card grid gap-4 p-4 md:p-5">
-          <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,18rem)] lg:items-start lg:gap-4">
-            <div>
-              <p className="text-sm font-semibold text-[var(--muted-strong)]">Search members</p>
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-4">
+            <label htmlFor="member-search" className="text-sm font-semibold text-[var(--muted-strong)]">Search members</label>
+            <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] lg:grid-cols-[18rem_auto]">
+              <input
+                id="member-search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                aria-label="Search members"
+                placeholder="Search members"
+                className="app-input min-h-11 w-full px-3 py-2 text-sm placeholder:text-[var(--muted)]"
+              />
+              <button type="button" aria-haspopup="dialog" className="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-4 py-2 text-sm font-semibold text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]" onClick={() => { setComparisonReady(false); comparisonDialogRef.current?.showModal(); }}>
+                <svg aria-hidden="true" className="size-4 shrink-0" fill="none" viewBox="0 0 24 24"><path d="M4 8h16m-4-4 4 4-4 4M20 16H4m4-4-4 4 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                Compare members
+              </button>
             </div>
-            <input
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              aria-label="Search members"
-              placeholder="Search members"
-              className="app-input min-h-10 w-full px-3 py-2 text-sm placeholder:text-[var(--muted)]"
-            />
           </div>
-          <button type="button" aria-haspopup="dialog" className="min-h-11 justify-self-start rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm hover:bg-[var(--surface-hover)]" onClick={() => { setComparisonReady(false); comparisonDialogRef.current?.showModal(); }}>Compare members</button>
           <div className="flex flex-wrap gap-2">
             {STATUS_OPTIONS.map((option) => (
               <FilterPill key={option} onClick={() => setStatus(option)} active={status === option}>

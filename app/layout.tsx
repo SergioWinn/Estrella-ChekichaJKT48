@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { Geist, IBM_Plex_Mono } from "next/font/google";
 
 import "./globals.css";
 import "./archive.css";
@@ -11,6 +12,9 @@ import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { logoutAction } from "@/lib/v2-actions.ts";
 import { getSessionContext } from "@/lib/v2-server.ts";
+
+const geist = Geist({ subsets: ["latin"], display: "swap", variable: "--font-geist" });
+const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: "500", display: "swap", preload: false, variable: "--font-ibm-plex-mono" });
 
 export const metadata: Metadata = {
   title: "JKT48 Cheki Archive by @estrellawin19",
@@ -44,7 +48,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   ];
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${geist.variable} ${mono.variable}`} suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[var(--z-toast)] focus:rounded-lg focus:bg-[var(--surface)] focus:px-4 focus:py-3 focus:text-[var(--foreground)]">Skip to content</a>

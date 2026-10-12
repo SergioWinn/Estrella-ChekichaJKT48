@@ -40,7 +40,6 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const rankingRef = useRef<HTMLOListElement>(null);
-  const rankingInteraction = useRef({ pointerHeld: false, touchHeld: false, wheelUntil: 0 });
   const debouncedQuery = useDebouncedValue(query);
   const rankingEntries = leaderboard.slice(0, 20);
 
@@ -74,44 +73,85 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
     if (!rail || selectedMember) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const hoverAvailable = window.matchMedia("(hover: hover)");
-    const interaction = rankingInteraction.current;
-    function releasePointer() { interaction.pointerHeld = false; }
-    function releaseTouch(event: TouchEvent) { interaction.touchHeld = event.touches.length > 0; }
-    window.addEventListener("pointerup", releasePointer);
-    window.addEventListener("pointercancel", releasePointer);
-    window.addEventListener("touchend", releaseTouch);
-    window.addEventListener("touchcancel", releaseTouch);
-    let frame: number;
+    const first = rail.firstElementChild as HTMLElement;
+    const copy = rail.querySelector<HTMLElement>('[data-ranking-copy="true"]');
+    if (!first || !copy) return;
+    const controller = new AbortController();
+    const { signal } = controller;
+    let frame = 0;
+    let wheelTimer = 0;
+    let wheeling = false;
+    let pointerHeld = false;
+    let touchHeld = false;
+    let visible = false;
+    let cycle = 0;
     let previous = 0;
     let offset = rail.scrollLeft;
-    function move(time: number) {
+    function stop() {
+      cancelAnimationFrame(frame);
+      frame = 0;
+      previous = 0;
+    }
+    const update = () => {
+      stop();
+      if (signal.aborted) return;
+      offset = rail.scrollLeft;
+      const hovered = hoverAvailable.matches && rail.matches(":hover");
+      const focused = rail.matches(":focus-visible") || rail.querySelector(":focus-visible");
+      if (visible && !document.hidden && !reducedMotion.matches && !hovered && !focused &&
+        !comparisonDialogRef.current?.open && !pointerHeld && !touchHeld && !wheeling && cycle > rail.clientWidth) {
+        frame = requestAnimationFrame(move);
+      }
+    };
+    const move = (time: number) => {
       const elapsed = previous ? Math.min(time - previous, 50) : 0;
       previous = time;
-      const paused = comparisonDialogRef.current?.open || interaction.pointerHeld || interaction.touchHeld || time < interaction.wheelUntil;
-      const hovered = hoverAvailable.matches && rail?.matches(":hover");
-      const keyboardFocused = rail?.matches(":focus-visible") || rail?.querySelector(":focus-visible");
-      if (rail && !reducedMotion.matches && !paused && !hovered && !keyboardFocused) {
-        const first = rail.firstElementChild as HTMLElement;
-        const copy = rail.querySelector<HTMLElement>('[data-ranking-copy="true"]');
-        const cycle = copy ? copy.offsetLeft - first.offsetLeft : 0;
-        if (cycle > rail.clientWidth) {
-          offset = (offset + elapsed * 0.025) % cycle;
-          rail.scrollLeft = offset;
-        }
-      } else if (rail) {
-        offset = rail.scrollLeft;
-      }
+      offset = (offset + elapsed * 0.025) % cycle;
+      rail.scrollLeft = offset;
       frame = requestAnimationFrame(move);
-    }
-    frame = requestAnimationFrame(move);
+    };
+    const resizeObserver = new ResizeObserver(() => {
+      cycle = copy.offsetLeft - first.offsetLeft;
+      update();
+    });
+    resizeObserver.observe(rail);
+    resizeObserver.observe(first);
+    const visibilityObserver = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      update();
+    });
+    visibilityObserver.observe(rail);
+    const dialogObserver = new MutationObserver(update);
+    if (comparisonDialogRef.current) dialogObserver.observe(comparisonDialogRef.current, { attributes: true, attributeFilter: ["open"] });
+    rail.addEventListener("pointerdown", () => { pointerHeld = true; update(); }, { signal });
+    rail.addEventListener("touchstart", () => { touchHeld = true; update(); }, { signal, passive: true });
+    window.addEventListener("pointerup", () => { pointerHeld = false; update(); }, { signal });
+    window.addEventListener("pointercancel", () => { pointerHeld = false; update(); }, { signal });
+    const releaseTouch = (event: TouchEvent) => { touchHeld = event.touches.length > 0; update(); };
+    window.addEventListener("touchend", releaseTouch, { signal });
+    window.addEventListener("touchcancel", releaseTouch, { signal });
+    rail.addEventListener("wheel", () => {
+      wheeling = true;
+      clearTimeout(wheelTimer);
+      update();
+      wheelTimer = window.setTimeout(() => { wheeling = false; update(); }, 200);
+    }, { signal, passive: true });
+    rail.addEventListener("pointerenter", update, { signal });
+    rail.addEventListener("pointerleave", update, { signal });
+    rail.addEventListener("focusin", update, { signal });
+    rail.addEventListener("focusout", update, { signal });
+    document.addEventListener("visibilitychange", update, { signal });
+    reducedMotion.addEventListener("change", update, { signal });
+    hoverAvailable.addEventListener("change", update, { signal });
+    window.addEventListener("blur", () => { pointerHeld = false; touchHeld = false; stop(); }, { signal });
+    window.addEventListener("focus", update, { signal });
     return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("pointerup", releasePointer);
-      window.removeEventListener("pointercancel", releasePointer);
-      window.removeEventListener("touchend", releaseTouch);
-      window.removeEventListener("touchcancel", releaseTouch);
-      interaction.pointerHeld = false;
-      interaction.touchHeld = false;
+      stop();
+      clearTimeout(wheelTimer);
+      controller.abort();
+      resizeObserver.disconnect();
+      visibilityObserver.disconnect();
+      dialogObserver.disconnect();
     };
   }, [selectedMember, leaderboard.length]);
 
@@ -125,7 +165,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
           </div>
         </header>
         {leaderboard.length ? (
-          <ol ref={rankingRef} className="member-ranking-list" tabIndex={0} aria-label="Top 20 show/event cheki ranking. Scroll to see more members." onPointerDown={() => { rankingInteraction.current.pointerHeld = true; }} onTouchStart={() => { rankingInteraction.current.touchHeld = true; }} onWheel={() => { rankingInteraction.current.wheelUntil = performance.now() + 200; }}>
+          <ol ref={rankingRef} className="member-ranking-list" tabIndex={0} aria-label="Top 20 show/event cheki ranking. Scroll to see more members.">
             {[...rankingEntries, ...rankingEntries].map((entry, index) => {
               const member = members.find((item) => item.id === entry.member_id);
               const isCopy = index >= rankingEntries.length;
@@ -186,8 +226,9 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                 <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-strong)] sm:size-16">
                   {member.avatar_url ? (
+                    // shortcut: twelve avatars stay eager for common viewports; revisit if the grid becomes denser.
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={member.avatar_url} alt={member.nickname || "Member avatar"} className="h-full w-full object-cover" />
+                    <img src={member.avatar_url} alt={member.nickname || "Member avatar"} loading={index < 12 ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover" />
                   ) : (
                     <span className="text-lg font-bold text-[var(--foreground)]">{(member.nickname || "?").slice(0, 1).toUpperCase()}</span>
                   )}

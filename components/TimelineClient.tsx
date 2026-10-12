@@ -55,10 +55,12 @@ function CompactDate({ value }: { value: string }) {
 function MemberPill({
   avatarUrl,
   name,
+  loading,
   waiting = false,
 }: {
   avatarUrl?: string | null;
   name: string;
+  loading: "eager" | "lazy";
   waiting?: boolean;
 }) {
   return (
@@ -73,7 +75,7 @@ function MemberPill({
         <span className="flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)] md:size-7">
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={avatarUrl} alt={name} className="h-full w-full object-cover" />
+            <img src={avatarUrl} alt={name} loading={loading} decoding="async" className="h-full w-full object-cover" />
           ) : (
             <span className="text-xs font-bold text-[var(--foreground)]">{name.slice(0, 1).toUpperCase()}</span>
           )}
@@ -210,9 +212,10 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                         </div>
                       </div>
                       <div className="flex min-w-0 flex-wrap gap-1 md:flex-nowrap md:gap-2 md:overflow-x-auto md:pb-1">
-                        {card.members.map((member, index) => (
+                        {card.members.map((member, memberIndex) => (
                           <MemberPill
-                            key={`${row.id}-${index}-${member.name}`}
+                            key={`${row.id}-${memberIndex}-${member.name}`}
+                            loading={sectionIndex === 0 && index < 12 ? "eager" : "lazy"}
                             avatarUrl={member.avatarUrl}
                             name={member.name}
                             waiting={member.waiting}

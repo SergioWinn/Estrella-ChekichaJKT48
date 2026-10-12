@@ -8,9 +8,9 @@
   --color-accent-ink: oklch(0.2 0.03 252);
   --color-focus: oklch(0.78 0.09 228);
 
-  --font-display: "Geist", "Segoe UI", sans-serif;
-  --font-body: "Geist", "Segoe UI", sans-serif;
-  --font-mono: "IBM Plex Mono", "Cascadia Mono", monospace;
+  --font-display: var(--font-geist, "Geist"), "Segoe UI", sans-serif;
+  --font-body: var(--font-geist, "Geist"), "Segoe UI", sans-serif;
+  --font-mono: var(--font-ibm-plex-mono, "IBM Plex Mono"), "Cascadia Mono", monospace;
 
   --space-3xs: 0.25rem;
   --space-2xs: 0.5rem;

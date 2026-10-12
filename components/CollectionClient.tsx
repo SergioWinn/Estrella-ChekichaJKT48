@@ -322,7 +322,7 @@ export function CollectionClient({
               <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:size-16">
                 {member.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={member.avatarUrl} alt="" className="h-full w-full object-cover" />
+                  <img src={member.avatarUrl} alt="" loading={index < 12 ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover" />
                 ) : (
                   <span className="text-lg font-bold text-[var(--foreground)]">{(member.name || "?").slice(0, 1).toUpperCase()}</span>
                 )}

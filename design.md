@@ -37,6 +37,8 @@ Dark mode uses brighter accent, error, and team text against its tinted surfaces
 - Display: Geist, weight 600, style normal
 - Body: Geist, weight 400
 - Mono: IBM Plex Mono, weight 500
+- Fonts are self-hosted through `next/font`; Geist is preloaded and the mono face
+  loads when needed. Ranking motion runs only while visible and not paused.
 - Display tracking: -0.04em
 - Type scale anchor: `--text-display` = `clamp(2.8rem, 4vw, 4.8rem)`
 - Root size follows browser preferences; form text is at least 16px and secondary

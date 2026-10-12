@@ -152,7 +152,7 @@ export function CollectionClient({
     const modeParam = searchParams.get("mode");
     return modeParam === "add" || modeParam === "manage";
   });
-  const [deskClosing, setDeskClosing] = useState(false);
+  const deskDialogRef = useRef<HTMLDialogElement>(null);
   const [addFilter, setAddFilter] = useState<(typeof FILTER_OPTIONS)[number]>("All");
   const [addQuery, setAddQuery] = useState("");
   const [visibleSlotCount, setVisibleSlotCount] = useState(SLOT_PAGE_SIZE);
@@ -171,6 +171,13 @@ export function CollectionClient({
     setDeskOpen(false);
   }, [searchParams]);
   /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    const dialog = deskDialogRef.current;
+    if (!dialog) return;
+    if (deskOpen && !dialog.open) dialog.showModal();
+    if (!deskOpen && dialog.open) dialog.close();
+  }, [deskOpen]);
 
   useEffect(() => {
     const mode = deskOpen ? (deskMode === "Add" ? "add" : "manage") : null;
@@ -244,17 +251,11 @@ export function CollectionClient({
   const uniqueMembers = new Set(entries.map((entry) => entry.member_id)).size;
 
   function openDesk() {
-    setDeskClosing(false);
     setDeskOpen(true);
   }
 
   function closeDesk() {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setDeskOpen(false);
-      setDeskClosing(false);
-      return;
-    }
-    setDeskClosing(true);
+    deskDialogRef.current?.close();
   }
 
   return (
@@ -346,23 +347,16 @@ export function CollectionClient({
 
       {selectedMember ? <MemberHistoryDialog member={selectedMember} onClose={() => setSelectedMemberId(null)} /> : null}
 
-      {deskOpen ? (
-        <div
-          className={`collection-desk-overlay fixed inset-0 z-[var(--z-modal-backdrop)] flex items-start justify-center overflow-y-auto px-4 py-6 ${deskClosing ? "collection-desk-overlay--closing" : ""}`}
-          onClick={closeDesk}
-          onAnimationEnd={(event) => {
-            if (event.target === event.currentTarget && deskClosing) {
-              setDeskOpen(false);
-              setDeskClosing(false);
-            }
-          }}
+        <dialog
+          ref={deskDialogRef}
+          aria-labelledby="collection-desk-title"
+          aria-describedby="collection-desk-summary"
+          className="app-modal-dialog m-auto h-[100dvh] max-h-[100dvh] w-full max-w-none overflow-y-auto bg-transparent px-4 py-6 text-[var(--foreground)]"
+          onClick={(event) => { if (event.target === event.currentTarget) closeDesk(); }}
+          onClose={() => setDeskOpen(false)}
         >
           <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="collection-desk-title"
-            aria-describedby="collection-desk-summary"
-            className="collection-desk-shell w-full max-w-6xl rounded-xl border border-[var(--border)] bg-[var(--panel)] p-5 shadow-[var(--shadow-modal)]"
+            className="collection-desk-shell mx-auto w-full max-w-6xl rounded-xl border border-[var(--border)] bg-[var(--panel)] p-5 shadow-[var(--shadow-modal)]"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4">
@@ -552,8 +546,7 @@ export function CollectionClient({
               </div>
             )}
           </div>
-        </div>
-      ) : null}
+        </dialog>
     </div>
   );
 }

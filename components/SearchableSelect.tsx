@@ -8,6 +8,7 @@ interface Option {
 }
 
 export function SearchableSelect({
+  id,
   name,
   options,
   value,
@@ -17,6 +18,7 @@ export function SearchableSelect({
   ariaLabel,
   className = "",
 }: {
+  id?: string;
   className?: string;
   ariaLabel?: string;
   defaultValue?: string;
@@ -30,15 +32,18 @@ export function SearchableSelect({
   const [query, setQuery] = useState("");
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue ?? "");
-  const controlId = useId();
+  const generatedId = useId();
+  const controlId = id ?? generatedId;
   const listboxId = `${controlId}-listbox`;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
   const selectedValue = value ?? uncontrolledValue;
 
-  const filtered = query.trim()
-    ? options.filter((o) => o.label.toLowerCase().includes(query.toLowerCase()))
+  const normalizedQuery = query.trim().toLowerCase();
+  const filtered = normalizedQuery
+    ? options.filter((o) => o.label.toLowerCase().includes(normalizedQuery))
     : options;
 
   useEffect(() => {
@@ -57,14 +62,14 @@ export function SearchableSelect({
   }, [highlightedIndex, open]);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(event: PointerEvent) {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setOpen(false);
         setQuery("");
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("pointerdown", handleClickOutside);
+    return () => document.removeEventListener("pointerdown", handleClickOutside);
   }, []);
 
   function handleKeyDown(event: React.KeyboardEvent) {
@@ -79,7 +84,7 @@ export function SearchableSelect({
 
     switch (event.key) {
       case "ArrowDown":
-        setHighlightedIndex((prev) => Math.min(prev + 1, filtered.length - 1));
+        setHighlightedIndex((prev) => Math.min(prev + 1, Math.max(0, filtered.length - 1)));
         event.preventDefault();
         break;
       case "ArrowUp":
@@ -96,7 +101,9 @@ export function SearchableSelect({
         setOpen(false);
         setQuery("");
         setHighlightedIndex(0);
+        triggerRef.current?.focus();
         event.preventDefault();
+        event.stopPropagation();
         break;
     }
   }
@@ -105,19 +112,26 @@ export function SearchableSelect({
     if (value === undefined) setUncontrolledValue(option.value);
     setQuery("");
     setOpen(false);
+    triggerRef.current?.focus();
     onChange?.(option.value);
   }
 
   const selected = options.find((o) => o.value === selectedValue);
 
   return (
-    <div ref={containerRef} className={`relative ${className}`}>
+    <div ref={containerRef} className={`relative ${className}`} onBlur={(event) => {
+      if (!event.currentTarget.contains(event.relatedTarget)) {
+        setOpen(false);
+        setQuery("");
+      }
+    }}>
       {name ? <input type="hidden" name={name} value={selected?.value ?? ""} /> : null}
       <button
+        ref={triggerRef}
         id={controlId}
         type="button"
         aria-controls={listboxId}
-        aria-label={ariaLabel ?? placeholder}
+        aria-label={`${ariaLabel ?? placeholder}: ${selected?.label || placeholder}`}
         aria-expanded={open}
         aria-haspopup="listbox"
         onKeyDown={handleKeyDown}
@@ -127,7 +141,7 @@ export function SearchableSelect({
         }}
         className="flex min-h-12 w-full items-center rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] px-4 py-3 text-left text-lg text-[var(--foreground)] transition-colors hover:border-[var(--border-strong)]"
       >
-        <span className={`min-w-0 flex-1 truncate ${selected ? "text-[var(--foreground)]" : "text-[var(--muted)]"}`}>
+        <span title={selected?.label} className={`min-w-0 flex-1 truncate ${selected ? "text-[var(--foreground)]" : "text-[var(--muted)]"}`}>
           {selected?.label || placeholder}
         </span>
         <span className="ml-2 shrink-0 text-[var(--muted)]" aria-hidden="true">
@@ -160,13 +174,14 @@ export function SearchableSelect({
               className="app-input min-h-11 w-full px-3 py-2 text-sm placeholder:text-[var(--muted)]"
             />
           </div>
-          <div id={listboxId} ref={listRef} className="min-h-0 flex-1 overflow-y-auto" role="listbox">
+          <div id={listboxId} ref={listRef} className="min-h-0 flex-1 overflow-y-auto" role="listbox" aria-label={ariaLabel ?? placeholder}>
             {filtered.length ? (
               filtered.map((option, index) => (
                 <button
                   key={option.value}
                   id={`${listboxId}-${index}`}
                   type="button"
+                  tabIndex={-1}
                   role="option"
                   aria-selected={option.value === selected?.value}
                   data-highlighted={index === highlightedIndex ? true : undefined}
@@ -182,7 +197,7 @@ export function SearchableSelect({
                       : "text-[var(--foreground)]"
                   }`}
                 >
-                  <span className="min-w-0 truncate">{option.label}</span>
+                  <span className="min-w-0 break-words">{option.label}</span>
                 </button>
               ))
             ) : (

@@ -47,6 +47,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
     <html lang="en" suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[var(--z-toast)] focus:rounded-lg focus:bg-[var(--surface)] focus:px-4 focus:py-3 focus:text-[var(--foreground)]">Skip to content</a>
         <div className="site-frame mx-auto min-h-screen max-w-[110rem] px-4 py-4 sm:px-6 lg:px-8">
           <header className="site-header archive-header app-shell">
             <div className="archive-brand">
@@ -70,7 +71,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               )}
             </div>
           </header>
-          <main>{children}</main>
+          <main id="main-content" tabIndex={-1}>{children}</main>
           <footer className="archive-footer">
             <p>Developed by <a href="https://x.com/estrellawin19" target="_blank" rel="noopener noreferrer">@estrellawin19</a></p>
             <a href="https://tako.id/Sportagame19Win" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 whitespace-nowrap"><SupportIcon className="size-3.5" />Support via Tako</a>

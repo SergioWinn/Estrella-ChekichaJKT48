@@ -410,22 +410,8 @@ button {
   --team-color-soft: var(--team-trainee-soft);
 }
 
-.collection-desk-overlay {
-  background: var(--overlay);
-  animation: modal-backdrop-in var(--dur-short) var(--ease-out) both;
-}
-
 .collection-desk-shell {
   background: linear-gradient(180deg, var(--panel), var(--surface));
-  animation: modal-panel-in var(--dur-mid) var(--ease-out) both;
-}
-
-.collection-desk-overlay--closing {
-  animation: modal-backdrop-out var(--dur-short) var(--ease-in) both;
-}
-
-.collection-desk-overlay--closing .collection-desk-shell {
-  animation: modal-panel-out var(--dur-short) var(--ease-in) both;
 }
 
 .app-modal-dialog {
@@ -471,38 +457,6 @@ button {
 
   .app-modal-dialog[open]::backdrop {
     background: transparent;
-  }
-}
-
-@keyframes modal-backdrop-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes modal-backdrop-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-@keyframes modal-panel-in {
-  from {
-    opacity: 0;
-    transform: translateY(0.75rem) scale(0.985);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes modal-panel-out {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(0.4rem) scale(0.99);
   }
 }
 

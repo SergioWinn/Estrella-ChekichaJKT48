@@ -289,7 +289,7 @@ export function AdminWorkspace({
 
           {queueRows.length ? (
             <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-              {queueRows.map((event) => {
+              {queueRows.map((event, index) => {
                 const waitingB = hasPendingSlotB(event) && !singleMemberEvent(event.event_type);
 
                 return (
@@ -317,8 +317,10 @@ export function AdminWorkspace({
 
                     <div className="grid gap-3">
                       <div className="space-y-2">
-                        <label className="block text-sm font-semibold text-[var(--muted-strong)]">Slot A member</label>
+                        <label htmlFor={`queue-member-a-${index}`} className="block text-sm font-semibold text-[var(--muted-strong)]">Slot A member</label>
                         <SearchableSelect
+                          id={`queue-member-a-${index}`}
+                          ariaLabel="Slot A member"
                           name="member_id_a"
                           defaultValue={event.member_id_a || ""}
                           options={memberOptions}
@@ -327,8 +329,10 @@ export function AdminWorkspace({
                       </div>
                       {waitingB ? (
                         <div className="space-y-2">
-                          <label className="block text-sm font-semibold text-[var(--muted-strong)]">Slot B member</label>
+                          <label htmlFor={`queue-member-b-${index}`} className="block text-sm font-semibold text-[var(--muted-strong)]">Slot B member</label>
                           <SearchableSelect
+                            id={`queue-member-b-${index}`}
+                            ariaLabel="Slot B member"
                             name="member_id_b"
                             defaultValue={event.member_id_b || ""}
                             options={memberOptions}
@@ -432,8 +436,10 @@ export function AdminWorkspace({
                   </div>
                 )}
                 <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot A</label>
+                  <label htmlFor="create-member-a" className="block text-sm font-semibold text-[var(--muted)]">Member for slot A</label>
                   <SearchableSelect
+                    id="create-member-a"
+                    ariaLabel="Member for slot A"
                     name="member_id_a"
                     options={memberOptions}
                     value={createMemberA}
@@ -443,8 +449,10 @@ export function AdminWorkspace({
                 </div>
                 {!createSingleMember && createSlotMode === "2" ? (
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot B</label>
+                    <label htmlFor="create-member-b" className="block text-sm font-semibold text-[var(--muted)]">Member for slot B</label>
                     <SearchableSelect
+                      id="create-member-b"
+                      ariaLabel="Member for slot B"
                       name="member_id_b"
                       options={memberOptions}
                       value={createMemberB}
@@ -549,8 +557,10 @@ export function AdminWorkspace({
                         )}
                       </div>
                       <div className="space-y-2">
-                        <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot A</label>
+                        <label htmlFor="edit-member-a" className="block text-sm font-semibold text-[var(--muted)]">Member for slot A</label>
                         <SearchableSelect
+                          id="edit-member-a"
+                          ariaLabel="Member for slot A"
                           name="member_id_a"
                           defaultValue={selectedEvent.member_id_a || ""}
                           options={memberOptions}
@@ -559,8 +569,10 @@ export function AdminWorkspace({
                       </div>
                       {showEditSlotB ? (
                         <div className="space-y-2">
-                          <label className="block text-sm font-semibold text-[var(--muted)]">Member for slot B</label>
+                          <label htmlFor="edit-member-b" className="block text-sm font-semibold text-[var(--muted)]">Member for slot B</label>
                           <SearchableSelect
+                            id="edit-member-b"
+                            ariaLabel="Member for slot B"
                             name="member_id_b"
                             defaultValue={selectedEvent.member_id_b || ""}
                             options={memberOptions}

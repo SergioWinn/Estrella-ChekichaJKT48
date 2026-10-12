@@ -24,8 +24,13 @@ modern-minimal
 - `--color-ink` oklch(0.95 0.01 250)
 - `--color-ink-2` oklch(0.78 0.02 248)
 - `--color-rule` oklch(0.42 0.03 247 / 0.34)
-- `--color-accent` oklch(0.72 0.11 235)
+- `--color-accent` oklch(0.76 0.11 235)
 - `--color-focus` oklch(0.78 0.09 228)
+
+Light mode uses darker blue action/text tokens and darker team label colors on pale
+surfaces. Primary blue buttons use white text in normal and hover states; error
+messages use dark red text. Team names remain visible so color is not the only cue.
+Dark mode uses brighter accent, error, and team text against its tinted surfaces.
 
 ## Typography
 
@@ -91,7 +96,7 @@ The live source is [`tokens.css`](tokens.css). Core portable roles:
   --color-ink: oklch(0.95 0.01 250);
   --color-ink-2: oklch(0.78 0.02 248);
   --color-rule: oklch(0.42 0.03 247 / 0.34);
-  --color-accent: oklch(0.72 0.11 235);
+  --color-accent: oklch(0.76 0.11 235);
   --color-accent-ink: oklch(0.2 0.03 252);
   --color-focus: oklch(0.78 0.09 228);
   --font-display: "Geist", "Segoe UI", sans-serif;
@@ -109,7 +114,7 @@ The live source is [`tokens.css`](tokens.css). Core portable roles:
   --color-ink: oklch(0.95 0.01 250);
   --color-ink-2: oklch(0.78 0.02 248);
   --color-rule: oklch(0.42 0.03 247 / 0.34);
-  --color-accent: oklch(0.72 0.11 235);
+  --color-accent: oklch(0.76 0.11 235);
   --color-focus: oklch(0.78 0.09 228);
   --font-display: "Geist", "Segoe UI", sans-serif;
   --font-body: "Geist", "Segoe UI", sans-serif;
@@ -133,7 +138,7 @@ The same portable roles are available in [`tokens.json`](tokens.json).
   "color": {
     "paper": { "$value": "oklch(0.21 0.03 252)", "$type": "color" },
     "ink": { "$value": "oklch(0.95 0.01 250)", "$type": "color" },
-    "accent": { "$value": "oklch(0.72 0.11 235)", "$type": "color" },
+    "accent": { "$value": "oklch(0.76 0.11 235)", "$type": "color" },
     "focus": { "$value": "oklch(0.78 0.09 228)", "$type": "color" }
   }
 }
@@ -147,7 +152,7 @@ The same portable roles are available in [`tokens.json`](tokens.json).
   --foreground: 95% 0.01 250;
   --card: 26% 0.025 252;
   --card-foreground: 95% 0.01 250;
-  --primary: 72% 0.11 235;
+  --primary: 76% 0.11 235;
   --primary-foreground: 20% 0.03 252;
   --muted: 42% 0.03 247;
   --muted-foreground: 78% 0.02 248;

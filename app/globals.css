@@ -279,6 +279,10 @@ button {
   padding: 0 0 var(--space-lg);
 }
 
+.letter-intro {
+  padding-bottom: 0;
+}
+
 .workbench-note {
   align-self: end;
   max-width: 65ch;
@@ -1564,10 +1568,6 @@ button {
     align-items: start;
   }
 
-  .letter-intro {
-    grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
-    align-items: start;
-  }
 }
 
 @media (min-width: 1280px) {

@@ -47,6 +47,10 @@ Dark mode uses brighter accent, error, and team text against its tinted surfaces
 
 ## Spacing
 
+Archive radius tokens use the `--archive-radius-*` namespace so Tailwind's
+rounded utilities retain their own scale. Auth introductions stay in one column;
+field hints sit 8px below their inputs at the default font size.
+
 4-point scale. Reusable CSS uses named values from `tokens.css`; JSX may use
 Tailwind spacing utilities only when they resolve to multiples of 4 px.
 

@@ -7,7 +7,7 @@
   gap: var(--space-sm);
   margin-bottom: var(--space-lg);
   padding: var(--space-sm);
-  border-radius: var(--radius-sm);
+  border-radius: var(--archive-radius-sm);
   background: var(--surface);
 }
 .archive-brand { grid-column: 1; grid-row: 1; min-width: 0; }
@@ -26,7 +26,7 @@
 .archive-workspace { gap: var(--space-md); }
 .archive-summary { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-xs) var(--space-lg); color: var(--muted); font-size: var(--text-sm); }
 .archive-summary strong { color: var(--foreground); font-weight: 600; font-variant-numeric: tabular-nums; }
-.archive-controls > .app-card { border-radius: var(--radius-sm); background: var(--surface); padding: var(--space-sm); }
+.archive-controls > .app-card { border-radius: var(--archive-radius-sm); background: var(--surface); padding: var(--space-sm); }
 .member-ranking { scroll-margin-top: var(--space-lg); border-block: 1px solid var(--border); padding-block: var(--space-md); }
 .member-ranking h2 { font-size: var(--text-lg); font-weight: 600; }
 .member-ranking header p { max-width: 70ch; font-size: var(--text-xs); color: var(--muted); margin-block: var(--space-2xs) var(--space-sm); }
@@ -34,7 +34,7 @@
 .member-ranking-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(14rem, 18rem); gap: var(--space-xs); overflow-x: auto; scrollbar-width: none; list-style: none; padding: var(--space-3xs); }
 .member-ranking-list::-webkit-scrollbar { display: none; }
 .member-ranking-list:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
-.member-ranking-button { display: flex; width: 100%; align-items: center; gap: var(--space-xs); padding: var(--space-xs); border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); text-align: left; }
+.member-ranking-button { display: flex; width: 100%; align-items: center; gap: var(--space-xs); padding: var(--space-xs); border: 1px solid var(--border); border-radius: var(--archive-radius-sm); background: var(--surface); text-align: left; }
 .member-ranking-button:hover { background: var(--surface-hover); }
 .member-ranking-button:active { background: var(--accent-soft); }
 .member-ranking-button:disabled { opacity: 0.5; cursor: not-allowed; }

@@ -40,9 +40,9 @@
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
-  --radius-sm: 0.75rem;
-  --radius-md: 1.1rem;
-  --radius-lg: 1.5rem;
+  --archive-radius-sm: 0.75rem;
+  --archive-radius-md: 1.1rem;
+  --archive-radius-lg: 1.5rem;
   --radius-pill: 999px;
 
   --shadow-modal: 0 20px 64px oklch(0.05 0.01 252 / 0.42);

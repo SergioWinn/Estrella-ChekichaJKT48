@@ -37,10 +37,14 @@ export default async function SignupPage({
           <h2 className="text-xl font-semibold text-[var(--foreground)]">Create account</h2>
           {error ? <div role="alert" className="app-status-message mt-4 rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
           <form action={signupAction} className="mt-5 space-y-4">
-            <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Username</span><input name="username" autoComplete="username" aria-describedby="username-hint" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
-            <p id="username-hint" className="text-sm text-[var(--muted)]">Use letters and numbers. Dots, underscores, and hyphens are allowed between them.</p>
-            <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Password</span><input name="password" type="password" autoComplete="new-password" aria-describedby="password-hint" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
-            <p id="password-hint" className="text-sm text-[var(--muted)]">Use at least 8 characters.</p>
+            <div className="space-y-2">
+              <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Username</span><input name="username" autoComplete="username" aria-describedby="username-hint" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
+              <p id="username-hint" className="text-sm text-[var(--muted)]">Use letters and numbers. Dots, underscores, and hyphens are allowed between them.</p>
+            </div>
+            <div className="space-y-2">
+              <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Password</span><input name="password" type="password" autoComplete="new-password" aria-describedby="password-hint" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
+              <p id="password-hint" className="text-sm text-[var(--muted)]">Use at least 8 characters.</p>
+            </div>
             <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Confirm password</span><input name="confirmPassword" type="password" autoComplete="new-password" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
             <PendingSubmitButton pendingLabel="Creating account…" className="min-h-11 w-full rounded-lg bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create account</PendingSubmitButton>
           </form>

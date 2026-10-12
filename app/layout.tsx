@@ -28,7 +28,8 @@ export const metadata: Metadata = {
 const themeInitScript = `(() => {
   try {
     const storageKey = "chekicha-theme";
-    const savedTheme = window.localStorage.getItem(storageKey);
+    let savedTheme = null;
+    try { savedTheme = window.localStorage.getItem(storageKey); } catch (_error) {}
     const theme = savedTheme === "light" || savedTheme === "dark"
       ? savedTheme
       : (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");

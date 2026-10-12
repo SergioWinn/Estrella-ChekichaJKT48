@@ -49,7 +49,7 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
     <dialog
       ref={dialogRef}
       aria-labelledby="member-history-title"
-      className="app-modal-dialog m-auto max-h-[min(80dvh,42rem)] w-[calc(100%_-_2rem)] max-w-2xl overflow-hidden rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--panel)] p-0 text-[var(--foreground)] shadow-2xl"
+      className="app-modal-dialog m-auto max-h-[min(80dvh,42rem)] w-[calc(100%_-_2rem)] max-w-2xl overflow-hidden rounded-[var(--archive-radius-lg)] border border-[var(--border)] bg-[var(--panel)] p-0 text-[var(--foreground)] shadow-2xl"
       onClick={(event) => {
         if (event.target === event.currentTarget) event.currentTarget.close();
       }}

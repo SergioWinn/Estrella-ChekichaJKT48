@@ -39,6 +39,9 @@ Dark mode uses brighter accent, error, and team text against its tinted surfaces
 - Mono: IBM Plex Mono, weight 500
 - Display tracking: -0.04em
 - Type scale anchor: `--text-display` = `clamp(2.8rem, 4vw, 4.8rem)`
+- Root size follows browser preferences; form text is at least 16px and secondary
+  labels are at least 0.875rem. Timeline, member, and collection cards use one
+  column below 640px, then expand at their existing larger breakpoints.
 
 ## Spacing
 

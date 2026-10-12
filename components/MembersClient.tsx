@@ -173,7 +173,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
 
       <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} members / All cheki types, including birthday & graduation.</p>
       {visibleMembers.length ? (
-        <section className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {visibleMembers.map((member, index) => (
             <button
               key={member.id}
@@ -197,7 +197,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                   <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{member.totalCheki}</strong> times</p>
                   <p className="mt-1 text-xs text-[var(--muted)]">Last cheki: <span className="text-[var(--foreground-soft)]">{member.history[0] ? formatEventDate(member.history[0].start_time) : "Not recorded"}</span></p>
                   <div className="mt-1.5">
-                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:text-xs">
+                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:text-xs">
                       {member.status || "Unknown team"}
                     </span>
                   </div>
@@ -301,13 +301,13 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                     <p className="mt-1 text-sm text-[var(--muted-strong)] sm:text-base">{selectedMember.full_name || "No full name"}</p>
                   </div>
                   <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:py-1.5 sm:text-xs">
+                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:py-1.5 sm:text-xs">
                       {selectedMember.status || "Unknown team"}
                     </span>
-                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:py-1.5 sm:text-xs">
+                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:py-1.5 sm:text-xs">
                       Generation {selectedMember.generasi || "?"}
                     </span>
-                    <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--accent)] sm:px-3 sm:py-1.5 sm:text-xs">
+                    <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent)] sm:px-3 sm:py-1.5 sm:text-xs">
                       All types {selectedMember.totalCheki} times
                     </span>
                   </div>
@@ -349,12 +349,12 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                           <p className="mt-1 text-xs text-[var(--muted-strong)] sm:text-sm">{formatEventDate(row.start_time)}</p>
                         </div>
                         <div className="mt-2 flex flex-wrap gap-1.5">
-                          <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--accent)] sm:px-2.5 sm:text-[11px]">
+                          <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent)] sm:px-2.5 sm:text-xs">
                             {row.event_type || "Roulette"}
                           </span>
                           <EventTeamBadge team={row.event_team} eventType={row.event_type} compact />
                           {slotLabel ? (
-                            <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)] sm:px-2.5 sm:text-[11px]">
+                            <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)] sm:px-2.5 sm:text-xs">
                               {slotLabel}
                             </span>
                           ) : null}

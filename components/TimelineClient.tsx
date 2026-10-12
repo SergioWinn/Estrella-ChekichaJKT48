@@ -47,7 +47,7 @@ function CompactDate({ value }: { value: string }) {
   return (
     <div className="timeline-mobile-date shrink-0 tabular-nums">
       <span className="timeline-mobile-date-day text-3xl font-semibold tracking-[-0.06em] text-[var(--foreground)]">{day}</span>
-      <span className="timeline-mobile-date-month text-[10px] font-semibold tracking-[0.16em] text-[var(--muted-strong)]">{month}</span>
+      <span className="timeline-mobile-date-month text-xs font-semibold tracking-[0.16em] text-[var(--muted-strong)]">{month}</span>
     </div>
   );
 }
@@ -63,7 +63,7 @@ function MemberPill({
 }) {
   return (
     <span
-      className={`inline-flex min-w-0 max-w-full shrink-0 items-center gap-1 rounded-full border px-2 py-1 text-[11px] font-medium md:gap-2 md:px-3 md:py-1.5 md:text-sm ${
+      className={`inline-flex min-w-0 max-w-full shrink-0 items-center gap-1 rounded-full border px-2 py-1 text-xs font-medium md:gap-2 md:px-3 md:py-1.5 md:text-sm ${
         waiting
           ? "border-[var(--warning-border)] bg-[var(--warning-soft)] text-[var(--warning)]"
           : "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]"
@@ -170,11 +170,11 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
           <details key={monthLabel} open={sectionIndex === 0} className="app-disclosure motion-section border-t border-[var(--border)] pt-3 sm:pt-4">
             <summary className="timeline-month-summary cursor-pointer rounded-lg px-1 py-3 text-sm font-bold uppercase tracking-[0.16em] text-[var(--muted-strong)] transition-colors hover:text-[var(--foreground)] md:text-base">
               <span>{monthLabel}</span>
-              <span className="inline-flex justify-center rounded-md bg-[var(--surface-hover)] px-2 py-1 text-[10px] tracking-normal text-[var(--foreground-soft)] md:text-xs">
+              <span className="inline-flex justify-center rounded-md bg-[var(--surface-hover)] px-2 py-1 text-xs tracking-normal text-[var(--foreground-soft)] md:text-xs">
                 {monthRows.length} {monthRows.length === 1 ? "event" : "events"}
               </span>
             </summary>
-            <div className="mt-3 grid grid-cols-2 gap-2 xl:mt-4 xl:gap-4">
+            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:mt-4 xl:gap-4">
               {monthRows.map((row, index) => {
                 const card = buildTimelineCardState(row);
                 const eventTeam = getEffectiveEventTeam(row.event_name, row.event_type, row.event_team);
@@ -186,13 +186,13 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                       style={{ "--i": Math.min(index, 5) } as CSSProperties}
                     >
                     <div className="absolute right-6 top-6 hidden xl:block">
-                      <span className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
+                      <span className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-0.5 text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
                         {card.eventType}
                       </span>
                     </div>
                     <div className="flex min-w-0 items-start justify-between gap-2 xl:hidden">
                       <CompactDate value={row.start_time} />
-                      <span className="inline-flex min-w-0 truncate rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--accent)]">
+                      <span className="inline-flex min-w-0 truncate rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-0.5 text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent)]">
                         {card.eventType}
                       </span>
                     </div>
@@ -202,8 +202,8 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                     <div className="min-w-0 space-y-3">
                       <div className="min-w-0 xl:pr-24">
                         <div className="min-w-0">
-                          <h2 className="truncate text-[1.2rem] font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-[1.2rem] lg:text-[1.65rem]" title={row.event_name || "Untitled event"}>{row.event_name || "Untitled event"}</h2>
-                          <div className="mt-2 flex min-w-0 flex-nowrap items-center gap-2 text-[0.8rem] font-semibold leading-[1.35] md:text-[0.95rem]">
+                          <h2 className="break-words text-[1.2rem] font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-[1.2rem] lg:text-[1.65rem]" title={row.event_name || "Untitled event"}>{row.event_name || "Untitled event"}</h2>
+                          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-2 text-sm font-semibold leading-[1.35] md:text-[0.95rem]">
                             <span className="min-w-0 truncate text-[var(--accent)]">{formatEventTime(row.start_time, row.end_time)} WIB</span>
                             <EventTeamBadge team={eventTeam} eventType={row.event_type} compact />
                           </div>

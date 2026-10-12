@@ -107,12 +107,12 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
                     </span>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-1.5">
-                    <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--accent)]">
+                    <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent)]">
                       {entry.event_type}
                     </span>
                     <EventTeamBadge team={entry.event_team} eventType={entry.event_type} compact />
                     {showSlot ? (
-                      <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)]">
+                      <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)]">
                         Slot {entry.slot_key}
                       </span>
                     ) : null}
@@ -308,7 +308,7 @@ export function CollectionClient({
 
       <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleQuantity} cheki across {memberCollections.length} members match your filters.</p>
       {memberCollections.length ? (
-        <section className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {memberCollections.map((member, index) => (
             <button
               key={member.id}
@@ -329,11 +329,11 @@ export function CollectionClient({
               </div>
               <div className="min-w-0 flex-1">
                 <div className="truncate text-[15px] font-medium tracking-[-0.04em] text-[var(--foreground)] sm:text-lg">{member.name}</div>
-                <div className="mt-0.5 text-[11px] text-[var(--muted)] sm:text-sm">
+                <div className="mt-0.5 text-xs text-[var(--muted)] sm:text-sm">
                   {[member.status, member.generation ? `Gen ${member.generation}` : null].filter(Boolean).join(" | ") || "Member details unavailable"}
                 </div>
               </div>
-              <span className="shrink-0 rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2 py-1 text-[11px] font-bold tabular-nums text-[var(--foreground)] sm:px-2.5 sm:text-xs">
+              <span className="shrink-0 rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2 py-1 text-xs font-bold tabular-nums text-[var(--foreground)] sm:px-2.5 sm:text-xs">
                 x{member.totalQuantity}
               </span>
             </button>

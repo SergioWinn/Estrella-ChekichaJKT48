@@ -21,8 +21,8 @@ export default async function SignupPage({
       <section className="grid gap-8 py-5 sm:py-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
         <div className="letter-intro">
           <SectionHeader
-            title="Start your cheki collection."
-            description="Create an account to save the cheki you own and keep track of your copies."
+            title="Start your chekicha collection."
+            description="Create an account to save the chekicha you own and keep track of your copies."
             titleClassName="text-[clamp(2.2rem,4vw,3.7rem)]"
             descriptionClassName="text-sm leading-7 sm:text-base"
           />

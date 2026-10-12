@@ -196,7 +196,7 @@ test("show/event comparison counts active slots and finds latest dates without s
   assert.equal(showEventStatsMap["inactive-slot"], undefined);
 });
 
-test("longest-since-cheki sort puts unrecorded members first, dates ascending and tied names alphabetically", () => {
+test("longest-since-chekicha sort puts unrecorded members first, dates ascending and tied names alphabetically", () => {
   const members = [
     { id: "recent", nickname: "Recent", showEventCheki: 1, lastShowEventTime: "2026-10-01T12:00:00+07:00" },
     { id: "old-b", nickname: "B", showEventCheki: 2, lastShowEventTime: "2026-01-01T05:00:00Z" },

@@ -12,7 +12,7 @@ export function buildHomepageCopy(snapshot: OverviewSnapshot) {
     topMemberName: topMember?.nickname ?? "No ranking yet",
     topMemberSubcopy: topMember
       ? `${topMember.count} time${topMember.count === 1 ? "" : "s"} so far`
-      : "Ranking starts after someone appears at least two times in show/event cheki",
+      : "Ranking starts after someone appears at least two times in show/event chekicha",
     waitingCopy,
     quickCounts: [
       {

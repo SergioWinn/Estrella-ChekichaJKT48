@@ -12,7 +12,7 @@ export default async function TimelinePage() {
       <header className="archive-page-heading">
         <div>
           <p className="kicker">JKT48 / Since January 2026</p>
-          <h1>Timeline cheki</h1>
+          <h1>Timeline chekicha</h1>
           <p>Browse event history and see who appeared in each session.</p>
         </div>
         <Link href="/members#ranking" className="archive-text-link">Most frequent members <span aria-hidden="true">&rarr;</span></Link>

@@ -14,7 +14,7 @@ modern-minimal
 - Home opens the timeline. `/timeline` remains an alias. Navigation: Timeline, Members, My collection; Admin is role-specific.
 - Members owns the top-twenty show/event slot ranking in a horizontally scrolling rail with a hidden scrollbar. It loops gently from the last member back to #1, pauses on hover, keyboard focus, holding or manual scrolling, and resumes automatically when interaction ends. Reduced motion disables animation. There is no pause button. Visual copies are hidden from assistive technology and keyboard navigation. Ties share ranks; birthday and graduation are excluded. Member event totals include all event types and count each event once.
 - Credits and support live in the footer. No oversized intros, decorative archive sections, or explanatory workflow panels on public app pages.
-- Member cards stay alphabetical and show total cheki counts and last dates across all types, including birthday and graduation. Member details explicitly label all-type totals/dates and show/event-only counts/dates. Compare members opens a popup to select members, then explicitly sort the selection: unrecorded first, then oldest last date, with names breaking ties. Comparison results show member, last cheki date and times, excluding birthday and graduation. Selection persists when editing or reopening the popup.
+- Member cards stay alphabetical and show total chekicha counts and last dates across all types, including birthday and graduation. Member details explicitly label all-type totals/dates and show/event-only counts/dates. Compare members opens a popup to select members, then explicitly sort the selection: unrecorded first, then oldest last date, with names breaking ties. Comparison results show member, last chekicha date and times, excluding birthday and graduation. Selection persists when editing or reopening the popup.
 - Content pages: Quiet Letter with a tall intro column, one restrained form slab, and generous negative space.
 
 ## Theme
@@ -69,7 +69,7 @@ Tailwind spacing utilities only when they resolve to multiples of 4 px.
 
 ## CTA voice
 
-- Use "collection" for a user's saved cheki, "event" for an archived session,
+- Use "collection" for a user's saved chekicha, "event" for an archived session,
   and "slot" for its member assignment. "Copies to add" increases a saved quantity;
   "Total copies owned" replaces it. Keep Roulette and team names as domain terms.
 
@@ -84,7 +84,7 @@ Tailwind spacing utilities only when they resolve to multiples of 4 px.
 
 ## What pages MUST share
 
-- The JKT48 Cheki Archive wordmark, timeline/member stats/collection description, and linked by @estrellawin19 credit
+- The JKT48 Chekicha Archive wordmark, timeline/member stats/collection description, and linked by @estrellawin19 credit
 - The accent colour and its small footprint
 - The unified Geist display/body system
 - The tighter rectangular border language

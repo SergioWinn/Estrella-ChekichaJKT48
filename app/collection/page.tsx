@@ -25,7 +25,7 @@ export default async function CollectionPage({
         <div>
           <p className="kicker">Your personal archive</p>
           <h1>My collection</h1>
-          <p>Keep track of your cheki and add the ones you own.</p>
+          <p>Keep track of your chekicha and add the ones you own.</p>
         </div>
       </header>
       <CollectionClient

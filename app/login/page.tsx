@@ -22,7 +22,7 @@ export default async function LoginPage({
         <div className="letter-intro">
           <SectionHeader
             title="Sign in to your collection."
-            description="Use your username and password to manage the cheki you own."
+            description="Use your username and password to manage the chekicha you own."
             titleClassName="text-[clamp(2.2rem,4vw,3.7rem)]"
             descriptionClassName="text-sm leading-7 sm:text-base"
           />

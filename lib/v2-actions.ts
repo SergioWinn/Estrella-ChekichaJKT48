@@ -300,10 +300,10 @@ export async function addCollectionAction(formData: FormData) {
       })).error;
 
   if (error) {
-    redirect(withMessage("/collection", "Could not add this cheki. Check your collection before trying again."));
+    redirect(withMessage("/collection", "Could not add this chekicha. Check your collection before trying again."));
   }
   revalidatePath("/collection");
-  redirect(withMessage("/collection", "Cheki added to your collection.", "success"));
+  redirect(withMessage("/collection", "Chekicha added to your collection.", "success"));
 }
 
 export async function updateCollectionQuantityAction(formData: FormData) {
@@ -323,8 +323,8 @@ export async function deleteCollectionEntryAction(formData: FormData) {
   const entryId = String(formData.get("entry_id") || "");
   const { error } = await supabase.from("user_collection_entries").delete().eq("id", entryId).eq("user_id", user.id);
   if (error) {
-    redirect(withMessage("/collection", "Could not remove this cheki. Check your collection before trying again."));
+    redirect(withMessage("/collection", "Could not remove this chekicha. Check your collection before trying again."));
   }
   revalidatePath("/collection");
-  redirect(withMessage("/collection", "Cheki removed from your collection.", "success"));
+  redirect(withMessage("/collection", "Chekicha removed from your collection.", "success"));
 }

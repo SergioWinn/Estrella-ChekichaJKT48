@@ -17,8 +17,8 @@ const geist = Geist({ subsets: ["latin"], display: "swap", variable: "--font-gei
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: "500", display: "swap", preload: false, variable: "--font-ibm-plex-mono" });
 
 export const metadata: Metadata = {
-  title: "JKT48 Cheki Archive by @estrellawin19",
-  description: "Explore JKT48 cheki timelines, member statistics, and your collection. Archived by @estrellawin19 since January 2026.",
+  title: "JKT48 Chekicha Archive by @estrellawin19",
+  description: "Explore JKT48 chekicha timelines, member statistics, and your collection. Archived by @estrellawin19 since January 2026.",
   icons: {
     icon: "/icon.svg",
     apple: "/apple-icon.png",
@@ -56,7 +56,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         <div className="site-frame mx-auto min-h-screen max-w-[110rem] px-4 py-4 sm:px-6 lg:px-8">
           <header className="site-header archive-header app-shell">
             <div className="archive-brand">
-              <Link href="/" className="archive-wordmark">JKT48 Cheki Archive</Link>
+              <Link href="/" className="archive-wordmark">JKT48 Chekicha Archive</Link>
               <p className="archive-brand-purpose">Timeline · Member stats · Collection</p>
               <p className="archive-brand-credit">by <a href="https://x.com/estrellawin19" target="_blank" rel="noopener noreferrer">@estrellawin19</a></p>
             </div>

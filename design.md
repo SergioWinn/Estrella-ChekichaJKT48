@@ -65,6 +65,10 @@ Tailwind spacing utilities only when they resolve to multiples of 4 px.
 
 ## CTA voice
 
+- Use "collection" for a user's saved cheki, "event" for an archived session,
+  and "slot" for its member assignment. "Copies to add" increases a saved quantity;
+  "Total copies owned" replaces it. Keep Roulette and team names as domain terms.
+
 - Primary CTA: dense accent block with sentence-case labels and firm rectangular corners
 - Secondary CTA: thin-outline block with soft fill on hover, never oversized pill chrome
 

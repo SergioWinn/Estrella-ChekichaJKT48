@@ -7,7 +7,7 @@ import { addCollectionQuantityToEntries } from "./v2-collection.ts";
 import { createAdminSupabaseClient } from "./supabase-admin.ts";
 import { createActionSupabaseClient } from "./supabase-ssr.ts";
 import { eventCollectionUsageCount, getSessionContext, memberUsageCount, requireAdmin, requireUser } from "./v2-server.ts";
-import { buildEventPayload, duplicateMemberLabels, getAuthRedirectPath, normalizeUsername, usernameToEmail, validateUsername } from "./v2-helpers.ts";
+import { buildEventPayload, duplicateMemberLabels, getAuthErrorMessage, getAuthRedirectPath, normalizeUsername, usernameToEmail, validateUsername } from "./v2-helpers.ts";
 
 function withMessage(path: string, message: string, type: "error" | "success" = "error") {
   const url = new URL(path, "http://local.test");
@@ -32,7 +32,7 @@ export async function loginAction(formData: FormData) {
   });
 
   if (error) {
-    redirect(withMessage("/login", error.message));
+    redirect(withMessage("/login", getAuthErrorMessage(error, "sign in")));
   }
 
   const { profile } = await getSessionContext();
@@ -53,7 +53,7 @@ export async function signupAction(formData: FormData) {
     redirect(withMessage("/signup", "Use at least 8 characters for the password."));
   }
   if (password !== confirmPassword) {
-    redirect(withMessage("/signup", "Passwords do not match."));
+    redirect(withMessage("/signup", "Passwords do not match. Enter the same password in both fields."));
   }
 
   const { data, error } = await supabase.auth.signUp({
@@ -61,10 +61,10 @@ export async function signupAction(formData: FormData) {
     password,
   });
   if (error) {
-    redirect(withMessage("/signup", error.message));
+    redirect(withMessage("/signup", getAuthErrorMessage(error, "create your account")));
   }
   if (!data.session || !data.user) {
-    redirect(withMessage("/signup", "Sign-up did not return a login session. Disable email confirmation in Supabase Auth for this username-first flow."));
+    redirect(withMessage("/signup", "Sign-up could not finish. Try signing in. If you still cannot access your collection, contact @estrellawin19."));
   }
 
   const { error: profileError } = await supabase.from("profiles").insert({
@@ -72,7 +72,7 @@ export async function signupAction(formData: FormData) {
     username: normalizeUsername(username),
   });
   if (profileError) {
-    redirect(withMessage("/signup", profileError.message));
+    redirect(withMessage("/collection", "Your account was created, but your username could not be saved. Contact @estrellawin19 for help."));
   }
 
   redirect("/collection?success=Account%20created.");
@@ -157,7 +157,7 @@ export async function deleteMemberAction(formData: FormData) {
   const confirmDelete = formData.get("confirm_delete") === "on";
 
   if (!confirmDelete) {
-    redirect(withMessage("/admin", "Confirm delete first."));
+    redirect(withMessage("/admin", "Select the confirmation checkbox before deleting this member."));
   }
   if (await memberUsageCount(supabase as never, memberId)) {
     redirect(withMessage("/admin", "This member cannot be deleted because they already appear in archived sessions."));
@@ -240,7 +240,7 @@ export async function deleteEventAction(formData: FormData) {
   const confirmDelete = formData.get("confirm_delete") === "on";
 
   if (!confirmDelete) {
-    redirect(withMessage("/admin", "Confirm delete first."));
+    redirect(withMessage("/admin", "Select the confirmation checkbox before deleting this event."));
   }
   if (await eventCollectionUsageCount(supabase as never, eventId)) {
     redirect(withMessage("/admin", "This event cannot be deleted because it is already saved in user collections."));
@@ -300,10 +300,10 @@ export async function addCollectionAction(formData: FormData) {
       })).error;
 
   if (error) {
-    redirect(withMessage("/collection", error.message));
+    redirect(withMessage("/collection", "Could not add this cheki. Check your collection before trying again."));
   }
   revalidatePath("/collection");
-  redirect(withMessage("/collection", result.type === "updated" ? "Collection updated." : "Added to collection.", "success"));
+  redirect(withMessage("/collection", "Cheki added to your collection.", "success"));
 }
 
 export async function updateCollectionQuantityAction(formData: FormData) {
@@ -312,10 +312,10 @@ export async function updateCollectionQuantityAction(formData: FormData) {
   const quantity = Number(formData.get("quantity") || 1);
   const { error } = await supabase.from("user_collection_entries").update({ quantity }).eq("id", entryId).eq("user_id", user.id);
   if (error) {
-    redirect(withMessage("/collection", error.message));
+    redirect(withMessage("/collection", "Could not save the quantity. Try again. If it still fails, contact @estrellawin19."));
   }
   revalidatePath("/collection");
-  redirect(withMessage("/collection", "Quantity saved.", "success"));
+  redirect(withMessage("/collection", "Total copies saved.", "success"));
 }
 
 export async function deleteCollectionEntryAction(formData: FormData) {
@@ -323,8 +323,8 @@ export async function deleteCollectionEntryAction(formData: FormData) {
   const entryId = String(formData.get("entry_id") || "");
   const { error } = await supabase.from("user_collection_entries").delete().eq("id", entryId).eq("user_id", user.id);
   if (error) {
-    redirect(withMessage("/collection", error.message));
+    redirect(withMessage("/collection", "Could not remove this cheki. Check your collection before trying again."));
   }
   revalidatePath("/collection");
-  redirect(withMessage("/collection", "Entry removed.", "success"));
+  redirect(withMessage("/collection", "Cheki removed from your collection.", "success"));
 }

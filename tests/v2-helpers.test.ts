@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
   buildEventPayload,
   duplicateMemberLabels,
+  getAuthErrorMessage,
   getAuthRedirectPath,
   getEventDurationMinutes,
   getFixedEventTeam,
@@ -24,6 +25,23 @@ test("auth redirect path follows role-aware V2 navigation", () => {
   assert.equal(getAuthRedirectPath(null), "/collection");
   assert.equal(getAuthRedirectPath({ role: "user" }), "/collection");
   assert.equal(getAuthRedirectPath({ role: "admin" }), "/admin");
+});
+
+test("auth errors explain recovery without exposing provider details", () => {
+  assert.match(getAuthErrorMessage({ code: "invalid_credentials" }, "sign in"), /[Uu]sername.*password.*try again/);
+  assert.match(getAuthErrorMessage({ code: "email_exists" }, "create your account"), /username.*Sign in/);
+  assert.match(getAuthErrorMessage({ code: "user_already_exists" }, "create your account"), /username.*Sign in/);
+  assert.match(getAuthErrorMessage({ status: 429 }, "sign in"), /later/);
+  assert.match(getAuthErrorMessage({ code: "weak_password" }, "create your account"), /stronger password/);
+  assert.match(getAuthErrorMessage({ code: "email_not_confirmed" }, "sign in"), /Contact @estrellawin19/);
+  assert.match(getAuthErrorMessage({ code: "signup_disabled" }, "create your account"), /unavailable/);
+  const providerError = { code: "unexpected_failure", status: 500, message: "private database configuration" };
+  for (const action of ["sign in", "create your account"] as const) {
+    const message = getAuthErrorMessage(providerError, action);
+    assert.ok(message.includes(action));
+    assert.ok(message.includes("@estrellawin19"));
+    assert.ok(!message.includes(providerError.message));
+  }
 });
 
 test("collection helper merges quantity on existing event and slot", () => {

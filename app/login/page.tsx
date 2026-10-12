@@ -21,15 +21,15 @@ export default async function LoginPage({
       <section className="grid gap-8 py-5 sm:py-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
         <div className="letter-intro">
           <SectionHeader
-            title="Reopen your cheki shelf."
-            description="Sign in with the same username-first flow as before. Admins route into the control workspace, collectors into their own shelf."
+            title="Sign in to your collection."
+            description="Use your username and password to manage the cheki you own."
             titleClassName="text-[clamp(2.2rem,4vw,3.7rem)]"
             descriptionClassName="text-sm leading-7 sm:text-base"
           />
           <aside className="workbench-note">
-            <div className="kicker">Private access</div>
+            <div className="kicker">Browse the archive</div>
             <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
-              No extra onboarding, no public profile layer. This route stays narrow and direct.
+              You can browse the timeline and member history without signing in.
             </p>
           </aside>
         </div>
@@ -44,7 +44,7 @@ export default async function LoginPage({
           <p className="mt-4 text-sm text-[var(--muted)]">
             Need an account?{" "}
             <Link href="/signup" className="font-semibold text-[var(--accent)] transition-colors hover:text-[var(--accent-strong)]">
-              Create one here
+              Create an account
             </Link>
           </p>
         </div>

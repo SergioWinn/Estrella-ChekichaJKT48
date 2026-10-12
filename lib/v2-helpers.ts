@@ -52,6 +52,16 @@ export function getAuthRedirectPath(profile: AuthProfile | null | undefined): "/
   return profile?.role === "admin" ? "/admin" : "/collection";
 }
 
+export function getAuthErrorMessage(error: { code?: string; status?: number }, action: "sign in" | "create your account"): string {
+  if (error.status === 429) return "Too many attempts. Try again later.";
+  if (error.code === "invalid_credentials") return "Username or password is incorrect. Check both and try again.";
+  if (error.code === "email_exists" || error.code === "user_already_exists") return "This username is already in use. Sign in, or choose another username.";
+  if (error.code === "weak_password") return "Choose a stronger password, then try again.";
+  if (error.code === "email_not_confirmed") return "This account is not ready for sign-in. Contact @estrellawin19 for help.";
+  if (error.code === "signup_disabled") return "Account creation is currently unavailable. Contact @estrellawin19 for help.";
+  return `Could not ${action}. Try again. If this keeps happening, contact @estrellawin19.`;
+}
+
 export function singleMemberEvent(eventType: string | null | undefined): boolean {
   return eventType === "Birthday" || eventType === "Graduation";
 }

@@ -353,7 +353,7 @@ export function AdminWorkspace({
             <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-12 text-center text-sm text-[var(--muted)]">
               <svg aria-hidden="true" className="size-10 text-[var(--muted-strong)]" fill="none" viewBox="0 0 24 24"><path d="M12 6v6l4 2" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5"/><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/></svg>
               <span className="font-semibold text-[var(--foreground)]">All caught up</span>
-              <span>No roulette rows are waiting right now. Every slot has been filled.</span>
+              <span>No events are waiting for member assignments.</span>
             </div>
           )}
         </section>
@@ -363,12 +363,12 @@ export function AdminWorkspace({
         <section className="app-tab-panel space-y-4">
           <header className="border-b border-[var(--border)] pb-4">
             <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">Events</h1>
-            <p className="mt-1 text-sm text-[var(--muted)]">Create a missing row or edit an existing one.</p>
+            <p className="mt-1 text-sm text-[var(--muted)]">Create an event or update its schedule and members.</p>
           </header>
 
           <div className="grid gap-6 xl:grid-cols-2">
             <details name="event-admin-action" open className="app-disclosure motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
-              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Create event row</summary>
+              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Create event</summary>
               <form action={createEventAction} className="space-y-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-[var(--muted)]">Event date</label>
@@ -471,18 +471,18 @@ export function AdminWorkspace({
                   dateText={createEventDateText}
                   footer={createSingleMember ? "Single-member event" : `${createSlotMode} slot mode`}
                 />
-                <PendingSubmitButton pendingLabel="Creating event…" className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create event row</PendingSubmitButton>
+                <PendingSubmitButton pendingLabel="Creating event…" className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create event</PendingSubmitButton>
               </form>
             </details>
 
             <details name="event-admin-action" className="app-disclosure motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
-              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Edit event row</summary>
+              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Edit event</summary>
               {selectedEvent ? (
                 <>
                   <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-[var(--muted)]">Saved event row</label>
-                    <p className="text-sm text-[var(--muted)]">Search the timeline details in the dropdown label if several rows use the same event name.</p>
-                    <select aria-label="Saved event row" value={selectedEventKey} onChange={(event) => {
+                    <label className="block text-sm font-semibold text-[var(--muted)]">Event to edit</label>
+                    <p className="text-sm text-[var(--muted)]">Use the date and time to distinguish events with the same name.</p>
+                    <select aria-label="Event to edit" value={selectedEventKey} onChange={(event) => {
                       const nextEvent = events.find((item) => String(item.id || "") === event.target.value) ?? null;
                       setSelectedEventId(event.target.value);
                       setEditEventName(nextEvent?.event_name || "");
@@ -495,7 +495,7 @@ export function AdminWorkspace({
                     </select>
                   </div>
                   <div key={String(selectedEvent.id || "no-event")} className="space-y-4">
-                    <p className="text-sm text-[var(--muted)]">Choose the saved row first, then update its schedule or assigned members.</p>
+                    <p className="text-sm text-[var(--muted)]">Choose an event, then update its schedule or assigned members.</p>
                     <form action={updateEventAction} className="space-y-4">
                       <input type="hidden" name="event_id" value={selectedEvent.id || ""} />
                       <div className="space-y-2">
@@ -526,7 +526,7 @@ export function AdminWorkspace({
                         <div className="space-y-2 sm:col-span-2">
                           <label className="block text-sm font-semibold text-[var(--muted)]">Timeline series</label>
                           <input aria-label="Timeline series" name="event_series" defaultValue={selectedEvent.event_series || ""} placeholder="Example: Ramadhan" className="app-input min-h-12 w-full px-4 py-3 text-lg" />
-                          <p className="text-sm text-[var(--muted)]">Roulette rows with the same series appear as one Timeline filter option.</p>
+                          <p className="text-sm text-[var(--muted)]">Roulette events with the same series share one timeline filter.</p>
                         </div>
                         {editSingleMember ? <input type="hidden" name="event_team" value="ALL" /> : editFixedTeam ? (
                           <div className="space-y-2 sm:col-span-2">
@@ -597,14 +597,14 @@ export function AdminWorkspace({
                       <input type="hidden" name="event_name" value={selectedEvent.event_name || "Event"} />
                       <label className="flex items-center gap-3 text-sm text-[var(--danger-foreground)]">
                         <input type="checkbox" name="confirm_delete" />
-                        I understand this event row will be deleted permanently
+                        I understand this event will be deleted permanently
                       </label>
-                      <PendingSubmitButton pendingLabel="Deleting event…" className="mt-4 min-h-11 rounded-lg border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--danger-soft)]">Delete this event row</PendingSubmitButton>
+                      <PendingSubmitButton pendingLabel="Deleting event…" className="mt-4 min-h-11 rounded-lg border border-[var(--danger-border)] px-4 py-3 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--danger-soft)]">Delete event</PendingSubmitButton>
                     </form>
                   </div>
                 </>
               ) : (
-                <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-sm text-[var(--muted)]">No event rows are available to edit yet.</div>
+                <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-sm text-[var(--muted)]">No events are available to edit. Create an event to get started.</div>
               )}
             </details>
           </div>

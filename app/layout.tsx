@@ -64,12 +64,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
               <ThemeToggle />
               {user ? (
                 <form action={logoutAction}>
-                  <PendingSubmitButton pendingLabel="Logging out..." ariaLabel="Logout" iconOnly className="site-icon-button inline-flex size-10 items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)]">
+                  <PendingSubmitButton pendingLabel="Signing out…" ariaLabel="Sign out" iconOnly className="site-icon-button inline-flex size-10 items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)]">
                     <LogoutIcon className="size-5" />
                   </PendingSubmitButton>
                 </form>
               ) : (
-                <Link href="/login" className="site-icon-button inline-flex size-10 items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)]" aria-label="Login or signup" title="Login or signup">
+                <Link href="/login" className="site-icon-button inline-flex size-10 items-center justify-center border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)]" aria-label="Sign in or create an account" title="Sign in or create an account">
                   <AuthIcon className="size-5" />
                 </Link>
               )}

@@ -267,7 +267,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
           <p className="mt-2 pr-8 text-sm text-[var(--muted)]">Show/event cheki only. Excludes birthday & graduation.</p>
           {comparisonReady ? (
             <>
-              <p className="mt-5 text-sm text-[var(--muted)]">Not recorded first, then oldest last cheki.</p>
+              <p className="mt-5 text-sm text-[var(--muted)]">Members with no recorded date appear first, followed by the oldest last cheki date.</p>
               <table className="mt-3 w-full table-fixed text-left text-xs sm:text-sm">
                 <thead className="text-[var(--muted)]"><tr><th scope="col" className="w-[38%] p-2">Member</th><th scope="col" className="w-[42%] p-2">Last cheki</th><th scope="col" className="w-[20%] p-2 text-right">Times</th></tr></thead>
                 <tbody>{comparisonResults.map((member) => (
@@ -290,10 +290,10 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
               </div>
               <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <p aria-live="polite" className="text-sm text-[var(--muted)]">{comparisonIds.length} selected · Choose at least 2.</p>
+                  <p aria-live="polite" className="text-sm text-[var(--muted)]">{comparisonIds.length} selected · Choose at least 2 members.</p>
                   <button type="button" disabled={!comparisonIds.length} onClick={() => setComparisonIds([])} className="min-h-11 whitespace-nowrap rounded-lg px-2 text-sm text-[var(--accent)] underline underline-offset-4 hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:text-[var(--muted)] disabled:no-underline disabled:opacity-50">Clear selection</button>
                 </div>
-                <button type="button" disabled={comparisonIds.length < 2} onClick={() => setComparisonReady(true)} className="min-h-11 rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-50">Sort selected</button>
+                <button type="button" disabled={comparisonIds.length < 2} onClick={() => setComparisonReady(true)} className="min-h-11 rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-50">Compare selected</button>
               </div>
             </>
           )}

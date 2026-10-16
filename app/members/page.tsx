@@ -2,12 +2,13 @@
 
 import { MembersClient } from "@/components/MembersClient";
 import { buildMemberArchive, buildOverviewSnapshot, loadMemberArchiveRows, loadMembers } from "@/lib/archive-data.ts";
+import { getSessionContext } from "@/lib/v2-server.ts";
 
 export const dynamic = "force-dynamic";
 
 export default async function MembersPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q = "" } = await searchParams;
-  const [members, archiveRows] = await Promise.all([loadMembers(), loadMemberArchiveRows()]);
+  const [members, archiveRows, { profile }] = await Promise.all([loadMembers(), loadMemberArchiveRows(), getSessionContext()]);
   const { limitedHistoryMap, totalMap, showEventStatsMap } = buildMemberArchive(archiveRows);
   const { leaderboard } = buildOverviewSnapshot(archiveRows);
   const browserItems = members.map((member) => ({
@@ -25,7 +26,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
           <h1>Members</h1>
         </div>
       </header>
-      <MembersClient members={browserItems} leaderboard={leaderboard} initialQuery={q} />
+      <MembersClient members={browserItems} leaderboard={leaderboard} initialQuery={q} canCopyImage={profile?.role === "admin"} />
     </div>
   );
 }

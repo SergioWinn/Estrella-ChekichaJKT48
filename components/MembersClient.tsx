@@ -11,7 +11,7 @@ import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { CloseIcon } from "@/components/UiIcons";
 import { useDebouncedValue } from "@/components/useDebouncedValue";
 import { compareMembersByLastCheki, memberMatchesQuery } from "@/lib/archive-data.ts";
-import { createComparisonImage } from "@/lib/comparison-image.ts";
+import { copyComparisonImage } from "@/lib/comparison-image.ts";
 import { formatEventDate } from "@/lib/format.ts";
 import { STATUS_OPTIONS as MEMBER_STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
 import type { MemberChekiStats, MemberHistoryEntry, MemberRecord, OverviewLeaderboardEntry } from "@/lib/types.ts";
@@ -27,18 +27,20 @@ interface MemberBrowserItem extends MemberRecord, MemberChekiStats {
   totalCheki: number;
 }
 
-export function MembersClient({ members, leaderboard, initialQuery = "" }: {
+export function MembersClient({ members, leaderboard, initialQuery = "", canCopyImage = false }: {
   members: MemberBrowserItem[];
   leaderboard: OverviewLeaderboardEntry[];
   initialQuery?: string;
+  canCopyImage?: boolean;
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [status, setStatus] = useState<(typeof STATUS_OPTIONS)[number]>("All");
   const [comparisonQuery, setComparisonQuery] = useState("");
   const [comparisonIds, setComparisonIds] = useState<string[]>([]);
   const [comparisonReady, setComparisonReady] = useState(false);
-  const [exporting, setExporting] = useState(false);
-  const [exportError, setExportError] = useState("");
+  const [copying, setCopying] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [copyError, setCopyError] = useState("");
   const comparisonDialogRef = useRef<HTMLDialogElement>(null);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -61,23 +63,18 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
   const comparisonChoices = members.filter((member) => memberMatchesQuery(member, comparisonQuery));
   const comparisonResults = members.filter((member) => comparisonIds.includes(member.id)).toSorted(compareMembersByLastCheki);
 
-  async function exportComparison() {
-    setExporting(true);
-    setExportError("");
+  async function copyComparison() {
+    if (!canCopyImage) return;
+    setCopying(true);
+    setCopied(false);
+    setCopyError("");
     try {
-      const image = await createComparisonImage(comparisonResults);
-      const url = URL.createObjectURL(image);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "chekicha-comparison.png";
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
+      await copyComparisonImage(comparisonResults);
+      setCopied(true);
     } catch {
-      setExportError("Could not export image. Please try again.");
+      setCopyError("Could not copy image. Allow clipboard access and use a supported browser over HTTPS.");
     } finally {
-      setExporting(false);
+      setCopying(false);
     }
   }
 
@@ -218,7 +215,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                 placeholder="Search members"
                 className="app-input min-h-11 w-full px-3 py-2 text-sm placeholder:text-[var(--muted)]"
               />
-              <button type="button" aria-haspopup="dialog" className="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-4 py-2 text-sm font-semibold text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]" onClick={() => { setComparisonReady(false); comparisonDialogRef.current?.showModal(); }}>
+              <button type="button" aria-haspopup="dialog" className="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-4 py-2 text-sm font-semibold text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]" onClick={() => { setComparisonReady(false); setCopied(false); setCopyError(""); comparisonDialogRef.current?.showModal(); }}>
                 <svg aria-hidden="true" className="size-4 shrink-0" fill="none" viewBox="0 0 24 24"><path d="M4 8h16m-4-4 4 4-4 4M20 16H4m4-4-4 4 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 Compare members
               </button>
@@ -298,10 +295,13 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                 ))}</tbody>
               </table>
               <div className="mt-5 flex flex-wrap gap-2">
-                <button type="button" className="min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm hover:bg-[var(--surface-hover)]" onClick={() => { setComparisonReady(false); setExportError(""); }}>Edit selection</button>
-                <button type="button" disabled={exporting} aria-busy={exporting} onClick={exportComparison} className="min-h-11 rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-50">{exporting ? "Exporting…" : "Export PNG"}</button>
+                <button type="button" disabled={copying} className="min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:opacity-50" onClick={() => { setComparisonReady(false); setCopied(false); setCopyError(""); }}>Edit selection</button>
+                {canCopyImage ? <button type="button" disabled={copying} aria-busy={copying} onClick={copyComparison} className="min-h-11 rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-50">{copying ? "Copying…" : "Copy image"}</button> : null}
               </div>
-              {exportError ? <p role="alert" className="mt-3 text-sm text-[var(--danger-foreground)]">{exportError}</p> : null}
+              {canCopyImage ? <>
+                <p role="status" className="mt-3 text-sm text-[var(--muted)]">{copied ? "Copied! Paste it into your chat." : ""}</p>
+                {copyError ? <p role="alert" className="mt-3 text-sm text-[var(--danger-foreground)]">{copyError}</p> : null}
+              </> : null}
             </>
           ) : (
             <>

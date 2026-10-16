@@ -1,6 +1,14 @@
 import { formatEventDate } from "./format.ts";
 import type { MemberChekiStats, MemberRecord } from "./types.ts";
 
+export async function copyComparisonImage(members: (MemberRecord & MemberChekiStats)[]): Promise<void> {
+  if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
+    throw new Error("Image copying requires a supported browser over HTTPS.");
+  }
+  // Start the clipboard write during the click, before rendering awaits fonts.
+  await navigator.clipboard.write([new ClipboardItem({ "image/png": createComparisonImage(members) })]);
+}
+
 export async function createComparisonImage(members: (MemberRecord & MemberChekiStats)[]): Promise<Blob> {
   await document.fonts.ready;
   const canvas = document.createElement("canvas");

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { createComparisonImage } from "../lib/comparison-image.ts";
+import { copyComparisonImage, createComparisonImage } from "../lib/comparison-image.ts";
 
 test("comparison PNG keeps every row, wraps names, and reports rendering failures", async (t) => {
   const labels: { text: string; x: number; y: number }[] = [];
@@ -52,6 +52,38 @@ test("comparison PNG keeps every row, wraps names, and reports rendering failure
   assert.ok(labels.some(({ text }) => text === "Not recorded"));
   assert.ok(labels.some(({ text }) => text.includes("Excludes birthday & graduation")));
   assert.ok(labels.every(({ y }) => y + 36 < canvas.height));
+
+  await t.test("copy starts before rendering resolves and propagates clipboard errors", async () => {
+    const previousClipboard = Object.getOwnPropertyDescriptor(navigator, "clipboard");
+    let imageData: Record<string, Promise<Blob>>;
+    Object.defineProperty(globalThis, "ClipboardItem", { configurable: true, value: function (data: Record<string, Promise<Blob>>) { imageData = data; } });
+    t.after(() => {
+      Reflect.deleteProperty(globalThis, "ClipboardItem");
+      if (previousClipboard) Object.defineProperty(navigator, "clipboard", previousClipboard);
+      else Reflect.deleteProperty(navigator, "clipboard");
+    });
+    const labelsBeforeCopy = labels.length;
+    let written = false;
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: {
+      write: async (items: ClipboardItem[]) => {
+        written = true;
+        assert.equal(labels.length, labelsBeforeCopy);
+        assert.equal(items.length, 1);
+        assert.deepEqual(Object.keys(imageData), ["image/png"]);
+        assert.equal(await imageData["image/png"], blob);
+      },
+    } });
+    const copying = copyComparisonImage(members);
+    assert.equal(written, true);
+    await copying;
+
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: {
+      write: async () => { await imageData["image/png"]; throw new Error("Permission denied"); },
+    } });
+    await assert.rejects(copyComparisonImage(members), /Permission denied/);
+    Reflect.deleteProperty(globalThis, "ClipboardItem");
+    await assert.rejects(copyComparisonImage(members), /supported browser over HTTPS/);
+  });
 
   available = false;
   await assert.rejects(createComparisonImage(members), /Canvas is unavailable/);

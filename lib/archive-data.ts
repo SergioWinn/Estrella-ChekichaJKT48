@@ -232,6 +232,15 @@ export function buildMemberArchive(rows: MemberHistoryEntry[]) {
   return { limitedHistoryMap, totalMap, showEventStatsMap };
 }
 
+export function getMemberChekiSummary(
+  member: MemberChekiStats & { totalCheki: number; history: MemberHistoryEntry[] },
+  showEventOnly: boolean,
+) {
+  return showEventOnly
+    ? { count: member.showEventCheki, lastTime: member.lastShowEventTime }
+    : { count: member.totalCheki, lastTime: member.history[0]?.start_time ?? null };
+}
+
 export function compareMembersByLastCheki(left: MemberRecord & MemberChekiStats, right: MemberRecord & MemberChekiStats): number {
   if (!left.lastShowEventTime && right.lastShowEventTime) return -1;
   if (left.lastShowEventTime && !right.lastShowEventTime) return 1;

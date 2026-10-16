@@ -10,7 +10,7 @@ import { FilterPill } from "@/components/FilterPill";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { CloseIcon } from "@/components/UiIcons";
 import { useDebouncedValue } from "@/components/useDebouncedValue";
-import { compareMembersByLastCheki, memberMatchesQuery } from "@/lib/archive-data.ts";
+import { compareMembersByLastCheki, getMemberChekiSummary, memberMatchesQuery } from "@/lib/archive-data.ts";
 import { copyComparisonImage } from "@/lib/comparison-image.ts";
 import { formatEventDate } from "@/lib/format.ts";
 import { STATUS_OPTIONS as MEMBER_STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
@@ -35,6 +35,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
 }) {
   const [query, setQuery] = useState(initialQuery);
   const [status, setStatus] = useState<(typeof STATUS_OPTIONS)[number]>("All");
+  const [showEventOnly, setShowEventOnly] = useState(false);
   const [comparisonQuery, setComparisonQuery] = useState("");
   const [comparisonIds, setComparisonIds] = useState<string[]>([]);
   const [comparisonReady, setComparisonReady] = useState(false);
@@ -228,13 +229,20 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
               </FilterPill>
             ))}
           </div>
+          <div role="group" aria-label="Chekicha types" className="flex flex-wrap items-center gap-2 border-t border-[var(--border)] pt-4">
+            <span className="mr-2 text-sm font-semibold text-[var(--muted-strong)]">Chekicha types</span>
+            <FilterPill onClick={() => setShowEventOnly(false)} active={!showEventOnly}>All types</FilterPill>
+            <FilterPill onClick={() => setShowEventOnly(true)} active={showEventOnly}>Non birthday/graduation</FilterPill>
+          </div>
         </div>
       </section>
 
-      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} members / All chekicha types, including birthday & graduation.</p>
+      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} members / {showEventOnly ? "Show/event chekicha only. Excludes birthday & graduation." : "All chekicha types, including birthday & graduation."}</p>
       {visibleMembers.length ? (
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-          {visibleMembers.map((member, index) => (
+          {visibleMembers.map((member, index) => {
+            const { count, lastTime } = getMemberChekiSummary(member, showEventOnly);
+            return (
             <button
               key={member.id}
               type="button"
@@ -255,8 +263,8 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
                 </div>
                 <div className="w-full min-w-0 flex-1">
                   <h2 className="truncate text-base font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-lg">{member.nickname || "Unknown member"}</h2>
-                  <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{member.totalCheki}</strong> times</p>
-                  <p className="mt-1 text-xs text-[var(--muted)]">Last chekicha: <span className="text-[var(--foreground-soft)]">{member.history[0] ? formatEventDate(member.history[0].start_time) : "Not recorded"}</span></p>
+                  <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{count}</strong> times</p>
+                  <p className="mt-1 text-xs text-[var(--muted)]">Last chekicha: <span className="text-[var(--foreground-soft)]">{lastTime ? formatEventDate(lastTime) : "Not recorded"}</span></p>
                   <div className="mt-1.5">
                     <span className="rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:text-xs">
                       {member.status || "Unknown team"}
@@ -265,7 +273,8 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
                 </div>
               </div>
             </button>
-          ))}
+            );
+          })}
         </section>
       ) : (
           <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-16 text-center text-sm text-[var(--muted)]">

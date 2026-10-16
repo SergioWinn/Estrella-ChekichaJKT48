@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { buildMemberArchive, buildOverviewSnapshot, compareMembersByLastCheki } from "../lib/archive-data.ts";
+import { buildMemberArchive, buildOverviewSnapshot, compareMembersByLastCheki, getMemberChekiSummary } from "../lib/archive-data.ts";
 
 test("buildOverviewSnapshot counts sessions, pending slots, ranks ties, and limits recent assignments", () => {
   const rows = [
@@ -194,6 +194,20 @@ test("show/event comparison counts active slots and finds latest dates without s
   assert.equal(limitedHistoryMap.b.length, 12);
   assert.equal(showEventStatsMap["special-only"], undefined);
   assert.equal(showEventStatsMap["inactive-slot"], undefined);
+});
+
+test("member card summaries switch counts and last dates without relying on limited special-event history", () => {
+  const member = {
+    totalCheki: 14,
+    history: Array.from({ length: 12 }, (_, index) => ({ id: `birthday-${index}`, event_type: "Birthday", start_time: "2026-10-11T12:00:00+07:00" })),
+    showEventCheki: 3,
+    lastShowEventTime: "2026-01-01T12:00:00+07:00",
+  };
+  assert.deepEqual(getMemberChekiSummary(member, false), { count: 14, lastTime: "2026-10-11T12:00:00+07:00" });
+  assert.deepEqual(getMemberChekiSummary(member, true), { count: 3, lastTime: member.lastShowEventTime });
+  const unrecorded = { totalCheki: 0, history: [], showEventCheki: 0, lastShowEventTime: null };
+  assert.deepEqual(getMemberChekiSummary(unrecorded, false), { count: 0, lastTime: null });
+  assert.deepEqual(getMemberChekiSummary({ ...member, showEventCheki: 0, lastShowEventTime: null }, true), { count: 0, lastTime: null });
 });
 
 test("longest-since-chekicha sort puts unrecorded members first, dates ascending and tied names alphabetically", () => {

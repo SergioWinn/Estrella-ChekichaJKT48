@@ -306,7 +306,7 @@ export function CollectionClient({
         </div>
       </section>
 
-      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleQuantity} chekicha across {memberCollections.length} members match your filters.</p>
+      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleQuantity} chekicha · {memberCollections.length} members</p>
       {memberCollections.length ? (
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {memberCollections.map((member, index) => (
@@ -341,7 +341,7 @@ export function CollectionClient({
         </section>
       ) : (
         <div className="app-card p-6 text-sm text-[var(--muted)]">
-          {entries.length ? "No chekicha match these filters. Try another event type or member status." : "Your collection is empty. Choose Add or manage chekicha to add your first item."}
+          {entries.length ? "No matches. Try different filters." : "No chekicha yet. Choose Add or manage chekicha to get started."}
         </div>
       )}
 
@@ -350,7 +350,6 @@ export function CollectionClient({
         <dialog
           ref={deskDialogRef}
           aria-labelledby="collection-desk-title"
-          aria-describedby="collection-desk-summary"
           className="app-modal-dialog m-auto h-[100dvh] max-h-[100dvh] w-full max-w-none overflow-y-auto bg-transparent px-4 py-6 text-[var(--foreground)]"
           onClick={(event) => { if (event.target === event.currentTarget) closeDesk(); }}
           onClose={() => setDeskOpen(false)}
@@ -361,9 +360,7 @@ export function CollectionClient({
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <div className="text-xs font-semibold text-[var(--accent)]">My collection</div>
-                <h3 id="collection-desk-title" className="mt-2 text-lg font-semibold tracking-[-0.04em] text-[var(--foreground)] md:text-xl">Add or manage chekicha</h3>
-                <p id="collection-desk-summary" className="mt-2 text-sm text-[var(--muted)]">Add chekicha you own, or update and remove saved entries.</p>
+                <h3 id="collection-desk-title" className="text-lg font-semibold tracking-[-0.04em] text-[var(--foreground)] md:text-xl">Add or manage chekicha</h3>
               </div>
               <button
                 type="button"
@@ -390,7 +387,7 @@ export function CollectionClient({
             {deskMode === "Add" ? (
               <div className="mt-5 space-y-5">
                 <div className="border-t border-[var(--border)] pt-4 text-sm text-[var(--muted)]">
-                  <strong className="text-[var(--foreground)]">Adding copies:</strong> choose an event slot and enter the number of copies to add. Adding the same slot again increases its saved quantity.
+                  Adding the same slot again increases your saved quantity.
                 </div>
                 {collectibleSlots.length ? (
                   <section className="p-4 md:p-5">
@@ -398,7 +395,6 @@ export function CollectionClient({
                       <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
                         <div>
                           <div className="text-sm font-semibold text-[var(--accent)]">Find slots</div>
-                          <div className="mt-1 text-sm text-[var(--muted)]">Only slots with assigned members can be added.</div>
                         </div>
                         <div className="text-xs font-semibold text-[var(--muted)]">
                           {filteredCollectibleSlots.length} matches
@@ -492,7 +488,7 @@ export function CollectionClient({
             ) : (
               <div className="mt-5 grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">
-                  <strong className="text-[var(--foreground)]">Updating your collection:</strong> save the total copies you own, or remove the entry. Removing an entry only changes your collection.
+                  Save replaces your total. Remove only affects your collection.
                 </div>
                 {entries.length ? (
                   entries.map((entry) => (

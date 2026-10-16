@@ -11,9 +11,8 @@ export default async function TimelinePage() {
     <div className="page-wrap archive-workspace">
       <header className="archive-page-heading">
         <div>
-          <p className="kicker">JKT48 / Since January 2026</p>
           <h1>Timeline chekicha</h1>
-          <p>Browse event history and see who appeared in each session.</p>
+          <p>Since January 2026</p>
         </div>
         <Link href="/members#ranking" className="archive-text-link">Most frequent members <span aria-hidden="true">&rarr;</span></Link>
       </header>

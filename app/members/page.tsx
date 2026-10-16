@@ -22,9 +22,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
     <div className="page-wrap archive-workspace">
       <header className="archive-page-heading">
         <div>
-          <p className="kicker">Members & statistics</p>
-          <h1>Member chekicha archive</h1>
-          <p>Browse member history and show/event frequency, or select members to compare their last chekicha.</p>
+          <h1>Members</h1>
         </div>
       </header>
       <MembersClient members={browserItems} leaderboard={leaderboard} initialQuery={q} />

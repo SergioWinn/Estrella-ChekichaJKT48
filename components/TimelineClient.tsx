@@ -248,7 +248,7 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
           <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-16 text-center text-sm text-[var(--muted)]">
             <svg aria-hidden="true" className="size-12 text-[var(--muted-strong)]" fill="none" viewBox="0 0 24 24"><path d="M12 6v6l4 2" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5"/><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/></svg>
             <span className="font-semibold text-[var(--foreground)]">No events match this filter.</span>
-            <span>Try a different filter or check back after the next session is archived.</span>
+            <span>Try a different filter.</span>
           </div>
       )}
     </div>

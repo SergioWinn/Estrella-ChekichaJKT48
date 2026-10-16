@@ -29,11 +29,11 @@ export function filterTimelineEvents(events: TimelineEvent[], filterType: string
 }
 
 export function buildTimelineFilterNote(filterType: string, rouletteSeries = "All", teamFilter = "All"): string {
-  const suffix = teamFilter === "All" ? "" : ` for ${teamFilter}`;
-  if (filterType === "All") return `Showing every event type across all months${suffix}`;
-  if (filterType === "Roulette" && rouletteSeries !== "All") return `Showing only ${rouletteSeries} roulette sessions${suffix}`;
-  if (filterType === "Roulette") return `Showing every roulette show across all months${suffix}`;
-  return `Showing only ${filterType} events${suffix}`;
+  const suffix = teamFilter === "All" ? "" : ` · ${teamFilter}`;
+  if (filterType === "All") return `All events${suffix}`;
+  if (filterType === "Roulette" && rouletteSeries !== "All") return `${rouletteSeries} roulette${suffix}`;
+  if (filterType === "Roulette") return `All roulette${suffix}`;
+  return `${filterType} events${suffix}`;
 }
 
 export function countTimelineTeams(events: TimelineEvent[]): Record<EventTeam, number> {

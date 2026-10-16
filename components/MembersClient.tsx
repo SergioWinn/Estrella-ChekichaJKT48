@@ -11,6 +11,7 @@ import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { CloseIcon } from "@/components/UiIcons";
 import { useDebouncedValue } from "@/components/useDebouncedValue";
 import { compareMembersByLastCheki, memberMatchesQuery } from "@/lib/archive-data.ts";
+import { createComparisonImage } from "@/lib/comparison-image.ts";
 import { formatEventDate } from "@/lib/format.ts";
 import { STATUS_OPTIONS as MEMBER_STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
 import type { MemberChekiStats, MemberHistoryEntry, MemberRecord, OverviewLeaderboardEntry } from "@/lib/types.ts";
@@ -36,6 +37,8 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
   const [comparisonQuery, setComparisonQuery] = useState("");
   const [comparisonIds, setComparisonIds] = useState<string[]>([]);
   const [comparisonReady, setComparisonReady] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState("");
   const comparisonDialogRef = useRef<HTMLDialogElement>(null);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -57,6 +60,26 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
 
   const comparisonChoices = members.filter((member) => memberMatchesQuery(member, comparisonQuery));
   const comparisonResults = members.filter((member) => comparisonIds.includes(member.id)).toSorted(compareMembersByLastCheki);
+
+  async function exportComparison() {
+    setExporting(true);
+    setExportError("");
+    try {
+      const image = await createComparisonImage(comparisonResults);
+      const url = URL.createObjectURL(image);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "chekicha-comparison.png";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 30_000);
+    } catch {
+      setExportError("Could not export image. Please try again.");
+    } finally {
+      setExporting(false);
+    }
+  }
 
   const selectedMember = useMemo(
     () => visibleMembers.find((member) => member.id === selectedMemberId) ?? members.find((member) => member.id === selectedMemberId) ?? null,
@@ -267,14 +290,18 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
           <p className="mt-2 pr-8 text-sm text-[var(--muted)]">Show/event chekicha only. Excludes birthday & graduation.</p>
           {comparisonReady ? (
             <>
-              <p className="mt-5 text-sm text-[var(--muted)]">Members with no recorded date appear first, followed by the oldest last chekicha date.</p>
+              <p className="mt-5 text-sm text-[var(--muted)]">Unrecorded first, then oldest last date.</p>
               <table className="mt-3 w-full table-fixed text-left text-xs sm:text-sm">
                 <thead className="text-[var(--muted)]"><tr><th scope="col" className="w-[38%] p-2">Member</th><th scope="col" className="w-[42%] p-2">Last chekicha</th><th scope="col" className="w-[20%] p-2 text-right">Times</th></tr></thead>
                 <tbody>{comparisonResults.map((member) => (
                   <tr key={member.id} className="border-t border-[var(--border)]"><th scope="row" className="break-words p-2 font-semibold">{member.nickname || member.full_name}</th><td className="p-2 text-[var(--muted-strong)]">{member.lastShowEventTime ? formatEventDate(member.lastShowEventTime) : "Not recorded"}</td><td className="p-2 text-right">{member.showEventCheki}</td></tr>
                 ))}</tbody>
               </table>
-              <button type="button" className="mt-5 min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm hover:bg-[var(--surface-hover)]" onClick={() => setComparisonReady(false)}>Edit selection</button>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <button type="button" className="min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm hover:bg-[var(--surface-hover)]" onClick={() => { setComparisonReady(false); setExportError(""); }}>Edit selection</button>
+                <button type="button" disabled={exporting} aria-busy={exporting} onClick={exportComparison} className="min-h-11 rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-50">{exporting ? "Exporting…" : "Export PNG"}</button>
+              </div>
+              {exportError ? <p role="alert" className="mt-3 text-sm text-[var(--danger-foreground)]">{exportError}</p> : null}
             </>
           ) : (
             <>
@@ -352,7 +379,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "" }: {
                       All types {selectedMember.totalCheki} times
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--muted)]">Show/event only: {selectedMember.showEventCheki} times. Last show/event chekicha: {selectedMember.lastShowEventTime ? formatEventDate(selectedMember.lastShowEventTime) : "Not recorded"}.</p>
+                  <p className="text-sm text-[var(--muted)]">Show/event: {selectedMember.showEventCheki} times · Last: {selectedMember.lastShowEventTime ? formatEventDate(selectedMember.lastShowEventTime) : "Not recorded"}</p>
                   <p className="text-xs leading-6 text-[var(--muted-strong)] sm:text-sm">
                     Last chekicha (all types): {selectedMember.history[0] ? formatEventDate(selectedMember.history[0].start_time) : "Not recorded"}. Includes birthday & graduation.
                   </p>

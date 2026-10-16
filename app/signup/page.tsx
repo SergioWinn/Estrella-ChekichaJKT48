@@ -21,20 +21,13 @@ export default async function SignupPage({
       <section className="grid gap-8 py-5 sm:py-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
         <div className="letter-intro">
           <SectionHeader
-            title="Start your chekicha collection."
-            description="Create an account to save the chekicha you own and keep track of your copies."
+            title="Create account"
+            description="Save your chekicha collection."
             titleClassName="text-[clamp(2.2rem,4vw,3.7rem)]"
             descriptionClassName="text-sm leading-7 sm:text-base"
           />
-          <aside className="workbench-note">
-            <div className="kicker">Your sign-in details</div>
-            <p className="mt-3 text-sm leading-7 text-[var(--foreground-soft)] sm:text-base">
-              Choose a username you can remember. You will use it to sign in.
-            </p>
-          </aside>
         </div>
         <div className="auth-form-panel p-6 sm:p-8">
-          <h2 className="text-xl font-semibold text-[var(--foreground)]">Create account</h2>
           {error ? <div role="alert" className="app-status-message mt-4 rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
           <form action={signupAction} className="mt-5 space-y-4">
             <div className="space-y-2">

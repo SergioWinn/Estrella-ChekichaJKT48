@@ -363,7 +363,6 @@ export function AdminWorkspace({
         <section className="app-tab-panel space-y-4">
           <header className="border-b border-[var(--border)] pb-4">
             <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">Events</h1>
-            <p className="mt-1 text-sm text-[var(--muted)]">Create an event or update its schedule and members.</p>
           </header>
 
           <div className="grid gap-6 xl:grid-cols-2">
@@ -495,7 +494,6 @@ export function AdminWorkspace({
                     </select>
                   </div>
                   <div key={String(selectedEvent.id || "no-event")} className="space-y-4">
-                    <p className="text-sm text-[var(--muted)]">Choose an event, then update its schedule or assigned members.</p>
                     <form action={updateEventAction} className="space-y-4">
                       <input type="hidden" name="event_id" value={selectedEvent.id || ""} />
                       <div className="space-y-2">
@@ -615,7 +613,6 @@ export function AdminWorkspace({
         <section className="app-tab-panel space-y-4">
           <header className="border-b border-[var(--border)] pb-4">
             <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">Members</h1>
-            <p className="mt-1 text-sm text-[var(--muted)]">Add a member or update an existing record.</p>
           </header>
 
           <div className="grid gap-6 xl:grid-cols-2">
@@ -653,7 +650,7 @@ export function AdminWorkspace({
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-[var(--muted)]">Avatar URL</label>
                   <input aria-label="Avatar URL" name="avatar_url" value={newAvatarUrl} onChange={(event) => setNewAvatarUrl(event.target.value)} className="app-input min-h-12 w-full px-4 py-3 text-base" />
-                  <p className="text-sm text-[var(--muted)]">Optional. Add an image URL so this member is easier to recognize in collection cards.</p>
+                  <p className="text-sm text-[var(--muted)]">Optional. Shown in collection cards.</p>
                 </div>
                 <MemberPreviewCard
                   title="Preview"
@@ -685,7 +682,7 @@ export function AdminWorkspace({
                       </select>
                     </div>
                   <div key={selectedMember.id} className="space-y-4">
-                    <p className="text-sm text-[var(--muted)]">Pick a member first, then save edits below. Deleting is permanent unless you recreate the record.</p>
+                    <p className="text-sm text-[var(--muted)]">Deleting a member is permanent.</p>
                     <form action={updateMemberAction} className="space-y-4">
                       <input type="hidden" name="member_id" value={selectedMember.id} />
                       <div className="grid gap-3 sm:grid-cols-2">
@@ -719,7 +716,7 @@ export function AdminWorkspace({
                       <div className="space-y-2">
                         <label className="block text-sm font-semibold text-[var(--muted)]">Edit avatar URL</label>
                         <input aria-label="Edit avatar URL" name="avatar_url" defaultValue={selectedMember.avatar_url || ""} className="app-input min-h-12 w-full px-4 py-3 text-base" />
-                        <p className="text-sm text-[var(--muted)]">Optional. Update this when the member photo changes or remove it if the link is no longer valid.</p>
+                        <p className="text-sm text-[var(--muted)]">Optional. Clear to remove the photo.</p>
                       </div>
                       <MemberPreviewCard
                         title="Edit preview"

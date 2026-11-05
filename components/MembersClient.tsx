@@ -46,6 +46,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const rankingRef = useRef<HTMLOListElement>(null);
+  const [rankingPaused, setRankingPaused] = useState(false);
   const debouncedQuery = useDebouncedValue(query);
   const rankingEntries = leaderboard.slice(0, 20);
 
@@ -91,7 +92,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
 
   useEffect(() => {
     const rail = rankingRef.current;
-    if (!rail || selectedMember) return;
+    if (!rail || selectedMember || rankingPaused) return;
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const hoverAvailable = window.matchMedia("(hover: hover)");
     const first = rail.firstElementChild as HTMLElement;
@@ -174,19 +175,29 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
       visibilityObserver.disconnect();
       dialogObserver.disconnect();
     };
-  }, [selectedMember, leaderboard.length]);
+  }, [selectedMember, leaderboard.length, rankingPaused]);
 
   return (
     <div className="space-y-6">
       <section id="ranking" className="member-ranking" aria-labelledby="ranking-title">
-        <header className="member-ranking-heading">
+        <header className="member-ranking-heading flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 id="ranking-title">Most frequent chekicha members</h2>
             <p>Top 20 · Chekicha show/event · Excludes birthday & graduation</p>
           </div>
+          {leaderboard.length > 0 ? (
+            <button
+              type="button"
+              aria-controls="member-ranking-list"
+              onClick={() => setRankingPaused((paused) => !paused)}
+              className="min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)] motion-reduce:hidden"
+            >
+              {rankingPaused ? "Resume scrolling" : "Pause scrolling"}
+            </button>
+          ) : null}
         </header>
         {leaderboard.length ? (
-          <ol ref={rankingRef} className="member-ranking-list" tabIndex={0} aria-label="Top 20 show/event chekicha ranking. Scroll to see more members.">
+          <ol id="member-ranking-list" ref={rankingRef} className="member-ranking-list" tabIndex={0} aria-label="Top 20 show/event chekicha ranking. Scroll to see more members.">
             {[...rankingEntries, ...rankingEntries].map((entry, index) => {
               const member = members.find((item) => item.id === entry.member_id);
               const isCopy = index >= rankingEntries.length;

@@ -15,6 +15,7 @@ export function SiteNav({ links }: { links: NavLink[] }) {
   const [open, setOpen] = useState(false);
   const activeLink = links.find((link) => link.href === pathname) ?? links[0];
   const navRef = useRef<HTMLElement | null>(null);
+  const toggleRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -24,7 +25,10 @@ export function SiteNav({ links }: { links: NavLink[] }) {
     }
 
     function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape" && navRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+        if (toggleRef.current?.getClientRects().length) toggleRef.current.focus();
+      }
     }
 
     document.addEventListener("mousedown", handlePointerDown);
@@ -38,8 +42,11 @@ export function SiteNav({ links }: { links: NavLink[] }) {
   }, [open]);
 
   return (
-    <nav ref={navRef} className="site-nav-shell">
+    <nav ref={navRef} className="site-nav-shell" onBlur={(event) => {
+      if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+    }}>
       <button
+        ref={toggleRef}
         type="button"
         aria-expanded={open}
         aria-controls="site-nav-links"

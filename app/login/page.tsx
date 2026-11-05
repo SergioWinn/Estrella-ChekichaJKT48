@@ -31,8 +31,9 @@ export default async function LoginPage({
         <div className="auth-form-panel p-6 sm:p-8">
           {error ? <div role="alert" className="app-status-message mt-4 rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
           <form action={loginAction} className="mt-5 space-y-4">
-            <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Username</span><input name="username" autoComplete="username" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
-            <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Password</span><input name="password" type="password" autoComplete="current-password" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
+            <p className="text-sm text-[var(--muted)]">All fields are required.</p>
+            <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Username</span><input name="username" required autoCapitalize="none" spellCheck={false} autoComplete="username" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
+            <label className="block space-y-2"><span className="text-sm font-semibold text-[var(--muted-strong)]">Password</span><input name="password" required type="password" autoComplete="current-password" className="app-input min-h-11 w-full px-4 py-3 placeholder:text-[var(--muted)]" /></label>
             <PendingSubmitButton pendingLabel="Signing in…" className="min-h-11 w-full rounded-lg bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Sign in</PendingSubmitButton>
           </form>
           <p className="mt-4 text-sm text-[var(--muted)]">

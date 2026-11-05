@@ -577,6 +577,7 @@ button {
 }
 
 .app-status-message {
+  overflow-wrap: anywhere;
   animation: status-message-in var(--dur-short) var(--ease-out) both;
 }
 

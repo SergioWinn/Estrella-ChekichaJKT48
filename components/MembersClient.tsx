@@ -180,21 +180,25 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
   return (
     <div className="space-y-6">
       <section id="ranking" className="member-ranking" aria-labelledby="ranking-title">
-        <header className="member-ranking-heading flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 id="ranking-title">Most frequent chekicha members</h2>
-            <p>Top 20 · Chekicha show/event · Excludes birthday & graduation</p>
-          </div>
+        <header className="member-ranking-heading">
+          <div className="flex items-center gap-1">
+            <h2 id="ranking-title" className="min-w-0">Most frequent chekicha members</h2>
           {leaderboard.length > 0 ? (
             <button
               type="button"
               aria-controls="member-ranking-list"
+              aria-label={rankingPaused ? "Resume scrolling" : "Pause scrolling"}
+              title={rankingPaused ? "Resume scrolling" : "Pause scrolling"}
               onClick={() => setRankingPaused((paused) => !paused)}
-              className="min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2 text-sm text-[var(--foreground)] transition-colors hover:bg-[var(--surface-hover)] motion-reduce:hidden"
+              className="inline-flex size-11 shrink-0 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)] motion-reduce:hidden"
             >
-              {rankingPaused ? "Resume scrolling" : "Pause scrolling"}
+              <svg aria-hidden="true" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                {rankingPaused ? <path d="m9 5 10 7-10 7V5Z" /> : <path d="M9 5v14M15 5v14" />}
+              </svg>
             </button>
           ) : null}
+          </div>
+          <p>Top 20 · Chekicha show/event · Excludes birthday & graduation</p>
         </header>
         {leaderboard.length ? (
           <ol id="member-ranking-list" ref={rankingRef} className="member-ranking-list" tabIndex={0} aria-label="Top 20 show/event chekicha ranking. Scroll to see more members.">

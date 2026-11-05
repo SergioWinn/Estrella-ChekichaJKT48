@@ -308,7 +308,7 @@ export function AdminWorkspace({
                       <div className="hidden h-24 items-center justify-center overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--panel)] md:flex">
                         {event.event_image_url ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={event.event_image_url} alt={event.event_name || "Event banner"} className="h-full w-full object-contain" />
+                          <img src={event.event_image_url} alt={event.event_name || "Event banner"} loading="lazy" decoding="async" className="h-full w-full object-contain" />
                         ) : (
                           <MediaPlaceholder />
                         )}

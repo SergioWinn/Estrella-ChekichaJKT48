@@ -431,7 +431,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
                         <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface-strong)]">
                           {row.event_image_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={row.event_image_url} alt={row.event_name || "Event banner"} className="h-full w-full object-cover" />
+                            <img src={row.event_image_url} alt={row.event_name || "Event banner"} loading="lazy" decoding="async" className="h-full w-full object-cover" />
                           ) : (
                             <MediaPlaceholder />
                           )}

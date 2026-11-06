@@ -210,7 +210,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
                   <button type="button" tabIndex={isCopy ? -1 : undefined} disabled={!member} onClick={() => setSelectedMemberId(entry.member_id)} aria-haspopup="dialog" className="member-ranking-button">
                     <span className="member-ranking-place">#{entry.rank}</span>
                     <span className="member-ranking-name">{member?.nickname || entry.nickname}</span>
-                    <span className="member-ranking-count"><strong>{entry.count}</strong> times</span>
+                    <span className="member-ranking-count"><strong>{entry.count}</strong> {entry.count === 1 ? "time" : "times"}</span>
                   </button>
                 </li>
               );
@@ -252,7 +252,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
         </div>
       </section>
 
-      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} members / {showEventOnly ? "Show/event chekicha only. Excludes birthday & graduation." : "All chekicha types, including birthday & graduation."}</p>
+      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} {visibleMembers.length === 1 ? "member" : "members"} · {showEventOnly ? "Show/event chekicha only. Excludes birthday & graduation." : "All chekicha types, including birthday & graduation."}</p>
       {visibleMembers.length ? (
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
           {visibleMembers.map((member, index) => {
@@ -278,7 +278,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
                 </div>
                 <div className="w-full min-w-0 flex-1">
                   <h2 className="truncate text-base font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-lg">{member.nickname || "Unknown member"}</h2>
-                  <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{count}</strong> times</p>
+                  <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{count}</strong> {count === 1 ? "time" : "times"}</p>
                   <p className="mt-1 text-xs text-[var(--muted)]">Last chekicha: <span className="text-[var(--foreground-soft)]">{lastTime ? formatEventDate(lastTime) : "Not recorded"}</span></p>
                   <div className="mt-1.5">
                     <span className="rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:text-xs">
@@ -335,7 +335,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
                   <label key={member.id} className="flex min-h-12 cursor-pointer items-center gap-3 border-b border-[var(--border)] px-3 py-2 last:border-0 hover:bg-[var(--surface-hover)]">
                     <input type="checkbox" checked={comparisonIds.includes(member.id)} onChange={(event) => setComparisonIds((ids) => event.target.checked ? [...ids, member.id] : ids.filter((id) => id !== member.id))} className="size-4 shrink-0 accent-[var(--accent)]" />
                     <span className="min-w-0 flex-1 break-words text-sm">{member.nickname || member.full_name}</span>
-                    <span className="shrink-0 text-xs text-[var(--muted)]">{member.showEventCheki} times</span>
+                    <span className="shrink-0 text-xs text-[var(--muted)]">{member.showEventCheki} {member.showEventCheki === 1 ? "time" : "times"}</span>
                   </label>
                 )) : <p className="p-3 text-sm text-[var(--muted)]">No members found.</p>}
               </div>
@@ -400,10 +400,10 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
                       Generation {selectedMember.generasi || "?"}
                     </span>
                     <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent)] sm:px-3 sm:py-1.5 sm:text-xs">
-                      All types {selectedMember.totalCheki} times
+                      All types {selectedMember.totalCheki} {selectedMember.totalCheki === 1 ? "time" : "times"}
                     </span>
                   </div>
-                  <p className="text-sm text-[var(--muted)]">Show/event: {selectedMember.showEventCheki} times · Last: {selectedMember.lastShowEventTime ? formatEventDate(selectedMember.lastShowEventTime) : "Not recorded"}</p>
+                  <p className="text-sm text-[var(--muted)]">Show/event: {selectedMember.showEventCheki} {selectedMember.showEventCheki === 1 ? "time" : "times"} · Last: {selectedMember.lastShowEventTime ? formatEventDate(selectedMember.lastShowEventTime) : "Not recorded"}</p>
                   <p className="text-xs leading-6 text-[var(--muted-strong)] sm:text-sm">
                     Last chekicha (all types): {selectedMember.history[0] ? formatEventDate(selectedMember.history[0].start_time) : "Not recorded"}. Includes birthday & graduation.
                   </p>
@@ -437,7 +437,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
                           )}
                         </div>
                         <div className="mt-2">
-                          <h4 className="truncate text-sm font-semibold tracking-[-0.02em] text-[var(--foreground)] sm:text-base">{row.event_name || "Untitled event"}</h4>
+                          <h4 className="break-words text-sm font-semibold tracking-[-0.02em] text-[var(--foreground)] sm:text-base">{row.event_name || "Untitled event"}</h4>
                           <p className="mt-1 text-xs text-[var(--muted-strong)] sm:text-sm">{formatEventDate(row.start_time)}</p>
                         </div>
                         <div className="mt-2 flex flex-wrap gap-1.5">

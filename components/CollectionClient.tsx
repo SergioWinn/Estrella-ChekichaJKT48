@@ -306,7 +306,7 @@ export function CollectionClient({
         </div>
       </section>
 
-      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleQuantity} chekicha · {memberCollections.length} members</p>
+      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleQuantity} chekicha · {memberCollections.length} {memberCollections.length === 1 ? "member" : "members"}</p>
       {memberCollections.length ? (
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {memberCollections.map((member, index) => (

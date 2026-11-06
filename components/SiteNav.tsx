@@ -13,7 +13,7 @@ export function SiteNav({ links }: { links: NavLink[] }) {
   const currentPath = usePathname();
   const pathname = currentPath === "/timeline" ? "/" : currentPath;
   const [open, setOpen] = useState(false);
-  const activeLink = links.find((link) => link.href === pathname) ?? links[0];
+  const activeLink = links.find((link) => link.href === pathname);
   const navRef = useRef<HTMLElement | null>(null);
   const toggleRef = useRef<HTMLButtonElement | null>(null);
 

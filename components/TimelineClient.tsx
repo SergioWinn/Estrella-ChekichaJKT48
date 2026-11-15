@@ -202,9 +202,11 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                       <DateRail value={row.start_time} />
                     </div>
                     <div className="min-w-0 space-y-3">
-                      <div className="min-w-0 xl:pr-24">
+                      <div className="min-w-0">
                         <div className="min-w-0">
-                          <h2 className="break-words text-[1.2rem] font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-[1.2rem] lg:text-[1.65rem]" title={row.event_name || "Untitled event"}>{row.event_name || "Untitled event"}</h2>
+                          <h2 className="flex h-[2lh] items-center text-[1.2rem] font-semibold leading-snug tracking-[-0.04em] text-[var(--foreground)] sm:text-[1.2rem] lg:text-[1.65rem]" title={row.event_name || "Untitled event"}>
+                            <span className="line-clamp-2 w-full break-words">{row.event_name || "Untitled event"}</span>
+                          </h2>
                           <div className="mt-2 flex min-w-0 flex-wrap items-center gap-2 text-sm font-semibold leading-[1.35] md:text-[0.95rem]">
                             <span className="min-w-0 truncate text-[var(--accent)]">{formatEventTime(row.start_time, row.end_time)} WIB</span>
                             <EventTeamBadge team={eventTeam} eventType={row.event_type} compact />

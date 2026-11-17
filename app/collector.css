@@ -90,16 +90,14 @@ body { background: var(--background); }
 .album-event-date > span { font-size: 0.85rem; font-variant-numeric: tabular-nums; }
 .album-event-special .album-event-art, .album-event-special .album-event-info { grid-row: 1 / 3; }
 .album-event-special .album-portrait { object-fit: cover; object-position: center; }
-.album-participants { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; border-top: 1px solid var(--border); padding-top: 0.75rem; }
-.album-participants-single { grid-template-columns: 1fr; }
-.album-participant { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; min-width: 0; padding: 0.25rem; text-align: center; }
-.album-participant-photo { width: 112px; height: 112px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; background: var(--accent-soft); }
+.album-participants { grid-column: 2; display: grid; align-content: start; gap: 0.75rem; border-top: 1px solid var(--border); padding-top: 0.75rem; }
+.album-participant { display: flex; align-items: center; gap: 0.75rem; min-width: 0; text-align: left; }
+.album-participant-photo { width: 56px; height: 56px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; background: var(--accent-soft); }
 .album-initial { color: var(--muted); font-size: 2rem; }
 .album-slot { font-size: 0.75rem; color: var(--accent); font-weight: 600; }
-.album-member-name { font-size: 1.4rem; line-height: 1.2; font-weight: 600; overflow-wrap: anywhere; }
-.album-event-show { grid-template-columns: 80px minmax(0, 1fr); grid-template-rows: 120px 196px; }
-.album-event-show > .album-event-art { width: 80px; height: 80px; align-self: center; background: transparent; }
-.album-event-show .album-event-title { font-size: 1rem; }
+.album-member-name { font-size: 1.1rem; line-height: 1.2; font-weight: 600; overflow-wrap: anywhere; }
+.album-event-show { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); grid-template-rows: minmax(140px, auto) minmax(176px, auto); }
+.album-event-show > .album-event-art { grid-row: 1 / 3; }
 .album-event-show .album-category { display: none; }
 .album-event-show .album-event-date { margin-block: 0.35rem; }
 .album-participant:has(.album-initial) .album-member-name { font-size: 1rem; font-weight: 500; color: var(--muted-strong); }
@@ -116,9 +114,9 @@ body { background: var(--background); }
 }
 @media (max-width: 480px) {
   .album-event { gap: 0.75rem; padding: 0.75rem; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr); grid-template-rows: 128px 208px; }
-  .album-event-show { grid-template-columns: 64px minmax(0, 1fr); }
-  .album-event-show > .album-event-art { width: 64px; height: 64px; }
-  .album-participant-photo { width: 104px; height: 104px; }
-  .album-member-name { font-size: 1.2rem; }
+  .album-event-show { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); grid-template-rows: minmax(160px, auto) minmax(176px, auto); }
+  .album-participant { gap: 0.5rem; }
+  .album-participant-photo { width: 48px; height: 48px; }
+  .album-member-name { font-size: 1rem; }
   .album-directory-photo { width: 80px; height: 80px; }
 }

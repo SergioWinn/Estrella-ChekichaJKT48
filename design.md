@@ -13,7 +13,7 @@ User-approved direction: Collector's Album layout with the Chekicha Pop palette.
 - Subtitle identifies the JKT48 FIGHT! era alongside the January 2026 archive start. Emphasize FIGHT! with restrained berry typography; keep member imagery dominant and avoid repeating campaign labels on cards.
 - Equal card footprints within each breakpoint. Desktop two columns, narrow screens one column.
 - Birthday/Graduation: portrait on left, member and event metadata on right.
-- Show: compact artwork thumbnail and metadata above a dominant participant area. Member names are larger than show titles, with equally sized square portraits and labels/names below. Two slots get equal columns; a genuine single slot is centered without an empty second slot. Missing member stays visible as awaiting; missing photograph uses a fallback.
+- Show: full-height contained show artwork on the left (40% of available column width), metadata and participants on the right, matching the special-event card structure. Participants use equal square thumbnails with slot labels and names beside them; two slots stack vertically, and a genuine single slot has no empty second row. Missing member stays visible as awaiting; missing photograph uses a fallback.
 - Titles use a reserved two-line area, vertically centered when short and ellipsized when long. Full title remains available via title attribute.
 - Filter by category, series, team, member and case-insensitive text. Display empty result state with reset action.
 

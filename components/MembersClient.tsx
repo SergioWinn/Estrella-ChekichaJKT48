@@ -209,6 +209,10 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
                 <li key={`${entry.member_id}-${index}`} data-ranking-copy={isCopy} aria-hidden={isCopy || undefined}>
                   <button type="button" tabIndex={isCopy ? -1 : undefined} disabled={!member} onClick={() => setSelectedMemberId(entry.member_id)} aria-haspopup="dialog" className="member-ranking-button">
                     <span className="member-ranking-place">#{entry.rank}</span>
+                    {member?.avatar_url && <span className="album-ranking-photo">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={member.avatar_url} alt="" loading="lazy" />
+                    </span>}
                     <span className="member-ranking-name">{member?.nickname || entry.nickname}</span>
                     <span className="member-ranking-count"><strong>{entry.count}</strong> {entry.count === 1 ? "time" : "times"}</span>
                   </button>
@@ -254,7 +258,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
 
       <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} {visibleMembers.length === 1 ? "member" : "members"} · {showEventOnly ? "Show/event chekicha only. Excludes birthday & graduation." : "All chekicha types, including birthday & graduation."}</p>
       {visibleMembers.length ? (
-        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {visibleMembers.map((member, index) => {
             const { count, lastTime } = getMemberChekiSummary(member, showEventOnly);
             return (
@@ -263,11 +267,11 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
               type="button"
               aria-haspopup="dialog"
               onClick={() => setSelectedMemberId(member.id)}
-                className="motion-card motion-list-item app-card p-3 text-left transition-colors hover:bg-[var(--surface-hover)] sm:p-4"
+                className="album-member-card motion-card motion-list-item app-card p-3 text-left transition-colors hover:bg-[var(--surface-hover)] sm:p-4"
               style={buildStaggerStyle(index)}
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-strong)] sm:size-16">
+                <div className="album-directory-photo">
                   {member.avatar_url ? (
                     // shortcut: twelve avatars stay eager for common viewports; revisit if the grid becomes denser.
                     // eslint-disable-next-line @next/next/no-img-element

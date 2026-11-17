@@ -3,6 +3,28 @@ import assert from "node:assert/strict";
 
 import { buildTimelineCardState, buildTimelineFilterNote, countTimelineTeams, filterTimelineEvents, getRouletteSeriesOptions } from "../lib/timeline-view.ts";
 
+test("timeline search and member filter compose with categories and either slot", () => {
+  const events = [
+    { id: "a", event_type: "Roulette", event_name: "Pajama Drive", start_time: "2026-11-20T14:10:00Z", member_id_a: "c", member_a: { nickname: "Cynthia" }, member_id_b: "r", member_b: { full_name: "Raisha Syifa" } },
+    { id: "b", event_type: "Birthday", event_name: "Birthday", start_time: "2026-11-24T10:15:00Z", member_id_a: "c", member_a: { nickname: "Cynthia" } },
+  ];
+  assert.deepEqual(filterTimelineEvents(events, "All", "All", "All", " RAISHA ", "r").map((e) => e.id), ["a"]);
+  assert.equal(filterTimelineEvents(events, "Birthday", "All", "All", "Cynthia", "r").length, 0);
+  assert.equal(filterTimelineEvents(events, "All", "All", "All", "pajama", "c").length, 1);
+});
+
+test("album cards distinguish a single-slot show from a pending second slot", () => {
+  const base = { start_time: "2026-11-20T14:10:00Z", member_id_a: "c", member_a: { nickname: "Cynthia", avatar_url: "portrait.webp" } };
+  for (const event_type of ["Birthday", "Graduation"]) {
+    assert.equal(buildTimelineCardState({ ...base, event_type, slot_mode: 2 }).members.length, 1);
+  }
+  assert.equal(buildTimelineCardState({ ...base, event_type: "Roulette", slot_mode: 1 }).members.length, 1);
+  const double = buildTimelineCardState({ ...base, event_type: "Roulette", slot_mode: 2 });
+  assert.equal(double.members.length, 2);
+  assert.equal(double.members[1].waiting, true);
+  assert.equal(double.members[0].avatarUrl, "portrait.webp");
+});
+
 test("buildTimelineFilterNote summarizes the active filters", () => {
   assert.equal(buildTimelineFilterNote("All"), "All events");
   assert.equal(buildTimelineFilterNote("Roulette"), "All roulette");

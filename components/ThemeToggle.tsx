@@ -10,7 +10,7 @@ type Theme = "dark" | "light";
 
 function resolveTheme(): Theme {
   if (typeof window === "undefined") {
-    return "dark";
+    return "light";
   }
 
   return document.documentElement.dataset.theme === "light" ? "light" : "dark";
@@ -22,7 +22,7 @@ function applyTheme(theme: Theme) {
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- Read browser preferences after hydration to match the server render.

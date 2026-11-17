@@ -1,178 +1,28 @@
-﻿# Design - Chekicha Archive Monitor
+# Collector's Album — Chekicha Archive
 
-A locked design system for this app. Every page redesign reads this file before
-emitting code. Do not regenerate per page - extend or amend this file when the
-system needs to grow.
+User-approved direction: Collector's Album layout with the Chekicha Pop palette. Operate mode: quick scanning and usable forms take precedence over decoration.
 
-## Genre
-modern-minimal
+## Visual system
+- Chekicha icon-inspired palette: coral (#f57587), turquoise focus (#48cbd2; #147f86 on light surfaces), and a small lime (#c4ff00) underline on FIGHT!. Light uses near-white (#fffafb), white cards, blush (#fff0f3), charcoal text (#29252b), and accessible deep coral text (#b93652). Dark uses charcoal (#201d24), plum cards (#2b2630), and coral accents. Active navigation and filters use soft backgrounds. Existing team/status colors retain their meaning.
+- Geist throughout: semibold headings and dates, regular body and metadata. Tabular numerals for dates/ranks; no editorial serif. No decorative gradients or glass panels.
+- `app/collector.css` owns the new theme/layout layer over the existing shared primitives. Base spacing, status colors and motion tokens remain in tokens.css.
+- Real member portraits and original event artwork, never generated mockup portraits. Directory, ranking and participant thumbnails use square frames matching the 1:1 assets; contain images without adding portrait-shaped empty space. Contain show logos; crop special-event portraits carefully.
+- 14px card corners, compact 8px controls, clear focus states, minimum 44px interaction targets.
 
-## Macrostructure family
+## Timeline
+- Subtitle identifies the JKT48 FIGHT! era alongside the January 2026 archive start. Emphasize FIGHT! with restrained berry typography; keep member imagery dominant and avoid repeating campaign labels on cards.
+- Equal card footprints within each breakpoint. Desktop two columns, narrow screens one column.
+- Birthday/Graduation: portrait on left, member and event metadata on right.
+- Show: compact artwork thumbnail and metadata above a dominant participant area. Member names are larger than show titles, with equally sized square portraits and labels/names below. Two slots get equal columns; a genuine single slot is centered without an empty second slot. Missing member stays visible as awaiting; missing photograph uses a fallback.
+- Titles use a reserved two-line area, vertically centered when short and ellipsized when long. Full title remains available via title attribute.
+- Filter by category, series, team, member and case-insensitive text. Display empty result state with reset action.
 
-- Marketing pages: Ledger Hero with a masthead strip, one dominant metric deck, and alternating dense archive bands.
-- App pages: Command Deck with a compact header, short page title, inline summaries and filters immediately above the primary data.
-- Home opens the timeline. `/timeline` remains an alias. Navigation: Timeline, Members, My collection; Admin is role-specific.
-- Members owns the top-twenty show/event slot ranking in a horizontally scrolling rail with a hidden scrollbar. It loops gently from the last member back to #1, pauses on hover, keyboard focus, holding or manual scrolling, and resumes automatically when interaction ends. Reduced motion disables animation. A compact pause/play icon beside the ranking title, with a 44px touch target and accessible Pause scrolling / Resume scrolling labels, keeps the rail paused while users interact elsewhere, preserving its position until resumed. The control is hidden under reduced motion. Visual copies are hidden from assistive technology and keyboard navigation. Ties share ranks; birthday and graduation are excluded. Member event totals include all event types and count each event once.
-- Credits and support live in the footer. No oversized intros, decorative archive sections, or explanatory workflow panels on public app pages.
-- Member cards stay alphabetical. A Chekicha types filter switches card counts and last dates between All types (default) and Non birthday/graduation (show/event slots only), alongside search and team filters. Members without matching records remain visible with zero times and Not recorded. Member details explicitly label all-type totals/dates and show/event-only counts/dates. Compare members opens a popup to select members, then explicitly sort the selection: unrecorded first, then oldest last date, with names breaking ties. Comparison results show member, last chekicha date and times, excluding birthday and graduation. Selection persists when editing or reopening the popup.
-- Content pages: Quiet Letter with a tall intro column, one restrained form slab, and generous negative space.
+## Other surfaces
+- Members: portrait-led alphabetical cards, history dialog, comparison dialog; retain all existing count semantics. Ranking remains a horizontal auto-scroll rail with compact pause/play, hover/focus pause and reduced-motion support. Decorative duplicate entries remain inaccessible.
+- Collection: member portrait and quantity, existing Add/Manage and history dialogs. No new upload, shop or trading features.
+- Sign in/Create account: restrained berry/ivory forms, same fields and validation as before.
+- Admin: existing role-protected tabs, forms and slot semantics; shared theme applies without changing actions.
+- Header and footer preserve navigation, auth, theme, credit and support links.
 
-## Theme
-
-- `--color-paper` oklch(0.21 0.03 252)
-- `--color-paper-2` oklch(0.26 0.025 252)
-- `--color-ink` oklch(0.95 0.01 250)
-- `--color-ink-2` oklch(0.78 0.02 248)
-- `--color-rule` oklch(0.42 0.03 247 / 0.34)
-- `--color-accent` oklch(0.76 0.11 235)
-- `--color-focus` oklch(0.78 0.09 228)
-
-Light mode uses darker blue action/text tokens and darker team label colors on pale
-surfaces. Primary blue buttons use white text in normal and hover states; error
-messages use dark red text. Team names remain visible so color is not the only cue.
-Dark mode uses brighter accent, error, and team text against its tinted surfaces.
-
-## Typography
-
-- Display: Geist, weight 600, style normal
-- Body: Geist, weight 400
-- Mono: IBM Plex Mono, weight 500
-- Fonts are self-hosted through `next/font`; Geist is preloaded and the mono face
-  loads when needed. Ranking motion runs only while visible and not paused.
-- Display tracking: -0.04em
-- Type scale anchor: `--text-display` = `clamp(2.8rem, 4vw, 4.8rem)`
-- Root size follows browser preferences; form text is at least 16px and secondary
-  labels are at least 0.875rem. Timeline, member, and collection cards use one
-  column below 640px, then expand at their existing larger breakpoints.
-
-## Spacing
-
-Archive radius tokens use the `--archive-radius-*` namespace so Tailwind's
-rounded utilities retain their own scale. Auth introductions stay in one column;
-field hints sit 8px below their inputs at the default font size.
-
-4-point scale. Reusable CSS uses named values from `tokens.css`; JSX may use
-Tailwind spacing utilities only when they resolve to multiples of 4 px.
-
-## Motion
-
-- Easings: `--ease-out`, `--ease-in`, `--ease-in-out`
-- Product motion: 120 ms controls, 180 ms menus/disclosures, 220 ms modals
-- Lists and pages load without decorative choreography
-- Reduced-motion fallback: immediate state changes, <= 10 ms
-
-## Microinteractions stance
-
-- Silent success
-- Hover delay 800 ms, focus delay 0 ms
-- One hover cue per element: border or lift, not both plus glow
-
-## CTA voice
-
-- Use "collection" for a user's saved chekicha, "event" for an archived session,
-  and "slot" for its member assignment. "Copies to add" increases a saved quantity;
-  "Total copies owned" replaces it. Keep Roulette and team names as domain terms.
-
-- Primary CTA: dense accent block with sentence-case labels and firm rectangular corners
-- Secondary CTA: thin-outline block with soft fill on hover, never oversized pill chrome
-
-## Per-page allowances
-
-- Marketing pages MAY use restrained gradient bands, archive rails, and one oversized data slab.
-- App pages MUST NOT use decorative enrichment and should rely on hierarchy, not ornament.
-- Content pages stay typography-first with one supporting panel and one narrow evidence rail.
-
-## What pages MUST share
-
-- The JKT48 Chekicha Archive wordmark, timeline/member stats/collection description, and linked by @estrellawin19 credit
-- The accent colour and its small footprint
-- The unified Geist display/body system
-- The tighter rectangular border language
-- Section headings led by clear titles; reserve kickers for one contextual note per page
-
-## What pages MAY differ on
-
-- Macrostructure inside each page-type family
-- Intro composition and rail placement
-- Density of slabs and archive bands based on task complexity
-
-## Exports
-
-### tokens.css
-
-The live source is [`tokens.css`](tokens.css). Core portable roles:
-
-```css
-:root {
-  --color-paper: oklch(0.21 0.03 252);
-  --color-paper-2: oklch(0.26 0.025 252);
-  --color-ink: oklch(0.95 0.01 250);
-  --color-ink-2: oklch(0.78 0.02 248);
-  --color-rule: oklch(0.42 0.03 247 / 0.34);
-  --color-accent: oklch(0.76 0.11 235);
-  --color-accent-ink: oklch(0.2 0.03 252);
-  --color-focus: oklch(0.78 0.09 228);
-  --font-display: "Geist", "Segoe UI", sans-serif;
-  --font-body: "Geist", "Segoe UI", sans-serif;
-  --font-outlier: "IBM Plex Mono", "Cascadia Mono", monospace;
-}
-```
-
-### Tailwind v4 `@theme`
-
-```css
-@theme {
-  --color-paper: oklch(0.21 0.03 252);
-  --color-paper-2: oklch(0.26 0.025 252);
-  --color-ink: oklch(0.95 0.01 250);
-  --color-ink-2: oklch(0.78 0.02 248);
-  --color-rule: oklch(0.42 0.03 247 / 0.34);
-  --color-accent: oklch(0.76 0.11 235);
-  --color-focus: oklch(0.78 0.09 228);
-  --font-display: "Geist", "Segoe UI", sans-serif;
-  --font-body: "Geist", "Segoe UI", sans-serif;
-  --font-outlier: "IBM Plex Mono", "Cascadia Mono", monospace;
-  --spacing-sm: 1rem;
-  --spacing-md: 1.5rem;
-  --spacing-lg: 2rem;
-  --radius-card: 1.1rem;
-  --radius-input: 0.75rem;
-  --radius-pill: 999px;
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-}
-```
-
-### DTCG `tokens.json`
-
-The same portable roles are available in [`tokens.json`](tokens.json).
-
-```json
-{
-  "color": {
-    "paper": { "$value": "oklch(0.21 0.03 252)", "$type": "color" },
-    "ink": { "$value": "oklch(0.95 0.01 250)", "$type": "color" },
-    "accent": { "$value": "oklch(0.76 0.11 235)", "$type": "color" },
-    "focus": { "$value": "oklch(0.78 0.09 228)", "$type": "color" }
-  }
-}
-```
-
-### shadcn/ui CSS variables
-
-```css
-:root {
-  --background: 21% 0.03 252;
-  --foreground: 95% 0.01 250;
-  --card: 26% 0.025 252;
-  --card-foreground: 95% 0.01 250;
-  --primary: 76% 0.11 235;
-  --primary-foreground: 20% 0.03 252;
-  --muted: 42% 0.03 247;
-  --muted-foreground: 78% 0.02 248;
-  --border: 42% 0.03 247;
-  --input: 42% 0.03 247;
-  --ring: 78% 0.09 228;
-  --radius: 1.1rem;
-}
-```
-
+## Review constraints
+Avoid modifying stored events or collections during visual QA. Preview with real data at desktop and mobile widths; verify filters, overflow, dialogs and both theme settings.

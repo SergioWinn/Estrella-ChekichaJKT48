@@ -1,0 +1,124 @@
+/* Chekicha Pop palette on the Collector's Album layout. */
+:root {
+  --background: #201d24;
+  --background-alt: #19171d;
+  --foreground: #faf5f7;
+  --foreground-soft: #e0d2d5;
+  --muted: #b9a8ad;
+  --muted-strong: #d0bfc4;
+  --card: #2b2630;
+  --card-border: #51424d;
+  --border: #51424d;
+  --border-strong: #886772;
+  --surface: #2b2630;
+  --surface-strong: #352b37;
+  --surface-hover: #45313e;
+  --panel: #27222d;
+  --overlay: #160e18b8;
+  --accent: #f57587;
+  --accent-strong: #ff9aab;
+  --accent-soft: #402e39;
+  --accent-soft-strong: #694352;
+  --accent-foreground: #29131d;
+  --brand-coral: #f57587;
+  --brand-turquoise: #48cbd2;
+  --brand-lime: #c4ff00;
+  --color-focus: var(--brand-turquoise);
+}
+[data-theme="light"] {
+  --background: #fffafb;
+  --background-alt: #fff0f3;
+  --foreground: #29252b;
+  --foreground-soft: #453d43;
+  --muted: #70616a;
+  --muted-strong: #594b54;
+  --card: #ffffff;
+  --card-border: #e3ccd3;
+  --border: #e3ccd3;
+  --border-strong: #b78b99;
+  --surface: #ffffff;
+  --surface-strong: #fff0f3;
+  --surface-hover: #fce3e9;
+  --panel: #fffafb;
+  --overlay: #35232c66;
+  --accent: #b93652;
+  --accent-strong: #962940;
+  --accent-soft: #fff0f3;
+  --accent-soft-strong: #e8bcc9;
+  --accent-foreground: #ffffff;
+  --color-focus: #147f86;
+}
+body { background: var(--background); }
+.site-frame { max-width: 1440px; }
+.archive-header { border: 0; border-bottom: 1px solid var(--accent); border-radius: 0; padding: 1rem 0 1.5rem; box-shadow: none; }
+.archive-wordmark span { color: var(--accent); }
+.archive-brand-credit { font-style: italic; }
+.archive-page-heading h1 { font-size: clamp(1.75rem, 3vw, 2.5rem); letter-spacing: -0.03em; }
+.archive-era-line { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.25rem 1rem; }
+.archive-fight { color: var(--accent); font-weight: 750; letter-spacing: -0.02em; text-decoration: underline; text-decoration-color: var(--brand-lime); text-decoration-thickness: 3px; text-underline-offset: 5px; }
+.site-nav-link, .site-icon-button { border-radius: 8px; }
+.site-nav-link[aria-current="page"] { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+.app-card, .app-card-strong, .app-shell, .auth-form-panel { background: var(--surface); box-shadow: none; }
+.archive-header.app-shell { background: transparent; }
+.app-input { background: var(--surface); border-radius: 8px; caret-color: var(--accent); }
+.app-input:disabled { opacity: 0.65; }
+.archive-controls > .app-card { background: transparent; border: 0; border-block: 1px solid var(--border); border-radius: 0; padding: 1rem 0; }
+.album-filters { display: grid; gap: 1rem; padding-block: 1rem; border-block: 1px solid var(--border); }
+.archive-header { margin-bottom: 1rem; }
+.archive-page-heading { padding-block: 0.5rem; }
+.archive-workspace { gap: 1rem; }
+@media (min-width: 1100px) {
+  .album-filters { grid-template-columns: 1fr 1fr; align-items: end; }
+  .album-filters > :first-child { grid-column: 1 / -1; }
+}
+.album-month { border-top: 1px solid var(--border); padding-top: 1rem; }
+.album-month > summary { padding: 0.75rem 0; cursor: pointer; color: var(--accent); }
+.album-month > summary > span:first-child { font-family: var(--font-body); font-weight: 600; font-size: clamp(1.4rem, 2.5vw, 1.85rem); line-height: 1.3; letter-spacing: -0.03em; }
+.album-event-count { font-size: 0.875rem; color: var(--muted); font-weight: 400; }
+.album-event-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; margin-top: 1rem; }
+.album-event { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: 180px 136px; gap: 1rem; padding: 0.875rem; min-width: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+.album-event-art { display: flex; align-items: center; justify-content: center; overflow: hidden; min-width: 0; min-height: 0; border-radius: 8px; background: var(--accent-soft); }
+.album-portrait { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center bottom; }
+.album-show-art { width: 100%; height: 100%; object-fit: contain; padding: 0.35rem; }
+.album-event-info { min-width: 0; align-self: center; }
+.album-category { display: inline-block; color: var(--accent); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem; }
+.album-event-title { display: flex; align-items: center; height: 2.5em; margin: 0; font-size: clamp(1.05rem, 1.6vw, 1.5rem); font-weight: 600; line-height: 1.25; letter-spacing: -0.03em; }
+.album-event-title span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: break-word; }
+.album-special-name { font-size: clamp(1.1rem, 1.7vw, 1.5rem); font-weight: 600; margin-bottom: 1rem; overflow-wrap: anywhere; }
+.album-event-date { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin-block: 0.75rem; }
+.album-event-date time { color: var(--accent); font-size: 1rem; font-family: var(--font-body); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.album-event-date > span { font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.album-event-special .album-event-art, .album-event-special .album-event-info { grid-row: 1 / 3; }
+.album-event-special .album-portrait { object-fit: cover; object-position: center; }
+.album-participants { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; border-top: 1px solid var(--border); padding-top: 0.75rem; }
+.album-participants-single { grid-template-columns: 1fr; }
+.album-participant { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; min-width: 0; padding: 0.25rem; text-align: center; }
+.album-participant-photo { width: 112px; height: 112px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; background: var(--accent-soft); }
+.album-initial { color: var(--muted); font-size: 2rem; }
+.album-slot { font-size: 0.75rem; color: var(--accent); font-weight: 600; }
+.album-member-name { font-size: 1.4rem; line-height: 1.2; font-weight: 600; overflow-wrap: anywhere; }
+.album-event-show { grid-template-columns: 80px minmax(0, 1fr); grid-template-rows: 120px 196px; }
+.album-event-show > .album-event-art { width: 80px; height: 80px; align-self: center; background: transparent; }
+.album-event-show .album-event-title { font-size: 1rem; }
+.album-event-show .album-category { display: none; }
+.album-event-show .album-event-date { margin-block: 0.35rem; }
+.album-participant:has(.album-initial) .album-member-name { font-size: 1rem; font-weight: 500; color: var(--muted-strong); }
+.album-directory-photo { width: 96px; height: 96px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; overflow: hidden; border-radius: 8px; background: var(--accent-soft); }
+.album-directory-photo img { object-fit: contain; object-position: center bottom; }
+.album-ranking-photo { width: 48px; height: 48px; overflow: hidden; flex-shrink: 0; background: var(--accent-soft); border-radius: 6px; }
+.album-ranking-photo img { width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
+.member-ranking-list { grid-auto-columns: minmax(18rem, 21rem); }
+.member-ranking-place { font-family: var(--font-body); font-weight: 600; font-variant-numeric: tabular-nums; }
+.auth-form-panel { border-radius: 14px; }
+.letter-intro h1 { font-family: var(--font-body); font-weight: 600; font-style: normal; color: var(--foreground); }
+@media (max-width: 900px) {
+  .album-event-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .album-event { gap: 0.75rem; padding: 0.75rem; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr); grid-template-rows: 128px 208px; }
+  .album-event-show { grid-template-columns: 64px minmax(0, 1fr); }
+  .album-event-show > .album-event-art { width: 64px; height: 64px; }
+  .album-participant-photo { width: 104px; height: 104px; }
+  .album-member-name { font-size: 1.2rem; }
+  .album-directory-photo { width: 80px; height: 80px; }
+}

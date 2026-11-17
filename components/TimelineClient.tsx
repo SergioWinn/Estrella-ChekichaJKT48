@@ -1,258 +1,74 @@
-/* Hallmark - pre-emit critique: P5 H5 E5 S5 R5 V4 */
 "use client";
-
-import type { CSSProperties } from "react";
 import { useMemo, useState } from "react";
-
 import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { FilterPill } from "@/components/FilterPill";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { countPendingSlots, groupTimelineByMonth } from "@/lib/archive-data.ts";
 import { formatEventTime } from "@/lib/format.ts";
-import { buildTimelineCardState, buildTimelineFilterNote, countTimelineTeams, filterTimelineEvents, getRouletteSeriesOptions } from "@/lib/timeline-view.ts";
+import { buildTimelineCardState, countTimelineTeams, filterTimelineEvents, getRouletteSeriesOptions } from "@/lib/timeline-view.ts";
 import { EVENT_TEAM_OPTIONS, getEffectiveEventTeam } from "@/lib/v2-helpers.ts";
 import type { TimelineEvent } from "@/lib/types.ts";
 
-const FILTERS = ["All", "Roulette", "Birthday", "Graduation"] as const;
-type TeamFilter = "All" | (typeof EVENT_TEAM_OPTIONS)[number];
-
-function DateRail({ value }: { value: string }) {
-  const dt = new Date(value);
-  const day = Number.isNaN(dt.getTime())
-    ? "--"
-    : new Intl.DateTimeFormat("en-GB", { day: "numeric", timeZone: "Asia/Jakarta" }).format(dt);
-  const month = Number.isNaN(dt.getTime())
-    ? "---"
-    : new Intl.DateTimeFormat("en-GB", { month: "short", timeZone: "Asia/Jakarta" }).format(dt).toUpperCase();
-
-  return (
-    <div className="flex min-h-full items-center justify-center border-b border-[var(--border)] pb-3 md:justify-start md:border-b-0 md:border-r md:pb-0 md:pr-4">
-      <div className="text-center md:min-w-14">
-        <div className="tabular-nums text-4xl font-semibold tracking-[-0.05em] text-[var(--foreground)] md:text-[3.1rem]">{day}</div>
-        <div className="mt-1 text-base font-semibold text-[var(--muted-strong)] md:text-lg">{month}</div>
-      </div>
-    </div>
-  );
-}
-
-function CompactDate({ value }: { value: string }) {
-  const dt = new Date(value);
-  const day = Number.isNaN(dt.getTime())
-    ? "--"
-    : new Intl.DateTimeFormat("en-GB", { day: "numeric", timeZone: "Asia/Jakarta" }).format(dt);
-  const month = Number.isNaN(dt.getTime())
-    ? "---"
-    : new Intl.DateTimeFormat("en-GB", { month: "short", timeZone: "Asia/Jakarta" }).format(dt).toUpperCase();
-
-  return (
-    <div className="timeline-mobile-date shrink-0 tabular-nums">
-      <span className="timeline-mobile-date-day text-3xl font-semibold tracking-[-0.06em] text-[var(--foreground)]">{day}</span>
-      <span className="timeline-mobile-date-month text-xs font-semibold tracking-[0.16em] text-[var(--muted-strong)]">{month}</span>
-    </div>
-  );
-}
-
-function MemberPill({
-  avatarUrl,
-  name,
-  loading,
-  waiting = false,
-}: {
-  avatarUrl?: string | null;
-  name: string;
-  loading: "eager" | "lazy";
-  waiting?: boolean;
-}) {
-  return (
-    <span
-      className={`inline-flex min-w-0 max-w-full shrink-0 items-center gap-1 rounded-full border px-2 py-1 text-xs font-medium md:gap-2 md:px-3 md:py-1.5 md:text-sm ${
-        waiting
-          ? "border-[var(--warning-border)] bg-[var(--warning-soft)] text-[var(--warning)]"
-          : "border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)]"
-      }`}
-    >
-      {!waiting ? (
-        <span className="flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-full border border-[var(--border)] bg-[var(--surface-hover)] md:size-7">
-          {avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={avatarUrl} alt={name} loading={loading} decoding="async" className="h-full w-full object-cover" />
-          ) : (
-            <span className="text-xs font-bold text-[var(--foreground)]">{name.slice(0, 1).toUpperCase()}</span>
-          )}
-        </span>
-      ) : null}
-      <span className="truncate">{name}</span>
-    </span>
-  );
-}
-
 export function TimelineClient({ events }: { events: TimelineEvent[] }) {
-  const [filterType, setFilterType] = useState<(typeof FILTERS)[number]>("All");
+  const [filterType, setFilterType] = useState("All");
   const [rouletteSeries, setRouletteSeries] = useState("All");
-  const [teamFilter, setTeamFilter] = useState<TeamFilter>("All");
-
-  const rouletteSeriesOptions = useMemo(() => getRouletteSeriesOptions(events), [events]);
-  const teamBaseEvents = useMemo(() => filterTimelineEvents(events, filterType, rouletteSeries), [events, filterType, rouletteSeries]);
-  const teamCounts = useMemo(() => countTimelineTeams(teamBaseEvents), [teamBaseEvents]);
-  const availableTeamFilters = useMemo(() => EVENT_TEAM_OPTIONS.filter((team) => teamCounts[team] > 0), [teamCounts]);
-  const activeTeamFilter = availableTeamFilters.length > 1 && availableTeamFilters.includes(teamFilter as never) ? teamFilter : "All";
-  const teamFilterLocked = availableTeamFilters.length <= 1;
-  const filtered = useMemo(() => filterTimelineEvents(events, filterType, rouletteSeries, activeTeamFilter), [events, filterType, rouletteSeries, activeTeamFilter]);
-  const pendingCount = useMemo(() => countPendingSlots(events), [events]);
+  const [teamFilter, setTeamFilter] = useState("All");
+  const [memberFilter, setMemberFilter] = useState("All");
+  const [query, setQuery] = useState("");
+  const series = useMemo(() => getRouletteSeriesOptions(events), [events]);
+  const teamCounts = useMemo(() => countTimelineTeams(filterTimelineEvents(events, filterType, rouletteSeries)), [events, filterType, rouletteSeries]);
+  const teams = EVENT_TEAM_OPTIONS.filter((team) => teamCounts[team] > 0);
+  const activeTeam = teams.length > 1 && teams.some((team) => team === teamFilter) ? teamFilter : "All";
+  const filtered = useMemo(() => filterTimelineEvents(events, filterType, rouletteSeries, activeTeam, query, memberFilter), [events, filterType, rouletteSeries, activeTeam, query, memberFilter]);
   const sections = useMemo(() => groupTimelineByMonth(filtered), [filtered]);
-  const filterNote = useMemo(() => buildTimelineFilterNote(filterType, rouletteSeries, activeTeamFilter), [filterType, rouletteSeries, activeTeamFilter]);
-  return (
-    <div className="space-y-6">
-      <div className="archive-summary" aria-live="polite">
-        <span><strong>{filtered.length}</strong> events shown</span>
-        <span><strong>{pendingCount}</strong> unassigned slots</span>
+  const members = useMemo(() => {
+    const options = new Map<string, string>();
+    for (const event of events) {
+      if (event.member_id_a) options.set(event.member_id_a, event.member_a?.nickname || event.member_a?.full_name || "Unknown member");
+      if (event.member_id_b) options.set(event.member_id_b, event.member_b?.nickname || event.member_b?.full_name || "Unknown member");
+    }
+    return [...options].sort((a, b) => a[1].localeCompare(b[1]));
+  }, [events]);
+  return <div className="space-y-6">
+    <div className="archive-summary" aria-live="polite"><span><strong>{filtered.length}</strong> events shown</span><span><strong>{countPendingSlots(events)}</strong> unassigned slots</span></div>
+    <section className="album-filters" aria-label="Filter timeline">
+      <div className="grid gap-3 md:grid-cols-2">
+        <label className="grid gap-2 text-sm">Search events<input type="search" className="app-input px-3 py-2" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search event or member" /></label>
+        <label className="grid gap-2 text-sm">Member<select className="app-input px-3 py-2" value={memberFilter} onChange={(e) => setMemberFilter(e.target.value)}><option value="All">All members</option>{members.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</select></label>
       </div>
-      <section className="archive-controls">
-        <div className="motion-card app-card grid gap-4 p-4 md:p-5">
-          <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(14rem,18rem)] lg:items-start lg:gap-4">
-            <div>
-              <div className="kicker">Filter</div>
-            </div>
-            <div className="text-sm leading-6 text-[var(--foreground-soft)] lg:text-right" aria-live="polite">{filterNote}</div>
+      <div className="flex flex-wrap gap-2">{["All", "Roulette", "Birthday", "Graduation"].map((option) => <FilterPill key={option} active={filterType === option} onClick={() => setFilterType(option)}>{option}</FilterPill>)}</div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <label className="grid gap-2 text-sm">Series<select className="app-input px-3 py-2" value={filterType === "Roulette" ? rouletteSeries : "All"} disabled={filterType !== "Roulette"} onChange={(e) => setRouletteSeries(e.target.value)}><option value="All">{filterType === "Roulette" ? "All roulette series" : "Series only for roulette"}</option>{series.map((name) => <option key={name}>{name}</option>)}</select></label>
+        <label className="grid gap-2 text-sm">Team<select className="app-input px-3 py-2" value={activeTeam} disabled={teams.length <= 1} onChange={(e) => setTeamFilter(e.target.value)}><option value="All">{teams.length === 1 ? teams[0] : "All teams"}</option>{teams.length > 1 && teams.map((team) => <option key={team} value={team}>{team} ({teamCounts[team]})</option>)}</select></label>
+      </div>
+    </section>
+    {sections.length ? sections.map(([month, rows], sectionIndex) => <details key={month} open={sectionIndex === 0} className="album-month app-disclosure">
+      <summary className="timeline-month-summary"><span>{month}</span><span className="album-event-count">{rows.length} {rows.length === 1 ? "event" : "events"}</span></summary>
+      <div className="album-event-grid">{rows.map((row, index) => {
+        const card = buildTimelineCardState(row);
+        const image = card.isSingle ? card.members[0].avatarUrl : row.event_image_url;
+        const date = new Date(row.start_time);
+        return <article key={row.id || row.event_name + row.start_time} className={`album-event ${card.isSingle ? "album-event-special" : "album-event-show"}`}>
+          <div className="album-event-art">{image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={image} alt={card.isSingle ? card.members[0].name : row.event_name || "Event artwork"} loading={sectionIndex === 0 && index < 4 ? "eager" : "lazy"} decoding="async" className={card.isSingle ? "album-portrait" : "album-show-art"} />
+          ) : <MediaPlaceholder />}</div>
+          <div className="album-event-info">
+            <span className="album-category">{card.eventType}</span>
+            <h2 className="album-event-title" title={row.event_name || "Untitled event"}><span>{row.event_name || "Untitled event"}</span></h2>
+            {card.isSingle && <p className="album-special-name">{card.members[0].name}</p>}
+            <div className="album-event-date"><time dateTime={row.start_time}>{Number.isNaN(date.getTime()) ? "Date unavailable" : new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Jakarta" }).format(date)}</time><span>{formatEventTime(row.start_time, row.end_time)} WIB</span></div>
+            <EventTeamBadge team={getEffectiveEventTeam(row.event_name, row.event_type, row.event_team)} eventType={row.event_type} compact />
           </div>
-          <div className="flex flex-wrap gap-2">
-              {FILTERS.map((option) => (
-                <FilterPill
-                  key={option}
-                  onClick={() => setFilterType(option)}
-                  active={filterType === option}
-                >
-                  {option}
-                </FilterPill>
-              ))}
-          </div>
-          <div className="grid gap-3 md:grid-cols-2">
-            <label className="grid gap-1">
-              <span className="text-xs font-semibold text-[var(--muted-strong)]">Series</span>
-              <select
-                value={filterType === "Roulette" ? rouletteSeries : "All"}
-                onChange={(event) => setRouletteSeries(event.target.value)}
-                disabled={filterType !== "Roulette"}
-                aria-disabled={filterType !== "Roulette"}
-                className="app-input min-h-10 w-full truncate px-3 py-2 text-sm disabled:text-[var(--muted)]"
-              >
-                <option value="All">{filterType === "Roulette" ? "All roulette series" : "Series only for roulette"}</option>
-                {rouletteSeriesOptions.map((series) => (
-                  <option key={series} value={series}>{series}</option>
-                ))}
-              </select>
-            </label>
-            <label className="grid gap-1">
-              <span className="text-xs font-semibold text-[var(--muted-strong)]">Team</span>
-              <select
-                value={activeTeamFilter}
-                onChange={(event) => setTeamFilter(event.target.value as TeamFilter)}
-                disabled={teamFilterLocked}
-                aria-disabled={teamFilterLocked}
-                className="app-input min-h-10 w-full truncate px-3 py-2 text-sm disabled:text-[var(--muted)]"
-              >
-                {teamFilterLocked ? (
-                  <option value="All">{availableTeamFilters[0] ? `${availableTeamFilters[0]}` : "No team filter"}</option>
-                ) : (
-                  <>
-                    <option value="All">All teams</option>
-                    {availableTeamFilters.map((option) => (
-                      <option key={option} value={option}>{`${option} ${teamCounts[option]}`}</option>
-                    ))}
-                  </>
-                )}
-              </select>
-            </label>
-          </div>
-        </div>
-      </section>
-
-      {sections.length ? (
-        sections.map(([monthLabel, monthRows], sectionIndex) => (
-          <details key={monthLabel} open={sectionIndex === 0} className="app-disclosure motion-section border-t border-[var(--border)] pt-3 sm:pt-4">
-            <summary className="timeline-month-summary cursor-pointer rounded-lg px-1 py-3 text-sm font-bold uppercase tracking-[0.16em] text-[var(--muted-strong)] transition-colors hover:text-[var(--foreground)] md:text-base">
-              <span>{monthLabel}</span>
-              <span className="inline-flex justify-center rounded-md bg-[var(--surface-hover)] px-2 py-1 text-xs tracking-normal text-[var(--foreground-soft)] md:text-xs">
-                {monthRows.length} {monthRows.length === 1 ? "event" : "events"}
-              </span>
-            </summary>
-            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 xl:mt-4 xl:gap-4">
-              {monthRows.map((row, index) => {
-                const card = buildTimelineCardState(row);
-                const eventTeam = getEffectiveEventTeam(row.event_name, row.event_type, row.event_team);
-
-                return (
-                    <article
-                      key={row.id || `${row.event_name}-${row.start_time}`}
-                      className="timeline-slab motion-card motion-list-item app-card-strong relative grid min-w-0 grid-cols-1 items-start gap-3 p-3 xl:grid-cols-[4.5rem_minmax(0,1fr)_12.5rem] xl:items-center xl:gap-5 xl:p-5"
-                      style={{ "--i": Math.min(index, 5) } as CSSProperties}
-                    >
-                    <div className="absolute right-6 top-6 hidden xl:block">
-                      <span className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-0.5 text-xs font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
-                        {card.eventType}
-                      </span>
-                    </div>
-                    <div className="flex min-w-0 items-start justify-between gap-2 xl:hidden">
-                      <CompactDate value={row.start_time} />
-                      <span className="inline-flex min-w-0 truncate rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-0.5 text-xs font-bold uppercase tracking-[0.08em] text-[var(--accent)]">
-                        {card.eventType}
-                      </span>
-                    </div>
-                    <div className="hidden xl:block">
-                      <DateRail value={row.start_time} />
-                    </div>
-                    <div className="min-w-0 space-y-3">
-                      <div className="min-w-0">
-                        <div className="min-w-0">
-                          <h2 className="flex h-[2lh] items-center text-[1.2rem] font-semibold leading-snug tracking-[-0.04em] text-[var(--foreground)] sm:text-[1.2rem] lg:text-[1.65rem]" title={row.event_name || "Untitled event"}>
-                            <span className="line-clamp-2 w-full break-words">{row.event_name || "Untitled event"}</span>
-                          </h2>
-                          <div className="mt-2 flex min-w-0 flex-wrap items-center gap-2 text-sm font-semibold leading-[1.35] md:text-[0.95rem]">
-                            <span className="min-w-0 truncate text-[var(--accent)]">{formatEventTime(row.start_time, row.end_time)} WIB</span>
-                            <EventTeamBadge team={eventTeam} eventType={row.event_type} compact />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex min-w-0 flex-wrap gap-1 md:flex-nowrap md:gap-2 md:overflow-x-auto md:pb-1">
-                        {card.members.map((member, memberIndex) => (
-                          <MemberPill
-                            key={`${row.id}-${memberIndex}-${member.name}`}
-                            loading={sectionIndex === 0 && index < 12 ? "eager" : "lazy"}
-                            avatarUrl={member.avatarUrl}
-                            name={member.name}
-                            waiting={member.waiting}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <div className="timeline-media min-w-0 overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[linear-gradient(180deg,var(--surface-hover),var(--surface))] p-2 sm:aspect-[4/3] sm:self-start md:max-h-40 md:p-3 xl:max-h-none">
-                      {row.event_image_url ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={row.event_image_url}
-                          alt={row.event_name || "Event banner"}
-                          width="320"
-                          height="400"
-                          loading="lazy"
-                          className="h-full w-full object-contain object-center"
-                        />
-                      ) : (
-                        <MediaPlaceholder />
-                      )}
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          </details>
-        ))
-      ) : (
-          <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-16 text-center text-sm text-[var(--muted)]">
-            <svg aria-hidden="true" className="size-12 text-[var(--muted-strong)]" fill="none" viewBox="0 0 24 24"><path d="M12 6v6l4 2" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5"/><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/></svg>
-            <span className="font-semibold text-[var(--foreground)]">No events match this filter.</span>
-            <span>Try a different filter.</span>
-          </div>
-      )}
-    </div>
-  );
+          {!card.isSingle && <div className={`album-participants ${card.members.length === 1 ? "album-participants-single" : ""}`}>{card.members.map((member, memberIndex) => <div className="album-participant" key={memberIndex}>
+            <div className="album-participant-photo">{member.avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={member.avatarUrl} alt="" loading="lazy" decoding="async" className="album-portrait" />
+            ) : <span className="album-initial" aria-hidden="true">{member.waiting ? "—" : member.name.slice(0, 1)}</span>}</div>
+            <div className="min-w-0"><span className="album-slot">Slot {memberIndex === 0 ? "A" : "B"}</span><p className="album-member-name">{member.waiting ? "Awaiting member" : member.name}</p></div>
+          </div>)}</div>}
+        </article>;
+      })}</div>
+    </details>) : <div className="app-card p-8 text-center"><p>No events match these filters.</p><button className="mt-4 text-[var(--accent)] underline" onClick={() => { setQuery(""); setMemberFilter("All"); setFilterType("All"); setRouletteSeries("All"); setTeamFilter("All"); }}>Reset filters</button></div>}
+  </div>;
 }

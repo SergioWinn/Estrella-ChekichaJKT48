@@ -19,9 +19,12 @@ export function getRouletteSeriesOptions(events: TimelineEvent[]): string[] {
   return Array.from(series.values()).sort((a, b) => a.localeCompare(b));
 }
 
-export function filterTimelineEvents(events: TimelineEvent[], filterType: string, rouletteSeries = "All", teamFilter = "All"): TimelineEvent[] {
+export function filterTimelineEvents(events: TimelineEvent[], filterType: string, rouletteSeries = "All", teamFilter = "All", query = "", memberFilter = "All"): TimelineEvent[] {
   return events.filter((event) => {
     const eventType = event.event_type || "Roulette";
+    if (memberFilter !== "All" && event.member_id_a !== memberFilter && event.member_id_b !== memberFilter) return false;
+    const search = query.trim().toLocaleLowerCase();
+    if (search && ![event.event_name, event.event_series, event.member_a?.nickname, event.member_a?.full_name, event.member_b?.nickname, event.member_b?.full_name].some((value) => value?.toLocaleLowerCase().includes(search))) return false;
     if (filterType !== "All" && eventType !== filterType) return false;
     if (teamFilter !== "All" && (singleMemberEvent(eventType) || getEffectiveEventTeam(event.event_name, eventType, event.event_team) !== teamFilter)) return false;
     return filterType !== "Roulette" || rouletteSeries === "All" || getEventSeries(event) === rouletteSeries;

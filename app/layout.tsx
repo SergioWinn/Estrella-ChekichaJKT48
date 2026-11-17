@@ -5,6 +5,7 @@ import { Geist, IBM_Plex_Mono } from "next/font/google";
 
 import "./globals.css";
 import "./archive.css";
+import "./collector.css";
 
 import { AuthIcon, LogoutIcon, SupportIcon } from "@/components/UiIcons";
 import { SiteNav } from "@/components/SiteNav";
@@ -18,7 +19,7 @@ const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: "500", display: "swap",
 
 export const metadata: Metadata = {
   title: "JKT48 Chekicha Archive by @estrellawin19",
-  description: "Explore JKT48 chekicha timelines, member statistics, and your collection. Archived by @estrellawin19 since January 2026.",
+  description: "Explore chekicha history from the JKT48 FIGHT! era: timelines, member statistics, and your collection. Archived by @estrellawin19 since January 2026.",
   icons: {
     icon: "/icon.svg",
     apple: "/apple-icon.png",
@@ -32,7 +33,7 @@ const themeInitScript = `(() => {
     try { savedTheme = window.localStorage.getItem(storageKey); } catch (_error) {}
     const theme = savedTheme === "light" || savedTheme === "dark"
       ? savedTheme
-      : (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      : "light";
 
     document.documentElement.dataset.theme = theme;
     document.documentElement.style.colorScheme = theme;
@@ -49,15 +50,14 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   ];
 
   return (
-    <html lang="en" className={`${geist.variable} ${mono.variable}`} suppressHydrationWarning>
+    <html lang="en" data-theme="light" className={`${geist.variable} ${mono.variable}`} suppressHydrationWarning>
       <body>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[var(--z-toast)] focus:rounded-lg focus:bg-[var(--surface)] focus:px-4 focus:py-3 focus:text-[var(--foreground)]">Skip to content</a>
         <div className="site-frame mx-auto min-h-screen max-w-[110rem] px-4 py-4 sm:px-6 lg:px-8">
           <header className="site-header archive-header app-shell">
             <div className="archive-brand">
-              <Link href="/" className="archive-wordmark">JKT48 Chekicha Archive</Link>
-              <p className="archive-brand-purpose">Timeline · Member stats · Collection</p>
+              <Link href="/" className="archive-wordmark"><span>JKT48</span> Chekicha Archive</Link>
               <p className="archive-brand-credit">by <a href="https://x.com/estrellawin19" target="_blank" rel="noopener noreferrer">@estrellawin19</a></p>
             </div>
             <SiteNav links={links} />

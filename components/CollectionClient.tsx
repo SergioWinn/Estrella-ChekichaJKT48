@@ -316,10 +316,10 @@ export function CollectionClient({
               aria-expanded={selectedMemberId === member.id}
               aria-haspopup="dialog"
               onClick={() => setSelectedMemberId(member.id)}
-              className="motion-card motion-list-item app-card flex min-h-24 w-full items-center gap-3 p-3 text-left hover:bg-[var(--surface-hover)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 sm:p-4"
+              className="album-member-card motion-card motion-list-item app-card flex min-h-24 w-full items-center gap-3 p-3 text-left hover:bg-[var(--surface-hover)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 sm:p-4"
               style={buildStaggerStyle(index)}
             >
-              <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:size-16">
+              <div className="album-directory-photo">
                 {member.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={member.avatarUrl} alt="" loading={index < 12 ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover" />

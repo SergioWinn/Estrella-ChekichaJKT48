@@ -71,7 +71,8 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
     setCopied(false);
     setCopyError("");
     try {
-      await copyComparisonImage(comparisonResults);
+      const theme = document.documentElement.dataset.theme === "light" ? "light" : "dark";
+      await copyComparisonImage(comparisonResults, theme);
       setCopied(true);
     } catch {
       setCopyError("Could not copy image. Allow clipboard access and use a supported browser over HTTPS.");

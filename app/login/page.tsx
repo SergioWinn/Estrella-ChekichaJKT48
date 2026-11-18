@@ -22,7 +22,7 @@ export default async function LoginPage({
         <div className="letter-intro">
           <SectionHeader
             title="Sign in"
-            description="Manage your chekicha collection."
+            description="Manage your Chekicha collection."
             titleClassName="text-[clamp(2.2rem,4vw,3.7rem)]"
             descriptionClassName="text-sm leading-7 sm:text-base"
           />

@@ -1,6 +1,6 @@
-# JKT48 Chekicha Archive
+# JKT48 Chekicha! Archive
 
-An archive for browsing event history, discovering member appearances, and managing a personal chekicha collection. Audience: JKT48 fans and collectors. All primary surfaces are Operate mode.
+An archive for browsing event history, discovering member appearances, and managing a personal Chekicha collection. Audience: JKT48 fans and collectors. All primary surfaces are Operate mode.
 
 - Timeline at `/` (`/timeline` alias): events grouped by month; event category, series, team, member and text filters.
 - Birthday and Graduation have one member; Roulette can have Slot A only or Slots A and B. Unassigned slots remain visible; nonexistent slots do not.

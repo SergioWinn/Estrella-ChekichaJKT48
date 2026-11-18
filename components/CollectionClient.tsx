@@ -74,7 +74,7 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
                 {member.name}
               </h3>
               <p className="mt-1 text-sm text-[var(--muted)]">
-                {member.totalQuantity} chekicha • {member.entries.length} {member.entries.length === 1 ? "session" : "sessions"}
+                {member.totalQuantity} Chekicha • {member.entries.length} {member.entries.length === 1 ? "session" : "sessions"}
               </p>
             </div>
           </div>
@@ -82,7 +82,7 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
             type="button"
             onClick={() => dialogRef.current?.close()}
             className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
-            aria-label={`Close ${member.name} chekicha history`}
+            aria-label={`Close ${member.name} Chekicha history`}
           >
             <CloseIcon className="size-4" />
           </button>
@@ -261,7 +261,7 @@ export function CollectionClient({
   return (
     <div className="space-y-6">
       <div className="archive-summary">
-        <span>@{username}</span><span><strong>{totalQuantity}</strong> chekicha owned</span><span><strong>{uniqueMembers}</strong> members</span>
+        <span>@{username}</span><span><strong>{totalQuantity}</strong> Chekicha owned</span><span><strong>{uniqueMembers}</strong> members</span>
       </div>
 
       {success ? <div role="status" aria-live="polite" className="app-status-message rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm font-semibold text-[var(--accent)]">{success}</div> : null}
@@ -278,7 +278,7 @@ export function CollectionClient({
               onClick={openDesk}
               className="min-h-11 whitespace-nowrap rounded-lg bg-[var(--accent)] px-5 text-sm font-semibold text-[var(--accent-foreground)] transition-colors hover:bg-[var(--accent-strong)]"
             >
-              Add or manage chekicha
+              Add or manage Chekicha
             </button>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
@@ -306,7 +306,7 @@ export function CollectionClient({
         </div>
       </section>
 
-      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleQuantity} chekicha · {memberCollections.length} {memberCollections.length === 1 ? "member" : "members"}</p>
+      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleQuantity} Chekicha · {memberCollections.length} {memberCollections.length === 1 ? "member" : "members"}</p>
       {memberCollections.length ? (
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {memberCollections.map((member, index) => (
@@ -341,7 +341,7 @@ export function CollectionClient({
         </section>
       ) : (
         <div className="app-card p-6 text-sm text-[var(--muted)]">
-          {entries.length ? "No matches. Try different filters." : "No chekicha yet. Choose Add or manage chekicha to get started."}
+          {entries.length ? "No matches. Try different filters." : "No Chekicha yet. Choose Add or manage Chekicha to get started."}
         </div>
       )}
 
@@ -360,7 +360,7 @@ export function CollectionClient({
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 id="collection-desk-title" className="text-lg font-semibold tracking-[-0.04em] text-[var(--foreground)] md:text-xl">Add or manage chekicha</h3>
+                <h3 id="collection-desk-title" className="text-lg font-semibold tracking-[-0.04em] text-[var(--foreground)] md:text-xl">Add or manage Chekicha</h3>
               </div>
               <button
                 type="button"
@@ -481,7 +481,7 @@ export function CollectionClient({
                   </section>
                 ) : (
                    <div className="app-card p-6 text-sm text-[var(--muted)]">
-                    No chekicha are available to add yet. Check the timeline for assigned members.
+                    No Chekicha are available to add yet. Check the timeline for assigned members.
                   </div>
                 )}
               </div>
@@ -536,7 +536,7 @@ export function CollectionClient({
                   <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-16 text-center text-sm text-[var(--muted)]">
                     <svg aria-hidden="true" className="size-12 text-[var(--muted-strong)]" fill="none" viewBox="0 0 24 24"><path d="M12 6v6l4 2" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5"/><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/></svg>
                     <span className="font-semibold text-[var(--foreground)]">Your collection is empty</span>
-                    <span>Open <strong>Add</strong> to add your first chekicha.</span>
+                    <span>Open <strong>Add</strong> to add your first Chekicha.</span>
                   </div>
                 )}
               </div>

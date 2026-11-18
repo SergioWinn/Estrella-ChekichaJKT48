@@ -183,7 +183,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
       <section id="ranking" className="member-ranking" aria-labelledby="ranking-title">
         <header className="member-ranking-heading">
           <div className="flex items-center gap-1">
-            <h2 id="ranking-title" className="min-w-0">Most frequent chekicha members</h2>
+            <h2 id="ranking-title" className="min-w-0">Most frequent Chekicha members</h2>
           {leaderboard.length > 0 ? (
             <button
               type="button"
@@ -202,7 +202,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
           <p>Top 20 · Chekicha show/event · Excludes birthday & graduation</p>
         </header>
         {leaderboard.length ? (
-          <ol id="member-ranking-list" ref={rankingRef} className="member-ranking-list" tabIndex={0} aria-label="Top 20 show/event chekicha ranking. Scroll to see more members.">
+          <ol id="member-ranking-list" ref={rankingRef} className="member-ranking-list" tabIndex={0} aria-label="Top 20 show/event Chekicha ranking. Scroll to see more members.">
             {[...rankingEntries, ...rankingEntries].map((entry, index) => {
               const member = members.find((item) => item.id === entry.member_id);
               const isCopy = index >= rankingEntries.length;
@@ -257,7 +257,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
         </div>
       </section>
 
-      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} {visibleMembers.length === 1 ? "member" : "members"} · {showEventOnly ? "Show/event chekicha only. Excludes birthday & graduation." : "All chekicha types, including birthday & graduation."}</p>
+          <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} {visibleMembers.length === 1 ? "member" : "members"} · {showEventOnly ? "Show/event Chekicha only. Excludes birthday & graduation." : "All Chekicha types, including birthday & graduation."}</p>
       {visibleMembers.length ? (
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {visibleMembers.map((member, index) => {
@@ -284,7 +284,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
                 <div className="w-full min-w-0 flex-1">
                   <h2 className="truncate text-base font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-lg">{member.nickname || "Unknown member"}</h2>
                   <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{count}</strong> {count === 1 ? "time" : "times"}</p>
-                  <p className="mt-1 text-xs text-[var(--muted)]">Last chekicha: <span className="text-[var(--foreground-soft)]">{lastTime ? formatEventDate(lastTime) : "Not recorded"}</span></p>
+                  <p className="mt-1 text-xs text-[var(--muted)]">Last Chekicha: <span className="text-[var(--foreground-soft)]">{lastTime ? formatEventDate(lastTime) : "Not recorded"}</span></p>
                   <div className="mt-1.5">
                     <span className="rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:text-xs">
                       {member.status || "Unknown team"}
@@ -313,12 +313,12 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
         <div className="relative mx-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-xl overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 shadow-[var(--shadow-modal)] sm:max-h-[calc(100dvh-3rem)] sm:p-6" onClick={(event) => event.stopPropagation()}>
           <button type="button" aria-label="Close comparison" onClick={() => comparisonDialogRef.current?.close()} className="absolute right-3 top-3 inline-flex size-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:bg-[var(--surface-hover)]"><CloseIcon className="size-4" /></button>
           <h2 id="comparison-title" className="pr-12 text-xl font-semibold tracking-[-0.03em]">Compare members</h2>
-          <p className="mt-2 pr-8 text-sm text-[var(--muted)]">Show/event chekicha only. Excludes birthday & graduation.</p>
+          <p className="mt-2 pr-8 text-sm text-[var(--muted)]">Show/event Chekicha only. Excludes birthday & graduation.</p>
           {comparisonReady ? (
             <>
               <p className="mt-5 text-sm text-[var(--muted)]">Unrecorded first, then oldest last date.</p>
               <table className="mt-3 w-full table-fixed text-left text-xs sm:text-sm">
-                <thead className="text-[var(--muted)]"><tr><th scope="col" className="w-[38%] p-2">Member</th><th scope="col" className="w-[42%] p-2">Last chekicha</th><th scope="col" className="w-[20%] p-2 text-right">Times</th></tr></thead>
+                <thead className="text-[var(--muted)]"><tr><th scope="col" className="w-[38%] p-2">Member</th><th scope="col" className="w-[42%] p-2">Last Chekicha</th><th scope="col" className="w-[20%] p-2 text-right">Times</th></tr></thead>
                 <tbody>{comparisonResults.map((member) => (
                   <tr key={member.id} className="border-t border-[var(--border)]"><th scope="row" className="break-words p-2 font-semibold">{member.nickname || member.full_name}</th><td className="p-2 text-[var(--muted-strong)]">{member.lastShowEventTime ? formatEventDate(member.lastShowEventTime) : "Not recorded"}</td><td className="p-2 text-right">{member.showEventCheki}</td></tr>
                 ))}</tbody>
@@ -410,7 +410,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
                   </div>
                   <p className="text-sm text-[var(--muted)]">Show/event: {selectedMember.showEventCheki} {selectedMember.showEventCheki === 1 ? "time" : "times"} · Last: {selectedMember.lastShowEventTime ? formatEventDate(selectedMember.lastShowEventTime) : "Not recorded"}</p>
                   <p className="text-xs leading-6 text-[var(--muted-strong)] sm:text-sm">
-                    Last chekicha (all types): {selectedMember.history[0] ? formatEventDate(selectedMember.history[0].start_time) : "Not recorded"}. Includes birthday & graduation.
+                    Last Chekicha (all types): {selectedMember.history[0] ? formatEventDate(selectedMember.history[0].start_time) : "Not recorded"}. Includes birthday & graduation.
                   </p>
                 </div>
               </div>

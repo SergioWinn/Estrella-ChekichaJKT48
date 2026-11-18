@@ -1,6 +1,6 @@
-# CHEKICHA ARCHIVE MONITOR
+# JKT48 CHEKICHA! ARCHIVE
 
-CHEKICHA ARCHIVE MONITOR is a full-stack web application for browsing, managing, and tracking archived JKT48 chekicha event data through a fast, focused, and mobile-friendly interface. Instead of digging through raw tables or scattered event records, the app reorganizes archive rows into a clearer view that highlights recent assignments, member frequency, timeline history, and user collection data in one place.
+JKT48 CHEKICHA! ARCHIVE is a full-stack web application for browsing, managing, and tracking archived JKT48 Chekicha event data through a fast, focused, and mobile-friendly interface. Instead of digging through raw tables or scattered event records, the app reorganizes archive rows into a clearer view that highlights recent assignments, member frequency, timeline history, and user collection data in one place.
 
 From a technical perspective, the project is built as a Next.js application backed by Supabase for authentication, storage, and server-side data access. The interface combines responsive pages for overview, timeline, members, and collection tracking, while admin-only flows handle member and event maintenance. The result is a compact but practical product that emphasizes usability, defensive server-side access, and a clean separation between UI, page logic, and data helpers.
 
@@ -8,7 +8,7 @@ From a technical perspective, the project is built as a Next.js application back
 
 Archive data becomes much more useful when it is easy to scan, compare, and update. For event-heavy tracking workflows, raw records are technically sufficient but not ideal for quickly answering questions like who appears most often, which draws are still unresolved, or what a specific member has appeared in recently.
 
-This project was built as a focused monitoring and archive layer on top of that need. Rather than acting as a generic database viewer, CHEKICHA ARCHIVE MONITOR turns archived JKT48 chekicha data into a more readable dashboard with role-based access, member history browsing, and collection management. It also serves as a portfolio project that demonstrates practical Next.js app-router work, Supabase-backed auth, and clean server/client separation.
+This project was built as a focused monitoring and archive layer on top of that need. Rather than acting as a generic database viewer, JKT48 CHEKICHA! ARCHIVE turns archived JKT48 Chekicha data into a more readable dashboard with role-based access, member history browsing, and collection management. It also serves as a portfolio project that demonstrates practical Next.js app-router work, Supabase-backed auth, and clean server/client separation.
 
 ## Highlights
 

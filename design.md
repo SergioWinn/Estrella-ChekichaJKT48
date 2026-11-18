@@ -1,4 +1,4 @@
-# Collector's Album — Chekicha Archive
+# Collector's Album — Chekicha! Archive
 
 User-approved direction: Collector's Album layout with the Chekicha Pop palette. Operate mode: quick scanning and usable forms take precedence over decoration.
 

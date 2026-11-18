@@ -44,7 +44,7 @@ export async function createComparisonImage(members: (MemberRecord & MemberCheki
   context.textBaseline = "top";
   context.fillStyle = colors.accent;
   context.font = `24px ${font}`;
-  context.fillText("JKT48 Chekicha Archive", 64, 48);
+  context.fillText("JKT48 Chekicha! Archive", 64, 48);
   context.fillStyle = colors.foreground;
   context.font = `600 44px ${font}`;
   context.fillText("Compare members", 64, 94);
@@ -53,7 +53,7 @@ export async function createComparisonImage(members: (MemberRecord & MemberCheki
   context.fillText("Show/event only · Excludes birthday & graduation", 64, 158);
   context.fillText("Unrecorded first, then oldest last date", 64, 194);
   context.fillText("Member", 64, 258);
-  context.fillText("Last chekicha", 560, 258);
+  context.fillText("Last Chekicha", 560, 258);
   context.textAlign = "right";
   context.fillText("Times", 1016, 258);
 

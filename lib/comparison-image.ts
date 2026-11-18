@@ -4,8 +4,8 @@ import type { MemberChekiStats, MemberRecord } from "./types.ts";
 export type ComparisonImageTheme = "dark" | "light";
 
 const imageThemes = {
-  dark: { background: "#17212f", foreground: "#f2f5f8", muted: "#b8c3d1", border: "#3d4d60", accent: "#79c4f1" },
-  light: { background: "#f9fafc", foreground: "#2c3543", muted: "#657284", border: "#cbd3dd", accent: "#1d78b3" },
+  dark: { background: "#201a1f", foreground: "#f8eef2", muted: "#d4c2cb", border: "#59434e", accent: "#f297b5", metric: "#55cbd2" },
+  light: { background: "#fffafb", foreground: "#29252b", muted: "#70616a", border: "#e3ccd3", accent: "#b93652", metric: "#147f86" },
 } satisfies Record<ComparisonImageTheme, Record<string, string>>;
 
 export async function copyComparisonImage(members: (MemberRecord & MemberChekiStats)[], theme: ComparisonImageTheme = "light"): Promise<void> {
@@ -68,7 +68,7 @@ export async function createComparisonImage(members: (MemberRecord & MemberCheki
     context.fillStyle = colors.muted;
     context.fillText(member.lastShowEventTime ? formatEventDate(member.lastShowEventTime) : "Not recorded", 560, y + 22);
     context.textAlign = "right";
-    context.fillStyle = colors.accent;
+    context.fillStyle = colors.metric;
     context.fillText(String(member.showEventCheki), 1016, y + 22);
     y += height;
   }

@@ -53,12 +53,12 @@ test("comparison PNG keeps every row, wraps names, and reports rendering failure
   assert.ok(labels.some(({ text }) => text === "16 Oct 2026"));
   assert.ok(labels.some(({ text }) => text === "Not recorded"));
   assert.ok(labels.some(({ text }) => text.includes("Excludes birthday & graduation")));
-  for (const color of ["#f9fafc", "#1d78b3"]) assert.ok(fills.includes(color));
+  for (const color of ["#fffafb", "#b93652", "#147f86"]) assert.ok(fills.includes(color));
   assert.ok(labels.every(({ y }) => y + 36 < canvas.height));
 
   const fillCount = fills.length;
   assert.equal(await createComparisonImage(members, "dark"), blob);
-  for (const color of ["#17212f", "#79c4f1", "#f2f5f8"]) assert.ok(fills.slice(fillCount).includes(color));
+  for (const color of ["#201a1f", "#f297b5", "#55cbd2"]) assert.ok(fills.slice(fillCount).includes(color));
 
   await t.test("copy starts before rendering resolves and propagates clipboard errors", async () => {
     const previousClipboard = Object.getOwnPropertyDescriptor(navigator, "clipboard");

@@ -5,7 +5,9 @@ import { copyComparisonImage, createComparisonImage } from "../lib/comparison-im
 
 test("comparison PNG keeps every row, wraps names, and reports rendering failures", async (t) => {
   const labels: { text: string; x: number; y: number }[] = [];
+  const fills: string[] = [];
   const context = {
+    set fillStyle(value: string) { fills.push(value); },
     fillRect() {},
     measureText: (text: string) => ({ width: [...text].length * 16 }),
     fillText: (text: string, x: number, y: number) => labels.push({ text, x, y }),
@@ -51,6 +53,7 @@ test("comparison PNG keeps every row, wraps names, and reports rendering failure
   assert.ok(labels.some(({ text }) => text === "16 Oct 2026"));
   assert.ok(labels.some(({ text }) => text === "Not recorded"));
   assert.ok(labels.some(({ text }) => text.includes("Excludes birthday & graduation")));
+  for (const color of ["#fffafb", "#b93652", "#147f86"]) assert.ok(fills.includes(color));
   assert.ok(labels.every(({ y }) => y + 36 < canvas.height));
 
   await t.test("copy starts before rendering resolves and propagates clipboard errors", async () => {

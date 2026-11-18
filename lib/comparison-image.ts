@@ -31,16 +31,16 @@ export async function createComparisonImage(members: (MemberRecord & MemberCheki
 
   canvas.width = 1080;
   canvas.height = 300 + rows.reduce((height, row) => height + row.height, 0) + 124;
-  context.fillStyle = "#142131";
+  context.fillStyle = "#fffafb";
   context.fillRect(0, 0, canvas.width, canvas.height);
   context.textBaseline = "top";
-  context.fillStyle = "#93c5fd";
+  context.fillStyle = "#b93652";
   context.font = `24px ${font}`;
   context.fillText("JKT48 Chekicha Archive", 64, 48);
-  context.fillStyle = "#f1f5f9";
+  context.fillStyle = "#29252b";
   context.font = `600 44px ${font}`;
   context.fillText("Compare members", 64, 94);
-  context.fillStyle = "#b9c9da";
+  context.fillStyle = "#70616a";
   context.font = `23px ${font}`;
   context.fillText("Show/event only · Excludes birthday & graduation", 64, 158);
   context.fillText("Unrecorded first, then oldest last date", 64, 194);
@@ -51,21 +51,21 @@ export async function createComparisonImage(members: (MemberRecord & MemberCheki
 
   let y = 300;
   for (const { member, lines, height } of rows) {
-    context.fillStyle = "#34465b";
+    context.fillStyle = "#e3ccd3";
     context.fillRect(64, y, 952, 1);
     context.textAlign = "left";
-    context.fillStyle = "#f1f5f9";
+    context.fillStyle = "#29252b";
     context.font = `28px ${font}`;
     lines.forEach((line, index) => context.fillText(line, 64, y + 22 + index * 36));
-    context.fillStyle = "#b9c9da";
+    context.fillStyle = "#594b54";
     context.fillText(member.lastShowEventTime ? formatEventDate(member.lastShowEventTime) : "Not recorded", 560, y + 22);
     context.textAlign = "right";
-    context.fillStyle = "#93c5fd";
+    context.fillStyle = "#147f86";
     context.fillText(String(member.showEventCheki), 1016, y + 22);
     y += height;
   }
   context.textAlign = "left";
-  context.fillStyle = "#b9c9da";
+  context.fillStyle = "#70616a";
   context.font = `22px ${font}`;
   context.fillText(`Exported ${formatEventDate(new Date())} (WIB)`, 64, y + 36);
   context.fillText("by @estrellawin19", 64, y + 72);

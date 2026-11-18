@@ -227,9 +227,9 @@ export function AdminWorkspace({
   const editSlotMode = selectedEditState?.slotMode || String(selectedEvent?.slot_mode || 1);
   const queueRows = useMemo(
     () =>
-      [...events]
+      events
         .filter((event) => hasPendingSlotA(event) || hasPendingSlotB(event))
-        .sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime()),
+        .toSorted((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime()),
     [events],
   );
   const createEventType = selectedCreatePreset?.event_type || "Roulette";

@@ -10,7 +10,7 @@ import { FilterPill } from "@/components/FilterPill";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { CloseIcon } from "@/components/UiIcons";
 import { useDebouncedValue } from "@/components/useDebouncedValue";
-import { compareMembersByLastCheki, getMemberChekiSummary, memberMatchesQuery } from "@/lib/archive-data.ts";
+import { compareMembersByLastCheki, getMemberChekiSummary, memberMatchesQuery, memberSortName } from "@/lib/archive-data.ts";
 import { copyComparisonImage } from "@/lib/comparison-image.ts";
 import { formatEventDate } from "@/lib/format.ts";
 import { STATUS_OPTIONS as MEMBER_STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
@@ -58,11 +58,11 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
             (status === "All" || (member.status || "").toUpperCase() === status) &&
             (!debouncedQuery.trim() || memberMatchesQuery(member, debouncedQuery)),
         )
-        .toSorted((a, b) => (a.full_name || a.nickname || "").localeCompare(b.full_name || b.nickname || "")),
+        .toSorted((a, b) => memberSortName(a).localeCompare(memberSortName(b))),
     [debouncedQuery, members, status],
   );
 
-  const comparisonChoices = members.filter((member) => memberMatchesQuery(member, comparisonQuery));
+  const comparisonChoices = members.filter((member) => memberMatchesQuery(member, comparisonQuery)).toSorted((a, b) => memberSortName(a).localeCompare(memberSortName(b)));
   const comparisonResults = members.filter((member) => comparisonIds.includes(member.id)).toSorted(compareMembersByLastCheki);
 
   async function copyComparison() {

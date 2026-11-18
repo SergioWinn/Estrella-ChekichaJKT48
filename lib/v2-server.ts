@@ -64,7 +64,7 @@ export async function loadAdminMembers(supabase: Awaited<ReturnType<typeof creat
   return supabaseSelect<MemberRecord>(
     "members",
     "id,nickname,full_name,status,generasi,avatar_url",
-    { orderBy: "nickname", orderDirection: "asc" },
+    { orderBy: "full_name", orderDirection: "asc" },
   );
 }
 

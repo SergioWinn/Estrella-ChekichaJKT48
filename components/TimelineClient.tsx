@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { FilterPill } from "@/components/FilterPill";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
-import { countPendingSlots, groupTimelineByMonth } from "@/lib/archive-data.ts";
+import { countPendingSlots, groupTimelineByMonth, memberSortName } from "@/lib/archive-data.ts";
 import { formatEventTime } from "@/lib/format.ts";
 import { buildTimelineCardState, countTimelineTeams, filterTimelineEvents, getRouletteSeriesOptions } from "@/lib/timeline-view.ts";
 import { EVENT_TEAM_OPTIONS, getEffectiveEventTeam } from "@/lib/v2-helpers.ts";
@@ -22,12 +22,12 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
   const filtered = useMemo(() => filterTimelineEvents(events, filterType, rouletteSeries, activeTeam, query, memberFilter), [events, filterType, rouletteSeries, activeTeam, query, memberFilter]);
   const sections = useMemo(() => groupTimelineByMonth(filtered), [filtered]);
   const members = useMemo(() => {
-    const options = new Map<string, string>();
+    const options = new Map<string, { label: string; sortName: string }>();
     for (const event of events) {
-      if (event.member_id_a) options.set(event.member_id_a, event.member_a?.nickname || event.member_a?.full_name || "Unknown member");
-      if (event.member_id_b) options.set(event.member_id_b, event.member_b?.nickname || event.member_b?.full_name || "Unknown member");
+      if (event.member_id_a) options.set(event.member_id_a, { label: event.member_a?.nickname || event.member_a?.full_name || "Unknown member", sortName: memberSortName(event.member_a || {}) });
+      if (event.member_id_b) options.set(event.member_id_b, { label: event.member_b?.nickname || event.member_b?.full_name || "Unknown member", sortName: memberSortName(event.member_b || {}) });
     }
-    return [...options].sort((a, b) => a[1].localeCompare(b[1]));
+    return Array.from(options.entries()).toSorted(([, left], [, right]) => left.sortName.localeCompare(right.sortName)).map(([id, member]) => [id, member.label] as const);
   }, [events]);
   return <div className="space-y-6">
     <div className="archive-summary" aria-live="polite"><span><strong>{filtered.length}</strong> events shown</span><span><strong>{countPendingSlots(events)}</strong> unassigned slots</span></div>

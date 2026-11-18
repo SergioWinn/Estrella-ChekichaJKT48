@@ -27,6 +27,7 @@ export interface OverviewAssignment {
   event_name: string;
   event_team?: string | null;
   event_type: string;
+  full_name?: string | null;
   generasi?: number | null;
   member_id: string;
   nickname: string;
@@ -39,6 +40,7 @@ export interface OverviewLeaderboardEntry {
   avatar_url?: string | null;
   count: number;
   generasi?: number | null;
+  full_name?: string | null;
   last_seen: Date;
   member_id: string;
   nickname: string;

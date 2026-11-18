@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { buildMemberArchive, buildOverviewSnapshot, compareMembersByLastCheki, getMemberChekiSummary } from "../lib/archive-data.ts";
+import { buildMemberArchive, buildOverviewSnapshot, compareMembersByLastCheki, getMemberChekiSummary, memberSortName } from "../lib/archive-data.ts";
 
 test("buildOverviewSnapshot counts sessions, pending slots, ranks ties, and limits recent assignments", () => {
   const rows = [
@@ -220,4 +220,13 @@ test("longest-since-chekicha sort puts unrecorded members first, dates ascending
   ];
   assert.deepEqual(members.toSorted(compareMembersByLastCheki).map((member) => member.id), ["never-a", "never-z", "old-a", "old-b", "recent"]);
   assert.equal(members[0].id, "recent");
+});
+
+test("member lists and comparison ties use full names before nicknames", () => {
+  const members = [
+    { id: "a", nickname: "Zee", full_name: "Alya Rahma", showEventCheki: 1, lastShowEventTime: "2026-01-01T12:00:00+07:00" },
+    { id: "b", nickname: "Ayu", full_name: "Zahra Putri", showEventCheki: 1, lastShowEventTime: "2026-01-01T12:00:00+07:00" },
+  ];
+  assert.deepEqual(members.toSorted((left, right) => memberSortName(left).localeCompare(memberSortName(right))).map((member) => member.id), ["a", "b"]);
+  assert.deepEqual(members.toSorted(compareMembersByLastCheki).map((member) => member.id), ["a", "b"]);
 });

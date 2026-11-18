@@ -15,6 +15,10 @@ import { EVENT_TEAM_OPTIONS, getEffectiveEventTeam } from "./v2-helpers.ts";
 
 const SPECIAL_EVENT_TYPES = new Set(["Birthday", "Graduation"]);
 
+export function memberSortName(member: Pick<MemberRelation, "full_name" | "nickname">): string {
+  return member.full_name || member.nickname || "";
+}
+
 export function relationToMember(value: MemberRelation | MemberRelation[] | null | undefined): MemberRelation {
   if (Array.isArray(value)) {
     return value[0] ?? {};
@@ -84,6 +88,7 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
         event_name: row.event_name || "Untitled event",
         event_team: eventTeam,
         event_type: eventType || "Roulette",
+        full_name: memberA.full_name,
         start_time: row.start_time,
         start_dt: startTime,
         slot_key: "A",
@@ -102,6 +107,7 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
           event_name: row.event_name || "Untitled event",
           event_team: eventTeam,
           event_type: eventType || "Roulette",
+          full_name: memberB.full_name,
           start_time: row.start_time,
           start_dt: startTime,
           slot_key: "B",
@@ -119,6 +125,7 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
         nickname: item.nickname,
         avatar_url: item.avatar_url,
         generasi: item.generasi,
+        full_name: item.full_name,
         count: 1,
         last_seen: item.start_dt,
       });
@@ -130,20 +137,21 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
       existing.last_seen = item.start_dt;
       existing.avatar_url = item.avatar_url;
       existing.generasi = item.generasi;
+      existing.full_name = item.full_name;
       existing.nickname = item.nickname;
     }
   }
 
   const leaderboard = Array.from(leaderboardMap.values())
     .filter((item) => item.count >= 2)
-    .sort((left, right) => {
+    .toSorted((left, right) => {
       if (right.count !== left.count) {
         return right.count - left.count;
       }
       if (right.last_seen.getTime() !== left.last_seen.getTime()) {
         return right.last_seen.getTime() - left.last_seen.getTime();
       }
-      return left.nickname.localeCompare(right.nickname);
+      return memberSortName(left).localeCompare(memberSortName(right));
     })
     .map((item) => ({ ...item, rank: 0 }));
 
@@ -157,8 +165,8 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
     item.rank = lastRank;
   });
 
-  const recentAssignments = [...assignments]
-    .sort((left, right) => right.start_dt.getTime() - left.start_dt.getTime())
+  const recentAssignments = assignments
+    .toSorted((left, right) => right.start_dt.getTime() - left.start_dt.getTime())
     .slice(0, recentLimit);
 
   return {
@@ -247,13 +255,13 @@ export function compareMembersByLastCheki(left: MemberRecord & MemberChekiStats,
   const dateOrder = left.lastShowEventTime && right.lastShowEventTime
     ? Date.parse(left.lastShowEventTime) - Date.parse(right.lastShowEventTime)
     : 0;
-  return dateOrder || (left.full_name || left.nickname || "").localeCompare(right.full_name || right.nickname || "");
+  return dateOrder || memberSortName(left).localeCompare(memberSortName(right));
 }
 
 export async function loadOverviewRows(): Promise<ChekichaRow[]> {
   return supabaseSelect<ChekichaRow>(
     "chekicha",
-    "id,event_type,event_team,event_name,start_time,slot_mode,member_id_a,member_id_b,member_a:member_id_a(nickname,avatar_url,generasi),member_b:member_id_b(nickname,avatar_url,generasi)",
+    "id,event_type,event_team,event_name,start_time,slot_mode,member_id_a,member_id_b,member_a:member_id_a(full_name,nickname,avatar_url,generasi),member_b:member_id_b(full_name,nickname,avatar_url,generasi)",
   );
 }
 
@@ -269,14 +277,14 @@ export async function loadMembers(): Promise<MemberRecord[]> {
   return supabaseSelect<MemberRecord>(
     "members",
     "id,nickname,full_name,status,generasi,avatar_url",
-    { orderBy: "nickname", orderDirection: "asc" },
+    { orderBy: "full_name", orderDirection: "asc" },
   );
 }
 
 export async function loadMemberArchiveRows(): Promise<MemberHistoryEntry[]> {
   return supabaseSelect<MemberHistoryEntry>(
     "chekicha",
-    "id,event_name,event_team,event_type,start_time,event_image_url,slot_mode,member_id_a,member_id_b",
+    "id,event_name,event_team,event_type,start_time,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(full_name,nickname,avatar_url,generasi),member_b:member_id_b(full_name,nickname,avatar_url,generasi)",
     { orderBy: "start_time", orderDirection: "desc" },
   );
 }

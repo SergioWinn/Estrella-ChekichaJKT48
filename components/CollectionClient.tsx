@@ -226,7 +226,7 @@ export function CollectionClient({
         ...member,
         entries: member.entries.toSorted((a, b) => new Date(b.start_time || 0).getTime() - new Date(a.start_time || 0).getTime()),
       }))
-      .sort((a, b) => a.sortName.localeCompare(b.sortName));
+      .toSorted((a, b) => a.sortName.localeCompare(b.sortName));
   }, [visibleEntries]);
   const selectedMember = memberCollections.find((member) => member.id === selectedMemberId) ?? null;
   const visibleQuantity = memberCollections.reduce((sum, member) => sum + member.totalQuantity, 0);

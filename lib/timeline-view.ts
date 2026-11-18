@@ -16,7 +16,7 @@ export function getRouletteSeriesOptions(events: TimelineEvent[]): string[] {
     if (name) series.set(name.toLocaleLowerCase(), name);
   }
 
-  return Array.from(series.values()).sort((a, b) => a.localeCompare(b));
+  return Array.from(series.values()).toSorted((a, b) => a.localeCompare(b));
 }
 
 export function filterTimelineEvents(events: TimelineEvent[], filterType: string, rouletteSeries = "All", teamFilter = "All", query = "", memberFilter = "All"): TimelineEvent[] {

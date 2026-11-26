@@ -9,7 +9,7 @@ const FIXED_SETLIST_TEAMS: Array<{ keywords: string[]; team: EventTeam }> = [
   { keywords: ["itadaki love"], team: "LOVE" },
   { keywords: ["dream bakudan"], team: "DREAM" },
   { keywords: ["passion 200"], team: "PASSION" },
-  { keywords: ["pajama drive"], team: "TRAINEE" },
+  { keywords: ["pajama drive", "kira kira girls"], team: "TRAINEE" },
 ];
 
 export const GENERATION_OPTIONS = [3, 6, 7, 8, 9, 10, 11, 12, 13, 14] as const;

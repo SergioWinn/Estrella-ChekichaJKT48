@@ -200,6 +200,7 @@ test("fixed setlist teams override manual event team values", () => {
   assert.equal(getFixedEventTeam("DREAM BAKUDAN", "Roulette"), "DREAM");
   assert.equal(getFixedEventTeam("ITADAKI LOVE", "Roulette"), "LOVE");
   assert.equal(getFixedEventTeam("Pajama Drive", "Roulette"), "TRAINEE");
+  assert.equal(getFixedEventTeam("KIRA-KIRA GIRLS", "Roulette"), "TRAINEE");
   assert.equal(getFixedEventTeam("Pertaruhan Cinta", "Roulette"), "ALL");
   assert.equal(getFixedEventTeam("Ramadhan", "Roulette"), "ALL");
   assert.equal(getFixedEventTeam("Cara Meminum Ramune", "Roulette"), null);

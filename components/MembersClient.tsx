@@ -5,7 +5,6 @@
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { EventTeamBadge } from "@/components/EventTeamBadge";
-import { EventResultLabel } from "@/components/EventResultLabel";
 import { FilterPill } from "@/components/FilterPill";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { CloseIcon } from "@/components/UiIcons";
@@ -13,7 +12,7 @@ import { useDebouncedValue } from "@/components/useDebouncedValue";
 import { compareMembersByLastCheki, getMemberChekiSummary, memberMatchesQuery, memberSortName } from "@/lib/archive-data.ts";
 import { copyComparisonImage } from "@/lib/comparison-image.ts";
 import { formatEventDate } from "@/lib/format.ts";
-import { getEventResultStatus, STATUS_OPTIONS as MEMBER_STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
+import { STATUS_OPTIONS as MEMBER_STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
 import type { MemberChekiStats, MemberHistoryEntry, MemberRecord, OverviewLeaderboardEntry } from "@/lib/types.ts";
 
 const STATUS_OPTIONS = ["All", ...MEMBER_STATUS_OPTIONS] as const;
@@ -495,7 +494,6 @@ export function MembersClient({ members, leaderboard, rouletteSeriesOptions, ini
                             {row.event_type || "Roulette"}
                           </span>
                           <EventTeamBadge team={row.event_team} eventType={row.event_type} compact />
-                          <EventResultLabel status={getEventResultStatus(row)} />
                           {slotLabel ? (
                             <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)] sm:px-2.5 sm:text-xs">
                               {slotLabel}

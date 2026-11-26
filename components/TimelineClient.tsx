@@ -1,13 +1,12 @@
 "use client";
 import { useMemo, useState } from "react";
-import { EventResultLabel } from "@/components/EventResultLabel";
 import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { FilterPill } from "@/components/FilterPill";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { countPendingSlots, groupTimelineByMonth, memberSortName } from "@/lib/archive-data.ts";
 import { formatEventTime } from "@/lib/format.ts";
 import { buildTimelineCardState, countTimelineTeams, filterTimelineEvents, getRouletteSeriesOptions } from "@/lib/timeline-view.ts";
-import { EVENT_TEAM_OPTIONS, getEffectiveEventTeam, getEventResultStatus, STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
+import { EVENT_TEAM_OPTIONS, getEffectiveEventTeam, STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
 import type { TimelineEvent } from "@/lib/types.ts";
 
 const eventDay = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", timeZone: "Asia/Jakarta" });
@@ -115,15 +114,12 @@ export function TimelineClient({ events }: { events: TimelineEvent[] }) {
                             <span>{formatEventTime(row.start_time, row.end_time)} WIB</span>
                           </div>
                           <h3>{row.event_name || "Untitled event"}</h3>
-                          <div className="timeline-badges">
-                            {(!card.isSingle || row.event_name !== card.eventType) && (
-                              <>
-                                <span>{card.eventType}</span>
-                                <EventTeamBadge team={getEffectiveEventTeam(row.event_name, row.event_type, row.event_team)} eventType={row.event_type} compact />
-                              </>
-                            )}
-                            <EventResultLabel status={getEventResultStatus(row)} />
-                          </div>
+                          {(!card.isSingle || row.event_name !== card.eventType) && (
+                            <div className="timeline-badges">
+                              <span>{card.eventType}</span>
+                              <EventTeamBadge team={getEffectiveEventTeam(row.event_name, row.event_type, row.event_team)} eventType={row.event_type} compact />
+                            </div>
+                          )}
                         </div>
                         <ul className="timeline-slots" aria-label={card.isSingle ? "Member" : "Roulette results"}>
                           {card.members.map((member, memberIndex) => (

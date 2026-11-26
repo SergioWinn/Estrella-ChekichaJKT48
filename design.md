@@ -26,7 +26,7 @@ Retain the Chekicha Pop palette and put event search and Roulette results first.
 ## Admin and account
 
 - Admin opens to Fill results, which groups the pending selectors and Save action by event. Fill results and Events combine event search, event type, Roulette series, and assigned member status. The series control is available for All event types and Roulette. Fill results uses saved slot results for the status filter and keeps unsaved selections while filtering the queue. Members combines name search with a member status filter. Reset clears the search and filters for the current list. Mobile displays the record list or editor as a full-width screen with a return action.
-- The shared event label displays Sebagian terisi when an event has both a saved result and an empty active slot. Member pickers in Fill results, Create Event, and Edit Event combine name search and member status. The picker Reset restores all options and keeps the current slot selection.
+- Member pickers in Fill results, Create Event, and Edit Event combine name search and member status. The picker Reset restores all options and keeps the current slot selection.
 - Sign in and Create account use a single compact column with the form directly after the heading and a link back to Timeline.
 
 ## Review constraints

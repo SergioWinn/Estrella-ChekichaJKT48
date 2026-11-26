@@ -6,7 +6,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { EventTeamBadge } from "@/components/EventTeamBadge";
-import { EventResultLabel } from "@/components/EventResultLabel";
 import { FilterPill } from "@/components/FilterPill";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { CloseIcon } from "@/components/UiIcons";
@@ -147,7 +146,6 @@ function MemberHistoryDialog({ member, onClose, onManage }: { member: MemberColl
                       {entry.event_type}
                     </span>
                     <EventTeamBadge team={entry.event_team} eventType={entry.event_type} compact />
-                    {entry.event_result_status && <EventResultLabel status={entry.event_result_status} />}
                     {showSlot ? (
                       <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)]">
                         Slot {entry.slot_key}
@@ -552,10 +550,7 @@ export function CollectionClient({
                               <form key={slot.slot_uid} action={addCollectionAction} className="grid gap-3 border-t border-[var(--border)] pt-4 lg:grid-cols-[minmax(0,1fr)_7rem_auto] lg:items-center">
                               <div className="min-w-0">
                                 <div className="truncate text-sm font-medium tracking-[-0.02em] text-[var(--foreground)] md:text-[0.95rem]">{slot.member_name}</div>
-                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[var(--muted)] md:text-[0.95rem]">
-                                  <span className="min-w-0 break-words">{slot.event_name}</span>
-                                  <EventResultLabel status={slot.event_result_status} />
-                                </div>
+                                <div className="break-words text-sm text-[var(--muted)] md:text-[0.95rem]">{slot.event_name}</div>
                                 <div className="mt-1 text-xs uppercase tracking-[0.14em] text-[var(--muted)]">
                                   {slot.slot_label} | {formatEventDate(slot.start_time)} | {formatEventTime(slot.start_time, slot.end_time)} WIB
                                 </div>
@@ -651,10 +646,7 @@ export function CollectionClient({
                       <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0">
                           <div className="text-sm font-medium tracking-[-0.02em] text-[var(--foreground)] md:text-[0.95rem]">{entry.member_name}</div>
-                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[var(--muted)] md:text-[0.95rem]">
-                            <span className="min-w-0 break-words">{entry.event_name}</span>
-                            {entry.event_result_status && <EventResultLabel status={entry.event_result_status} />}
-                          </div>
+                          <div className="break-words text-sm text-[var(--muted)] md:text-[0.95rem]">{entry.event_name}</div>
                           <div className="mt-2 text-sm text-[var(--muted)] md:text-[0.95rem]">
                             {formatEventDate(entry.start_time)} | {formatEventTime(entry.start_time, entry.end_time)} WIB
                           </div>

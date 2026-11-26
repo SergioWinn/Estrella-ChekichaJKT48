@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { EventResultLabel } from "@/components/EventResultLabel";
 import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
@@ -18,7 +17,7 @@ import {
 } from "@/lib/v2-actions.ts";
 import { formatEventDate, formatEventTime } from "@/lib/format.ts";
 import { getRouletteSeriesOptions, matchesEventMemberStatus, matchesRouletteSeries } from "@/lib/timeline-view.ts";
-import { GENERATION_OPTIONS, STATUS_OPTIONS, getEffectiveEventTeam, getEventResultStatus, getEventSlotProgress, getFixedEventTeam, singleMemberEvent } from "@/lib/v2-helpers.ts";
+import { GENERATION_OPTIONS, STATUS_OPTIONS, getEffectiveEventTeam, getEventSlotProgress, getFixedEventTeam, singleMemberEvent } from "@/lib/v2-helpers.ts";
 import type { ChekichaRow, EventPreset, MemberRecord } from "@/lib/types.ts";
 
 const MANUAL_EVENT_TEAM_OPTIONS = ["LOVE", "DREAM", "PASSION"] as const;
@@ -170,10 +169,7 @@ function AdminRecordList({ label, records, eventTypeOptions, rouletteSeriesOptio
           {matches.map((record) => (
             <li key={record.id}>
               <button type="button" aria-pressed={!creating && selectedId === record.id} onClick={() => onSelect(record.id)}>
-                <strong className={record.event ? "flex flex-wrap items-center justify-between gap-x-2 gap-y-1" : undefined}>
-                  {record.title}
-                  {record.event && <EventResultLabel status={getEventResultStatus(record.event)} />}
-                </strong>
+                <strong>{record.title}</strong>
                 <span>{record.detail}</span>
               </button>
             </li>
@@ -466,10 +462,7 @@ export function AdminWorkspace({
                     <input type="hidden" name="slot_mode" value={event.slot_mode || 1} />
                     <div className="min-w-0">
                       <div className="min-w-0">
-                        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-                          <h2 className="break-words font-semibold text-[var(--foreground)]">{event.event_name || "Untitled event"}</h2>
-                          <EventResultLabel status={getEventResultStatus(event)} />
-                        </div>
+                        <h2 className="break-words font-semibold text-[var(--foreground)]">{event.event_name || "Untitled event"}</h2>
                         <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2 text-sm text-[var(--muted)]"><EventTeamBadge team={event.event_team} eventType={event.event_type} /><span>{formatEventDate(event.start_time)} · {formatEventTime(event.start_time, event.end_time)} WIB</span></div>
                         <p className="mt-1 text-sm text-[var(--accent)]">{waitingCount} {waitingCount === 1 ? "result" : "results"} needed</p>
                       </div>

@@ -2,10 +2,10 @@
 
 /* Hallmark · pre-emit critique: P4 H5 E4 S4 R5 V4 */
 
-import type { CSSProperties } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { EventTeamBadge } from "@/components/EventTeamBadge";
+import { EventResultLabel } from "@/components/EventResultLabel";
 import { FilterPill } from "@/components/FilterPill";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { CloseIcon } from "@/components/UiIcons";
@@ -13,13 +13,50 @@ import { useDebouncedValue } from "@/components/useDebouncedValue";
 import { compareMembersByLastCheki, getMemberChekiSummary, memberMatchesQuery, memberSortName } from "@/lib/archive-data.ts";
 import { copyComparisonImage } from "@/lib/comparison-image.ts";
 import { formatEventDate } from "@/lib/format.ts";
-import { STATUS_OPTIONS as MEMBER_STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
+import { getEventResultStatus, STATUS_OPTIONS as MEMBER_STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
 import type { MemberChekiStats, MemberHistoryEntry, MemberRecord, OverviewLeaderboardEntry } from "@/lib/types.ts";
 
 const STATUS_OPTIONS = ["All", ...MEMBER_STATUS_OPTIONS] as const;
 
-function buildStaggerStyle(index: number): CSSProperties {
-  return { "--i": Math.min(index, 5) } as CSSProperties;
+function MemberStatusSelect({ id, value, onChange }: {
+  id: string;
+  value: string;
+  onChange: (status: string) => void;
+}) {
+  return (
+    <div className="grid gap-1">
+      <label htmlFor={id} className="text-sm font-semibold text-[var(--muted-strong)]">Member status</label>
+      <select id={id} value={value} onChange={(event) => onChange(event.target.value)} className="app-input min-h-12 w-full min-w-0 px-3 text-base">
+        {STATUS_OPTIONS.map((option) => <option key={option}>{option}</option>)}
+      </select>
+    </div>
+  );
+}
+
+function RouletteSeriesSelect({ id, options, value, onChange }: {
+  id: string;
+  options: string[];
+  value: string;
+  onChange: (series: string) => void;
+}) {
+  return (
+    <div className="grid gap-1">
+      <label htmlFor={id} className="text-sm font-semibold text-[var(--muted-strong)]">Roulette series</label>
+      <select id={id} value={value} onChange={(event) => onChange(event.target.value)} className="app-input min-h-12 w-full min-w-0 px-3 text-base">
+        <option value="">All roulette series</option>
+        {options.map((option) => <option key={option}>{option}</option>)}
+      </select>
+    </div>
+  );
+}
+
+function subscribeToView(callback: () => void) {
+  window.addEventListener("hashchange", callback);
+  return () => window.removeEventListener("hashchange", callback);
+}
+
+function isRankingView() {
+  return window.location.hash === "#ranking";
 }
 
 interface MemberBrowserItem extends MemberRecord, MemberChekiStats {
@@ -27,16 +64,23 @@ interface MemberBrowserItem extends MemberRecord, MemberChekiStats {
   totalCheki: number;
 }
 
-export function MembersClient({ members, leaderboard, initialQuery = "", canCopyImage = false }: {
+export function MembersClient({ members, leaderboard, rouletteSeriesOptions, initialQuery = "", canCopyImage = false }: {
   members: MemberBrowserItem[];
   leaderboard: OverviewLeaderboardEntry[];
+  rouletteSeriesOptions: string[];
   initialQuery?: string;
   canCopyImage?: boolean;
 }) {
   const [query, setQuery] = useState(initialQuery);
+  const [directorySeries, setDirectorySeries] = useState("");
+  const [rankingQuery, setRankingQuery] = useState("");
+  const [rankingStatus, setRankingStatus] = useState("All");
+  const [rankingSeries, setRankingSeries] = useState("");
   const [status, setStatus] = useState<(typeof STATUS_OPTIONS)[number]>("All");
   const [showEventOnly, setShowEventOnly] = useState(false);
   const [comparisonQuery, setComparisonQuery] = useState("");
+  const [comparisonStatus, setComparisonStatus] = useState("All");
+  const [comparisonSeries, setComparisonSeries] = useState("");
   const [comparisonIds, setComparisonIds] = useState<string[]>([]);
   const [comparisonReady, setComparisonReady] = useState(false);
   const [copying, setCopying] = useState(false);
@@ -45,24 +89,49 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
   const comparisonDialogRef = useRef<HTMLDialogElement>(null);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const rankingRef = useRef<HTMLOListElement>(null);
-  const [rankingPaused, setRankingPaused] = useState(false);
+  const showRanking = useSyncExternalStore(subscribeToView, isRankingView, () => false);
   const debouncedQuery = useDebouncedValue(query);
-  const rankingEntries = leaderboard.slice(0, 20);
+  const directoryQuery = query.trim() ? debouncedQuery : "";
+  const membersById = useMemo(() => new Map(members.map((member) => [member.id, member])), [members]);
+  const rankingName = rankingQuery.trim().toLowerCase();
+  const rankingSeriesKey = rankingSeries.toLocaleLowerCase();
+  const rankingFiltered = Boolean(rankingName || rankingSeriesKey) || rankingStatus !== "All";
+  const visibleRanking = rankingFiltered
+    ? leaderboard.filter((entry) => {
+        const member = membersById.get(entry.member_id);
+        const matchesStatus = rankingStatus === "All" || member?.status?.toUpperCase() === rankingStatus;
+        const matchesName = !rankingName || [member?.nickname, member?.full_name, entry.nickname, entry.full_name].some(
+          (name) => name?.toLowerCase().includes(rankingName),
+        );
+        const matchesSeries = !rankingSeriesKey || entry.roulette_series.includes(rankingSeriesKey);
+        return matchesStatus && matchesName && matchesSeries;
+      })
+    : leaderboard;
 
+  const directorySeriesKey = directorySeries.toLocaleLowerCase();
+  const seriesByMemberId = useMemo(
+    () => new Map(leaderboard.map((entry) => [entry.member_id, entry.roulette_series])),
+    [leaderboard],
+  );
   const visibleMembers = useMemo(
     () =>
       members
         .filter(
           (member) =>
             (status === "All" || (member.status || "").toUpperCase() === status) &&
-            (!debouncedQuery.trim() || memberMatchesQuery(member, debouncedQuery)),
+            (!directorySeriesKey || seriesByMemberId.get(member.id)?.includes(directorySeriesKey)) &&
+            (!directoryQuery.trim() || memberMatchesQuery(member, directoryQuery)),
         )
         .toSorted((a, b) => memberSortName(a).localeCompare(memberSortName(b))),
-    [debouncedQuery, members, status],
+    [directoryQuery, directorySeriesKey, members, seriesByMemberId, status],
   );
 
-  const comparisonChoices = members.filter((member) => memberMatchesQuery(member, comparisonQuery)).toSorted((a, b) => memberSortName(a).localeCompare(memberSortName(b)));
+  const comparisonSeriesKey = comparisonSeries.toLocaleLowerCase();
+  const comparisonChoices = members.filter((member) =>
+    memberMatchesQuery(member, comparisonQuery) &&
+    (comparisonStatus === "All" || member.status?.toUpperCase() === comparisonStatus) &&
+    (!comparisonSeriesKey || seriesByMemberId.get(member.id)?.includes(comparisonSeriesKey)),
+  ).toSorted((a, b) => memberSortName(a).localeCompare(memberSortName(b)));
   const comparisonResults = members.filter((member) => comparisonIds.includes(member.id)).toSorted(compareMembersByLastCheki);
 
   async function copyComparison() {
@@ -91,217 +160,171 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
     if (selectedMember && dialog && !dialog.open) dialog.showModal();
   }, [selectedMember]);
 
-  useEffect(() => {
-    const rail = rankingRef.current;
-    if (!rail || selectedMember || rankingPaused) return;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const hoverAvailable = window.matchMedia("(hover: hover)");
-    const first = rail.firstElementChild as HTMLElement;
-    const copy = rail.querySelector<HTMLElement>('[data-ranking-copy="true"]');
-    if (!first || !copy) return;
-    const controller = new AbortController();
-    const { signal } = controller;
-    let frame = 0;
-    let wheelTimer = 0;
-    let wheeling = false;
-    let pointerHeld = false;
-    let touchHeld = false;
-    let visible = false;
-    let cycle = 0;
-    let previous = 0;
-    let offset = rail.scrollLeft;
-    function stop() {
-      cancelAnimationFrame(frame);
-      frame = 0;
-      previous = 0;
+  function resetDirectory() {
+    setQuery("");
+    setDirectorySeries("");
+    setStatus("All");
+    setShowEventOnly(false);
+    const url = new URL(window.location.href);
+    if (url.searchParams.has("q")) {
+      url.searchParams.delete("q");
+      window.history.replaceState(null, "", url);
     }
-    const update = () => {
-      stop();
-      if (signal.aborted) return;
-      offset = rail.scrollLeft;
-      const hovered = hoverAvailable.matches && rail.matches(":hover");
-      const focused = rail.matches(":focus-visible") || rail.querySelector(":focus-visible");
-      if (visible && !document.hidden && !reducedMotion.matches && !hovered && !focused &&
-        !comparisonDialogRef.current?.open && !pointerHeld && !touchHeld && !wheeling && cycle > rail.clientWidth) {
-        frame = requestAnimationFrame(move);
-      }
-    };
-    const move = (time: number) => {
-      const elapsed = previous ? Math.min(time - previous, 50) : 0;
-      previous = time;
-      offset = (offset + elapsed * 0.025) % cycle;
-      rail.scrollLeft = offset;
-      frame = requestAnimationFrame(move);
-    };
-    const resizeObserver = new ResizeObserver(() => {
-      cycle = copy.offsetLeft - first.offsetLeft;
-      update();
-    });
-    resizeObserver.observe(rail);
-    resizeObserver.observe(first);
-    const visibilityObserver = new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      update();
-    });
-    visibilityObserver.observe(rail);
-    const dialogObserver = new MutationObserver(update);
-    if (comparisonDialogRef.current) dialogObserver.observe(comparisonDialogRef.current, { attributes: true, attributeFilter: ["open"] });
-    rail.addEventListener("pointerdown", () => { pointerHeld = true; update(); }, { signal });
-    rail.addEventListener("touchstart", () => { touchHeld = true; update(); }, { signal, passive: true });
-    window.addEventListener("pointerup", () => { pointerHeld = false; update(); }, { signal });
-    window.addEventListener("pointercancel", () => { pointerHeld = false; update(); }, { signal });
-    const releaseTouch = (event: TouchEvent) => { touchHeld = event.touches.length > 0; update(); };
-    window.addEventListener("touchend", releaseTouch, { signal });
-    window.addEventListener("touchcancel", releaseTouch, { signal });
-    rail.addEventListener("wheel", () => {
-      wheeling = true;
-      clearTimeout(wheelTimer);
-      update();
-      wheelTimer = window.setTimeout(() => { wheeling = false; update(); }, 200);
-    }, { signal, passive: true });
-    rail.addEventListener("pointerenter", update, { signal });
-    rail.addEventListener("pointerleave", update, { signal });
-    rail.addEventListener("focusin", update, { signal });
-    rail.addEventListener("focusout", update, { signal });
-    document.addEventListener("visibilitychange", update, { signal });
-    reducedMotion.addEventListener("change", update, { signal });
-    hoverAvailable.addEventListener("change", update, { signal });
-    window.addEventListener("blur", () => { pointerHeld = false; touchHeld = false; stop(); }, { signal });
-    window.addEventListener("focus", update, { signal });
-    return () => {
-      stop();
-      clearTimeout(wheelTimer);
-      controller.abort();
-      resizeObserver.disconnect();
-      visibilityObserver.disconnect();
-      dialogObserver.disconnect();
-    };
-  }, [selectedMember, leaderboard.length, rankingPaused]);
+  }
+
+  function resetComparisonSearch() {
+    setComparisonQuery("");
+    setComparisonStatus("All");
+    setComparisonSeries("");
+    setComparisonIds([]);
+  }
+
+  function resetRankingSearch() {
+    setRankingQuery("");
+    setRankingStatus("All");
+    setRankingSeries("");
+  }
 
   return (
-    <div className="space-y-6">
+    <div className="members-workspace">
+      <nav id="directory" className="archive-view-nav" aria-label="Members views">
+        <a href="#directory" aria-current={!showRanking ? "location" : undefined}>Directory</a>
+        <a href="#ranking" aria-current={showRanking ? "location" : undefined}>Ranking</a>
+      </nav>
+      {showRanking ? (
       <section id="ranking" className="member-ranking" aria-labelledby="ranking-title">
-        <header className="member-ranking-heading">
-          <div className="flex items-center gap-1">
-            <h2 id="ranking-title" className="min-w-0">Most frequent Chekicha members</h2>
-          {leaderboard.length > 0 ? (
-            <button
-              type="button"
-              aria-controls="member-ranking-list"
-              aria-label={rankingPaused ? "Resume scrolling" : "Pause scrolling"}
-              title={rankingPaused ? "Resume scrolling" : "Pause scrolling"}
-              onClick={() => setRankingPaused((paused) => !paused)}
-              className="inline-flex size-11 shrink-0 items-center justify-center rounded-lg text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--foreground)] motion-reduce:hidden"
-            >
-              <svg aria-hidden="true" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                {rankingPaused ? <path d="m9 5 10 7-10 7V5Z" /> : <path d="M9 5v14M15 5v14" />}
-              </svg>
-            </button>
-          ) : null}
-          </div>
-          <p>Top 20 · Chekicha show/event · Excludes birthday & graduation</p>
+        <header>
+          <h2 id="ranking-title">Most frequent Chekicha members</h2>
+          <p>Members with at least one show/event appearance. Excludes birthday &amp; graduation.</p>
         </header>
-        {leaderboard.length ? (
-          <ol id="member-ranking-list" ref={rankingRef} className="member-ranking-list" tabIndex={0} aria-label="Top 20 show/event Chekicha ranking. Scroll to see more members.">
-            {[...rankingEntries, ...rankingEntries].map((entry, index) => {
-              const member = members.find((item) => item.id === entry.member_id);
-              const isCopy = index >= rankingEntries.length;
+        {leaderboard.length > 0 && (
+          <search aria-label="Ranking search" className="mb-3 grid max-w-md gap-1.5">
+            <label htmlFor="ranking-search" className="text-sm font-semibold text-[var(--muted-strong)]">Search by name</label>
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+              <input
+                id="ranking-search"
+                type="search"
+                value={rankingQuery}
+                onChange={(event) => setRankingQuery(event.target.value)}
+                placeholder="Nickname or full name"
+                autoCorrect="off"
+                autoCapitalize="none"
+                spellCheck={false}
+                className="app-input min-h-12 w-full px-3 py-2 text-base placeholder:text-[var(--muted)]"
+              />
+              <button type="button" className="archive-secondary-action" aria-label="Reset ranking search and filters" onClick={resetRankingSearch}>
+                Reset
+              </button>
+            </div>
+            <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+              <MemberStatusSelect id="ranking-member-status" value={rankingStatus} onChange={setRankingStatus} />
+              <RouletteSeriesSelect id="ranking-roulette-series" options={rouletteSeriesOptions} value={rankingSeries} onChange={setRankingSeries} />
+            </div>
+          </search>
+        )}
+        <p role="status" className="mb-2 text-sm text-[var(--muted)] empty:mb-0">
+          {rankingFiltered && (visibleRanking.length ? `${visibleRanking.length} ${visibleRanking.length === 1 ? "match" : "matches"}` : "No ranked members match these filters.")}
+        </p>
+        {visibleRanking.length > 0 && (
+          <ol className="archive-member-list" role="list" aria-label="Show/event Chekicha ranking">
+            {visibleRanking.map((entry, index) => {
+              const member = membersById.get(entry.member_id);
+              const name = member?.nickname || entry.nickname;
+              const avatar = member?.avatar_url || entry.avatar_url;
               return (
-                <li key={`${entry.member_id}-${index}`} data-ranking-copy={isCopy} aria-hidden={isCopy || undefined}>
-                  <button type="button" tabIndex={isCopy ? -1 : undefined} disabled={!member} onClick={() => setSelectedMemberId(entry.member_id)} aria-haspopup="dialog" className="member-ranking-button">
+                <li key={entry.member_id}>
+                  <button type="button" disabled={!member} onClick={() => setSelectedMemberId(entry.member_id)} aria-haspopup="dialog" className="archive-member-row member-ranking-row">
                     <span className="member-ranking-place">#{entry.rank}</span>
-                    {member?.avatar_url && <span className="album-ranking-photo">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={member.avatar_url} alt="" loading="lazy" />
-                    </span>}
-                    <span className="member-ranking-name">{member?.nickname || entry.nickname}</span>
-                    <span className="member-ranking-count"><strong>{entry.count}</strong> {entry.count === 1 ? "time" : "times"}</span>
+                    <span className="archive-card-photo" aria-hidden="true">
+                      {avatar ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={avatar} alt="" loading={index < 8 ? "eager" : "lazy"} decoding="async" />
+                      ) : name.slice(0, 1).toUpperCase()}
+                    </span>
+                    <span className="archive-member-identity"><strong>{name}</strong></span>
+                    <span className="archive-member-quantity"><strong>{entry.count}</strong> {entry.count === 1 ? "time" : "times"}</span>
                   </button>
                 </li>
               );
             })}
           </ol>
-        ) : <p className="text-sm text-[var(--muted)]">No show/event ranking available yet.</p>}
+        )}
+        {leaderboard.length === 0 && <p className="text-sm text-[var(--muted)]">No show/event ranking available yet.</p>}
       </section>
-      <section className="archive-controls" aria-label="Find a member">
-        <div className="motion-card app-card grid gap-4 p-4 md:p-5">
-          <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-4">
-            <label htmlFor="member-search" className="text-sm font-semibold text-[var(--muted-strong)]">Search members</label>
-            <div className="grid min-w-0 gap-2 sm:grid-cols-[minmax(0,1fr)_auto] lg:grid-cols-[18rem_auto]">
+      ) : (
+      <>
+      <section className="directory-controls" aria-label="Find a member">
+          <div className="directory-toolbar">
+            <label htmlFor="member-search" className="sr-only">Search members</label>
               <input
                 id="member-search"
+                type="search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                aria-label="Search members"
-                placeholder="Search members"
+                placeholder="Find a member"
                 className="app-input min-h-11 w-full px-3 py-2 text-sm placeholder:text-[var(--muted)]"
               />
-              <button type="button" aria-haspopup="dialog" className="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-4 py-2 text-sm font-semibold text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]" onClick={() => { setComparisonReady(false); setCopied(false); setCopyError(""); comparisonDialogRef.current?.showModal(); }}>
-                <svg aria-hidden="true" className="size-4 shrink-0" fill="none" viewBox="0 0 24 24"><path d="M4 8h16m-4-4 4 4-4 4M20 16H4m4-4-4 4 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                Compare members
+              <button type="button" className="archive-secondary-action" aria-label="Reset search and filters" onClick={resetDirectory}>
+                Reset
               </button>
-            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="directory-team-filters flex flex-wrap gap-1.5" role="group" aria-label="Filter by team or status">
             {STATUS_OPTIONS.map((option) => (
               <FilterPill key={option} onClick={() => setStatus(option)} active={status === option}>
                 {option}
               </FilterPill>
             ))}
           </div>
-          <div role="group" aria-label="Chekicha types" className="flex flex-wrap items-center gap-2 border-t border-[var(--border)] pt-4">
-            <span className="mr-2 text-sm font-semibold text-[var(--muted-strong)]">Chekicha types</span>
-            <FilterPill onClick={() => setShowEventOnly(false)} active={!showEventOnly}>All types</FilterPill>
-            <FilterPill onClick={() => setShowEventOnly(true)} active={showEventOnly}>Non birthday/graduation</FilterPill>
+          <div className="directory-type-toolbar flex flex-wrap items-center justify-between gap-2">
+            <div role="group" aria-label="Chekicha types" className="directory-type-filters flex flex-wrap items-center gap-1.5">
+              <FilterPill onClick={() => setShowEventOnly(false)} active={!showEventOnly}>All types</FilterPill>
+              <FilterPill onClick={() => setShowEventOnly(true)} active={showEventOnly}>Show/event only</FilterPill>
+            </div>
+            <button type="button" aria-label="Compare members" aria-haspopup="dialog" className="inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-3 py-2 text-sm font-semibold text-[var(--accent)] transition-colors hover:bg-[var(--surface-hover)]" onClick={() => { setComparisonReady(false); setCopied(false); setCopyError(""); comparisonDialogRef.current?.showModal(); }}>
+              <svg aria-hidden="true" className="size-4 shrink-0" fill="none" viewBox="0 0 24 24"><path d="M4 8h16m-4-4 4 4-4 4M20 16H4m4-4-4 4 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              Compare
+            </button>
           </div>
-        </div>
+          {rouletteSeriesOptions.length > 0 && (
+            <div className="max-w-md">
+              <RouletteSeriesSelect id="directory-roulette-series" options={rouletteSeriesOptions} value={directorySeries} onChange={setDirectorySeries} />
+            </div>
+          )}
       </section>
 
-          <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} {visibleMembers.length === 1 ? "member" : "members"} · {showEventOnly ? "Show/event Chekicha only. Excludes birthday & graduation." : "All Chekicha types, including birthday & graduation."}</p>
+          <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleMembers.length} {visibleMembers.length === 1 ? "member" : "members"}{directorySeries ? ` · ${directorySeries} participants` : ""} · {showEventOnly ? "Show/event Chekicha only. Excludes birthday & graduation." : "All Chekicha types, including birthday & graduation."}</p>
       {visibleMembers.length ? (
-        <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <ul className="archive-member-list" role="list" aria-label="Member directory">
           {visibleMembers.map((member, index) => {
             const { count, lastTime } = getMemberChekiSummary(member, showEventOnly);
+            const name = member.nickname || "Unknown member";
             return (
-            <button
-              key={member.id}
-              type="button"
-              aria-haspopup="dialog"
-              onClick={() => setSelectedMemberId(member.id)}
-                className="album-member-card motion-card motion-list-item app-card p-3 text-left transition-colors hover:bg-[var(--surface-hover)] sm:p-4"
-              style={buildStaggerStyle(index)}
-            >
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                <div className="album-directory-photo">
-                  {member.avatar_url ? (
-                    // shortcut: twelve avatars stay eager for common viewports; revisit if the grid becomes denser.
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={member.avatar_url} alt={member.nickname || "Member avatar"} loading={index < 12 ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover" />
-                  ) : (
-                    <span className="text-lg font-bold text-[var(--foreground)]">{(member.nickname || "?").slice(0, 1).toUpperCase()}</span>
-                  )}
-                </div>
-                <div className="w-full min-w-0 flex-1">
-                  <h2 className="truncate text-base font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-lg">{member.nickname || "Unknown member"}</h2>
-                  <p className="mt-1 text-sm text-[var(--muted)]"><strong className="text-[var(--foreground)]">{count}</strong> {count === 1 ? "time" : "times"}</p>
-                  <p className="mt-1 text-xs text-[var(--muted)]">Last Chekicha: <span className="text-[var(--foreground-soft)]">{lastTime ? formatEventDate(lastTime) : "Not recorded"}</span></p>
-                  <div className="mt-1.5">
-                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:text-xs">
-                      {member.status || "Unknown team"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </button>
+              <li key={member.id}>
+                <button type="button" className="archive-member-row" aria-haspopup="dialog" onClick={() => setSelectedMemberId(member.id)}>
+                  <span className="archive-card-photo" aria-hidden="true">
+                    {member.avatar_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={member.avatar_url} alt="" loading={index < 8 ? "eager" : "lazy"} decoding="async" />
+                    ) : (member.nickname || "?").slice(0, 1).toUpperCase()}
+                  </span>
+                  <span className="archive-member-identity">
+                    <strong>{name}</strong>
+                    <span>{member.status || "Unknown team"} · Last: {lastTime ? formatEventDate(lastTime) : "Not recorded"}</span>
+                  </span>
+                  <span className="archive-member-quantity"><strong>{count}</strong> {count === 1 ? "time" : "times"}</span>
+                </button>
+              </li>
             );
           })}
-        </section>
+        </ul>
       ) : (
           <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-16 text-center text-sm text-[var(--muted)]">
             <svg aria-hidden="true" className="size-12 text-[var(--muted-strong)]" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5"/><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/></svg>
             <span className="font-semibold text-[var(--foreground)]">No members found</span>
-            <span>Try a different search term or team filter.</span>
+            <span>Try a different name, status, or Roulette series.</span>
           </div>
+      )}
+      </>
       )}
 
       <dialog
@@ -310,10 +333,12 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
         className="app-modal-dialog m-auto max-h-[100dvh] w-full max-w-none overflow-visible bg-transparent p-3 text-[var(--foreground)] sm:p-6"
         onClick={(event) => { if (event.target === event.currentTarget) event.currentTarget.close(); }}
       >
-        <div className="relative mx-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-xl overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4 shadow-[var(--shadow-modal)] sm:max-h-[calc(100dvh-3rem)] sm:p-6" onClick={(event) => event.stopPropagation()}>
-          <button type="button" aria-label="Close comparison" onClick={() => comparisonDialogRef.current?.close()} className="absolute right-3 top-3 inline-flex size-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:bg-[var(--surface-hover)]"><CloseIcon className="size-4" /></button>
-          <h2 id="comparison-title" className="pr-12 text-xl font-semibold tracking-[-0.03em]">Compare members</h2>
-          <p className="mt-2 pr-8 text-sm text-[var(--muted)]">Show/event Chekicha only. Excludes birthday & graduation.</p>
+        <div className="comparison-content mx-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-xl overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--panel)] shadow-[var(--shadow-modal)] sm:max-h-[calc(100dvh-3rem)]" onClick={(event) => event.stopPropagation()}>
+          <header className="archive-sticky-header comparison-header flex items-center justify-between gap-4">
+            <h2 id="comparison-title" className="min-w-0 text-xl font-semibold tracking-[-0.03em]">Compare members</h2>
+            <button type="button" aria-label="Close comparison" onClick={() => comparisonDialogRef.current?.close()} className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:bg-[var(--surface-hover)]"><CloseIcon className="size-4" /></button>
+          </header>
+          <p className="mt-2 text-sm text-[var(--muted)]">Show/event Chekicha only. Excludes birthday & graduation.</p>
           {comparisonReady ? (
             <>
               <p className="mt-5 text-sm text-[var(--muted)]">Unrecorded first, then oldest last date.</p>
@@ -334,7 +359,28 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
             </>
           ) : (
             <>
-              <input value={comparisonQuery} onChange={(event) => setComparisonQuery(event.target.value)} aria-label="Find members to compare" placeholder="Find members to compare" className="app-input mt-5 min-h-11 w-full px-3 py-2 text-sm" />
+              <div className="mt-5 grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+                <input
+                  type="search"
+                  value={comparisonQuery}
+                  onChange={(event) => setComparisonQuery(event.target.value)}
+                  aria-label="Find members to compare"
+                  placeholder="Find a member"
+                  autoCorrect="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  className="app-input min-h-12 w-full px-3 py-2 text-base placeholder:text-[var(--muted)]"
+                />
+                <button type="button" className="archive-secondary-action" aria-label="Reset comparison search, filters, and selection" onClick={resetComparisonSearch}>
+                  Reset
+                </button>
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
+                <MemberStatusSelect id="comparison-member-status" value={comparisonStatus} onChange={setComparisonStatus} />
+                {rouletteSeriesOptions.length > 0 && (
+                  <RouletteSeriesSelect id="comparison-roulette-series" options={rouletteSeriesOptions} value={comparisonSeries} onChange={setComparisonSeries} />
+                )}
+              </div>
               <div className="mt-3 max-h-[40dvh] overflow-y-auto rounded-xl border border-[var(--border)]">
                 {comparisonChoices.length ? comparisonChoices.map((member) => (
                   <label key={member.id} className="flex min-h-12 cursor-pointer items-center gap-3 border-b border-[var(--border)] px-3 py-2 last:border-0 hover:bg-[var(--surface-hover)]">
@@ -360,7 +406,7 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
         <dialog
           ref={dialogRef}
           aria-labelledby="member-detail-title"
-          className="app-modal-dialog m-auto max-h-[100dvh] w-full max-w-none overflow-visible bg-transparent p-3 text-[var(--foreground)] sm:p-6"
+          className="app-modal-dialog archive-detail-drawer"
           onClick={(event) => {
             if (event.target === event.currentTarget) event.currentTarget.close();
           }}
@@ -370,33 +416,33 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
           }}
         >
           <div
-            className="relative mx-auto max-h-[calc(100dvh-1.5rem)] w-full max-w-4xl overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-3 shadow-[var(--shadow-modal)] sm:max-h-[calc(100dvh-3rem)] sm:p-5"
+            className="archive-drawer-content directory-history-content"
             onClick={(event) => event.stopPropagation()}
           >
-            <button
-              type="button"
-              onClick={() => dialogRef.current?.close()}
-              className="absolute right-3 top-3 inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)]"
-              aria-label="Close member history"
-            >
-              <CloseIcon className="size-4" />
-            </button>
+            <header className="archive-sticky-header directory-history-header flex items-center justify-between gap-4">
+              <h2 id="member-detail-title" className="min-w-0 break-words text-xl font-semibold tracking-[-0.03em] text-[var(--foreground)] sm:text-2xl">{selectedMember.nickname || "Unknown member"}</h2>
+              <button
+                type="button"
+                onClick={() => dialogRef.current?.close()}
+                className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)]"
+                aria-label="Close member history"
+              >
+                <CloseIcon className="size-4" />
+              </button>
+            </header>
 
-            <div className="flex items-start justify-between gap-4 pr-12 sm:pr-14">
-              <div className="grid min-w-0 flex-1 grid-cols-[5.75rem_minmax(0,1fr)] items-start gap-3 sm:grid-cols-[11rem_minmax(0,1fr)] sm:gap-4 lg:grid-cols-[14rem_minmax(0,1fr)]">
-                <div className="flex aspect-[3/4] w-[5.75rem] items-center justify-center self-start overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:w-full sm:max-w-none sm:aspect-square">
+            <div className="mt-4 flex items-start justify-between gap-4">
+              <div className="grid min-w-0 flex-1 grid-cols-[minmax(3.5rem,24%)_minmax(0,1fr)] items-start gap-3">
+                <div className="archive-card-photo">
                   {selectedMember.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={selectedMember.avatar_url} alt={selectedMember.nickname || "Member avatar"} className="h-full w-full object-cover" />
+                    <img src={selectedMember.avatar_url} alt="" />
                   ) : (
                     <span className="text-6xl font-bold text-[var(--foreground)]">{(selectedMember.nickname || "?").slice(0, 1).toUpperCase()}</span>
                   )}
                 </div>
                 <div className="space-y-3">
-                  <div>
-                    <h2 id="member-detail-title" className="text-xl font-semibold tracking-[-0.05em] text-[var(--foreground)] sm:text-[2.2rem]">{selectedMember.nickname || "Unknown member"}</h2>
-                    <p className="mt-1 text-sm text-[var(--muted-strong)] sm:text-base">{selectedMember.full_name || "No full name"}</p>
-                  </div>
+                  <p className="text-sm text-[var(--muted-strong)] sm:text-base">{selectedMember.full_name || "No full name"}</p>
                   <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.14em] text-[var(--foreground-soft)] sm:px-3 sm:py-1.5 sm:text-xs">
                       {selectedMember.status || "Unknown team"}
@@ -418,8 +464,8 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
 
             <div className="mt-5">
               <h3 className="text-lg font-semibold tracking-[-0.03em] text-[var(--foreground)]">Recent event history</h3>
-              <div className="mt-3 overflow-x-auto pb-2">
-                <div className="grid grid-flow-col grid-rows-1 auto-cols-[minmax(9rem,42vw)] gap-2.5 sm:auto-cols-[11rem] lg:auto-cols-[12rem]">
+              <div className="mt-3">
+                <div className="grid gap-3">
                 {selectedMember.history.length ? (
                   selectedMember.history.map((row) => {
                     let slotLabel: string | null = "Slot A";
@@ -432,29 +478,30 @@ export function MembersClient({ members, leaderboard, initialQuery = "", canCopy
                     }
 
                     return (
-                      <article key={row.id} className="border-t border-[var(--border)] pt-2">
-                        <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-[1rem] border border-[var(--border)] bg-[var(--surface-strong)]">
+                      <article key={row.id} className="directory-history-row">
+                        <div className="archive-card-photo">
                           {row.event_image_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={row.event_image_url} alt={row.event_name || "Event banner"} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                            <img src={row.event_image_url} alt="" loading="lazy" decoding="async" />
                           ) : (
                             <MediaPlaceholder />
                           )}
                         </div>
-                        <div className="mt-2">
+                        <div className="min-w-0">
                           <h4 className="break-words text-sm font-semibold tracking-[-0.02em] text-[var(--foreground)] sm:text-base">{row.event_name || "Untitled event"}</h4>
                           <p className="mt-1 text-xs text-[var(--muted-strong)] sm:text-sm">{formatEventDate(row.start_time)}</p>
-                        </div>
-                        <div className="mt-2 flex flex-wrap gap-1.5">
+                        <div className="mt-2 flex flex-wrap items-center gap-1.5">
                           <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent)] sm:px-2.5 sm:text-xs">
                             {row.event_type || "Roulette"}
                           </span>
                           <EventTeamBadge team={row.event_team} eventType={row.event_type} compact />
+                          <EventResultLabel status={getEventResultStatus(row)} />
                           {slotLabel ? (
                             <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)] sm:px-2.5 sm:text-xs">
                               {slotLabel}
                             </span>
                           ) : null}
+                        </div>
                         </div>
                       </article>
                     );

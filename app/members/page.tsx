@@ -2,6 +2,7 @@
 
 import { MembersClient } from "@/components/MembersClient";
 import { buildMemberArchive, buildOverviewSnapshot, loadMemberArchiveRows, loadMembers } from "@/lib/archive-data.ts";
+import { getRouletteSeriesOptions } from "@/lib/timeline-view.ts";
 import { getSessionContext } from "@/lib/v2-server.ts";
 
 export const dynamic = "force-dynamic";
@@ -26,7 +27,7 @@ export default async function MembersPage({ searchParams }: { searchParams: Prom
           <h1>Members</h1>
         </div>
       </header>
-      <MembersClient members={browserItems} leaderboard={leaderboard} initialQuery={q} canCopyImage={profile?.role === "admin"} />
+      <MembersClient members={browserItems} leaderboard={leaderboard} rouletteSeriesOptions={getRouletteSeriesOptions(archiveRows)} initialQuery={q} canCopyImage={profile?.role === "admin"} />
     </div>
   );
 }

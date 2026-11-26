@@ -7,12 +7,31 @@ import {
   getAuthErrorMessage,
   getAuthRedirectPath,
   getEventDurationMinutes,
+  getEventResultStatus,
+  getEventSlotProgress,
   getFixedEventTeam,
   normalizeUsername,
   usernameToEmail,
   validateUsername,
 } from "../lib/v2-helpers.ts";
 import { addCollectionQuantityToEntries, buildCollectibleSlots, hydrateCollectionEntries } from "../lib/v2-collection.ts";
+
+test("event slot progress counts saved results and empty active slots", () => {
+  const roulette = { event_type: "Roulette", slot_mode: 2 };
+  for (const slots of [{ member_id_a: "a" }, { member_id_b: "b" }]) {
+    const { filledCount, waitingCount } = getEventSlotProgress({ ...roulette, ...slots });
+    assert.deepEqual([filledCount, waitingCount], [1, 1]);
+    assert.equal(getEventResultStatus({ ...roulette, ...slots }), "Sebagian terisi");
+  }
+  assert.deepEqual(getEventSlotProgress(roulette), { waitingA: true, waitingB: true, waitingCount: 2, filledCount: 0 });
+  assert.equal(getEventResultStatus(roulette), "Belum ada hasil");
+  assert.equal(getEventResultStatus({ ...roulette, member_id_a: "a", member_id_b: "b" }), "Lengkap");
+  assert.equal(getEventSlotProgress({ ...roulette, member_id_a: "a", member_id_b: "b" }).waitingCount, 0);
+  for (const event of [{ ...roulette, slot_mode: 1 }, { ...roulette, event_type: "Birthday" }, { ...roulette, event_type: "Graduation" }]) {
+    assert.deepEqual(getEventSlotProgress({ ...event, member_id_b: "b" }), { waitingA: true, waitingB: false, waitingCount: 1, filledCount: 0 });
+    assert.equal(getEventResultStatus({ ...event, member_id_a: "a" }), "Lengkap");
+  }
+});
 
 test("username helpers normalize and validate the Streamlit auth rules", () => {
   assert.equal(normalizeUsername("  MiChiE.Name  "), "michie.name");
@@ -79,6 +98,7 @@ test("collectible slot helper emits member and slot labels like the Streamlit co
     {
       id: "evt-2",
       event_name: "Roulette Night",
+      event_series: "Ramadhan",
       event_type: "Roulette",
       event_team: "DREAM",
       start_time: "2026-07-09T10:00:00+07:00",
@@ -95,6 +115,8 @@ test("collectible slot helper emits member and slot labels like the Streamlit co
   assert.equal(slots[0].slot_label, "Member");
   assert.equal(slots[1].slot_label, "Slot A");
   assert.equal(slots[2].slot_label, "Slot B");
+  assert.deepEqual(slots.map((slot) => slot.event_result_status), ["Lengkap", "Lengkap", "Lengkap"]);
+  assert.deepEqual(slots.slice(1).map((slot) => slot.event_series), ["Ramadhan", "Ramadhan"]);
   assert.equal(slots[0].event_team, "LOVE");
   assert.equal(slots[1].event_team, "DREAM");
   assert.equal(slots[0].member_status, "LOVE");
@@ -124,6 +146,7 @@ test("collection hydration prefers resolved slot data over stale entry ids", () 
         slot_key: "A",
         slot_label: "Slot A",
         event_name: "Pajama Drive",
+        event_result_status: "Sebagian terisi",
         event_type: "Roulette",
         event_team: "LOVE",
         start_time: "2026-07-10T10:00:00+07:00",
@@ -138,12 +161,14 @@ test("collection hydration prefers resolved slot data over stale entry ids", () 
         display_label: "Pajama Drive | LOVE | Slot A | Michie",
       },
     ],
-    [],
+    [{ event_id: "evt-1", event_name: "Pajama Drive", event_result_status: "Sebagian terisi", event_series: "Pajama Drive", event_type: "Roulette" }],
     [],
   );
 
   assert.equal(hydrated[0]?.slot_key, "A");
   assert.equal(hydrated[0]?.event_name, "Pajama Drive");
+  assert.equal(hydrated[0]?.event_result_status, "Sebagian terisi");
+  assert.equal(hydrated[0]?.event_series, "Pajama Drive");
   assert.equal(hydrated[0]?.event_team, "LOVE");
   assert.equal(hydrated[0]?.member_name, "Michie");
   assert.equal(hydrated[0]?.member_full_name, "Michella Adlen");

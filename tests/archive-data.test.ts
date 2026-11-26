@@ -114,7 +114,6 @@ test("buildOverviewSnapshot counts sessions, pending slots, ranks ties, and limi
   assert.equal(snapshot.assigned_show_event_slots, 8);
   assert.deepEqual(snapshot.team_counts, { ALL: 7, LOVE: 0, DREAM: 0, PASSION: 0, TRAINEE: 0 });
   assert.equal(snapshot.pending_slots, 2);
-  assert.equal(snapshot.leaderboard.length, 3);
   assert.deepEqual(
     snapshot.leaderboard.map((row) => ({
       nickname: row.nickname,
@@ -125,6 +124,8 @@ test("buildOverviewSnapshot counts sessions, pending slots, ranks ties, and limi
       { nickname: "Gracie", count: 2, rank: 1 },
       { nickname: "Michie", count: 2, rank: 1 },
       { nickname: "Fritzy", count: 2, rank: 1 },
+      { nickname: "Guest", count: 1, rank: 4 },
+      { nickname: "Late", count: 1, rank: 4 },
     ],
   );
   assert.equal(snapshot.recent_assignments.length, 6);
@@ -165,17 +166,21 @@ test("buildMemberArchive groups duplicate slots once per event and caps recent h
 });
 
 
-test("member ranking works with history rows without member relations and counts both show slots", () => {
+test("member ranking counts both show slots and excludes members with only special events", () => {
   const rows = [
-    { id: "show", start_time: "2026-10-10T10:00:00+07:00", event_type: "Roulette", slot_mode: 2, member_id_a: "member", member_id_b: "member" },
+    { id: "show", start_time: "2026-10-10T10:00:00+07:00", event_type: "Roulette", event_name: "Show A", event_series: " Series A ", slot_mode: 2, member_id_a: "member", member_id_b: "member" },
+    { id: "older-show", start_time: "2026-09-01T10:00:00+07:00", event_name: "Legacy Show", slot_mode: 2, member_id_a: "other-member", member_id_b: "member" },
+    { id: "other-show", start_time: "2026-10-09T11:00:00+07:00", event_type: "Special Show", member_id_a: "member" },
     { id: "birthday", start_time: "2026-10-09T10:00:00+07:00", event_type: "Birthday", member_id_a: "member" },
-    { id: "graduation", start_time: "2026-10-08T10:00:00+07:00", event_type: "Graduation", member_id_a: "other" },
+    { id: "graduation", start_time: "2026-10-08T10:00:00+07:00", event_type: "Graduation", member_id_a: "graduation-only" },
+    { id: "other-birthday", start_time: "2026-10-07T10:00:00+07:00", event_type: "Birthday", member_id_a: "birthday-only" },
   ];
   const { leaderboard } = buildOverviewSnapshot(rows);
-  assert.deepEqual(leaderboard.map(({ member_id, count, rank }) => ({ member_id, count, rank })), [
-    { member_id: "member", count: 2, rank: 1 },
+  assert.deepEqual(leaderboard.map(({ member_id, count, rank, roulette_series }) => ({ member_id, count, rank, roulette_series })), [
+    { member_id: "member", count: 4, rank: 1, roulette_series: ["series a", "legacy show"] },
+    { member_id: "other-member", count: 1, rank: 2, roulette_series: ["legacy show"] },
   ]);
-  assert.equal(buildMemberArchive(rows).totalMap.member, 2);
+  assert.equal(buildMemberArchive(rows).totalMap.member, 4);
 });
 
 test("show/event comparison counts active slots and finds latest dates without special events or history limits", () => {

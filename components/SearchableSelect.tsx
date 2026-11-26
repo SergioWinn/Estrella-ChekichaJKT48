@@ -5,12 +5,14 @@ import { useEffect, useId, useRef, useState } from "react";
 interface Option {
   label: string;
   value: string;
+  status?: string;
 }
 
 export function SearchableSelect({
   id,
   name,
   options,
+  statusOptions,
   value,
   defaultValue,
   onChange,
@@ -25,16 +27,19 @@ export function SearchableSelect({
   name?: string;
   onChange?: (value: string) => void;
   options: Option[];
+  statusOptions?: readonly string[];
   placeholder?: string;
   value?: string;
 }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [status, setStatus] = useState("All");
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue ?? "");
   const generatedId = useId();
   const controlId = id ?? generatedId;
   const listboxId = `${controlId}-listbox`;
+  const statusId = `${controlId}-status`;
   const containerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
@@ -42,9 +47,9 @@ export function SearchableSelect({
   const selectedValue = value ?? uncontrolledValue;
 
   const normalizedQuery = query.trim().toLowerCase();
-  const filtered = normalizedQuery
-    ? options.filter((o) => o.label.toLowerCase().includes(normalizedQuery))
-    : options;
+  const filtered = options.filter((option) =>
+    (status === "All" || option.status === status) && option.label.toLowerCase().includes(normalizedQuery),
+  );
 
   useEffect(() => {
     if (open && inputRef.current) {
@@ -157,7 +162,7 @@ export function SearchableSelect({
           aria-hidden={!open}
           inert={!open}
         >
-          <div className="border-b border-[var(--border)] p-2">
+          <div className="flex gap-2 border-b border-[var(--border)] p-2">
             <input
               ref={inputRef}
               type="text"
@@ -171,9 +176,38 @@ export function SearchableSelect({
               onChange={(e) => { setQuery(e.target.value); setHighlightedIndex(0); }}
               onKeyDown={handleKeyDown}
               placeholder={placeholder}
-              className="app-input min-h-11 w-full px-3 py-2 text-sm placeholder:text-[var(--muted)]"
+              className="app-input min-h-11 w-full min-w-0 px-3 py-2 text-base placeholder:text-[var(--muted)]"
             />
+            <button
+              type="button"
+              aria-label={`Reset ${ariaLabel ?? placeholder} search${statusOptions ? " and filters" : ""}`}
+              className="archive-secondary-action shrink-0"
+              onMouseDown={(event) => event.preventDefault()}
+              onKeyDown={(event) => { if (event.key === "Escape") handleKeyDown(event); }}
+              onClick={() => {
+                setQuery("");
+                setStatus("All");
+                setHighlightedIndex(0);
+                listRef.current?.scrollTo({ top: 0 });
+                inputRef.current?.focus();
+              }}
+            >
+              Reset
+            </button>
           </div>
+          {statusOptions && (
+            <div className="grid gap-1 border-b border-[var(--border)] px-2 pb-2 pt-1.5">
+              <label htmlFor={statusId} className="text-sm font-semibold text-[var(--muted-strong)]">Member status</label>
+              <select id={statusId} value={status} onChange={(event) => {
+                setStatus(event.target.value);
+                setHighlightedIndex(0);
+                listRef.current?.scrollTo({ top: 0 });
+              }} className="app-input min-h-11 w-full min-w-0 px-3 text-base">
+                <option value="All">All</option>
+                {statusOptions.map((option) => <option key={option}>{option}</option>)}
+              </select>
+            </div>
+          )}
           <div id={listboxId} ref={listRef} className="min-h-0 flex-1 overflow-y-auto" role="listbox" aria-label={ariaLabel ?? placeholder}>
             {filtered.length ? (
               filtered.map((option, index) => (

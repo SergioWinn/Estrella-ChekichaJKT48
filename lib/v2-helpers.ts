@@ -1,6 +1,9 @@
+import type { ChekichaRow } from "./types.ts";
+
 const AUTH_EMAIL_DOMAIN = "users.chekitrack.local";
 
 export const STATUS_OPTIONS = ["LOVE", "DREAM", "PASSION", "TRAINEE", "GRADUATED"] as const;
+export const EVENT_RESULT_STATUS = { empty: "Belum ada hasil", partial: "Sebagian terisi", complete: "Lengkap" } as const;
 export const EVENT_TEAM_OPTIONS = ["ALL", "LOVE", "DREAM", "PASSION", "TRAINEE"] as const;
 export type EventTeam = (typeof EVENT_TEAM_OPTIONS)[number];
 const VARIABLE_TEAM_SETLISTS = ["cara meminum ramune", "sambil menggandeng erat tanganku"];
@@ -64,6 +67,21 @@ export function getAuthErrorMessage(error: { code?: string; status?: number }, a
 
 export function singleMemberEvent(eventType: string | null | undefined): boolean {
   return eventType === "Birthday" || eventType === "Graduation";
+}
+
+export function getEventSlotProgress(event: Pick<ChekichaRow, "event_type" | "slot_mode" | "member_id_a" | "member_id_b">) {
+  const hasSlotB = !singleMemberEvent(event.event_type) && Number(event.slot_mode) === 2;
+  const waitingA = !event.member_id_a?.trim();
+  const waitingB = hasSlotB && !event.member_id_b?.trim();
+  const waitingCount = Number(waitingA) + Number(waitingB);
+  const filledCount = (hasSlotB ? 2 : 1) - waitingCount;
+  return { waitingA, waitingB, waitingCount, filledCount };
+}
+
+export function getEventResultStatus(event: Parameters<typeof getEventSlotProgress>[0]) {
+  const { filledCount, waitingCount } = getEventSlotProgress(event);
+  if (filledCount === 0) return EVENT_RESULT_STATUS.empty;
+  return waitingCount > 0 ? EVENT_RESULT_STATUS.partial : EVENT_RESULT_STATUS.complete;
 }
 
 export function getEventDurationMinutes(eventType: string): number {

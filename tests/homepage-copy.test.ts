@@ -18,6 +18,7 @@ test("buildHomepageCopy mirrors the Streamlit homepage messaging", () => {
         member_id: "chelsea",
         nickname: "Chelsea",
         rank: 1,
+        roulette_series: [],
       },
     ],
     pending_slots: 2,

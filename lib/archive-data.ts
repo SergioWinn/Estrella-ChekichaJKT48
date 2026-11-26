@@ -31,6 +31,10 @@ export function isShowEvent(eventType: string | null | undefined): boolean {
   return !SPECIAL_EVENT_TYPES.has(eventType ?? "");
 }
 
+export function getEventSeries(event: Pick<ChekichaRow, "event_series" | "event_name">): string {
+  return (event.event_series || event.event_name || "").trim();
+}
+
 export function countPendingSlots(rows: Pick<ChekichaRow, "member_id_a" | "member_id_b" | "slot_mode">[]): number {
   let pending = 0;
 
@@ -53,11 +57,12 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
   let graduationSessions = 0;
   let pendingSlots = 0;
   let latestShowEvent: Date | null = null;
-  const assignments: OverviewAssignment[] = [];
+  const assignments: (OverviewAssignment & { roulette_series: string })[] = [];
   const teamCounts = Object.fromEntries(EVENT_TEAM_OPTIONS.map((team) => [team, 0]));
 
   for (const row of eventRows) {
     const eventType = row.event_type;
+    const rouletteSeries = (eventType || "Roulette") === "Roulette" ? getEventSeries(row).toLocaleLowerCase() : "";
     const slotMode = row.slot_mode || 1;
     const startTime = new Date(row.start_time);
     const eventTeam = getEffectiveEventTeam(row.event_name, eventType, row.event_team);
@@ -88,6 +93,7 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
         event_name: row.event_name || "Untitled event",
         event_team: eventTeam,
         event_type: eventType || "Roulette",
+        roulette_series: rouletteSeries,
         full_name: memberA.full_name,
         start_time: row.start_time,
         start_dt: startTime,
@@ -107,6 +113,7 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
           event_name: row.event_name || "Untitled event",
           event_team: eventTeam,
           event_type: eventType || "Roulette",
+          roulette_series: rouletteSeries,
           full_name: memberB.full_name,
           start_time: row.start_time,
           start_dt: startTime,
@@ -127,12 +134,16 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
         generasi: item.generasi,
         full_name: item.full_name,
         count: 1,
+        roulette_series: item.roulette_series ? [item.roulette_series] : [],
         last_seen: item.start_dt,
       });
       continue;
     }
 
     existing.count += 1;
+    if (item.roulette_series && !existing.roulette_series.includes(item.roulette_series)) {
+      existing.roulette_series.push(item.roulette_series);
+    }
     if (item.start_dt > existing.last_seen) {
       existing.last_seen = item.start_dt;
       existing.avatar_url = item.avatar_url;
@@ -143,7 +154,6 @@ export function buildOverviewSnapshot(eventRows: ChekichaRow[], recentLimit = 6)
   }
 
   const leaderboard = Array.from(leaderboardMap.values())
-    .filter((item) => item.count >= 2)
     .toSorted((left, right) => {
       if (right.count !== left.count) {
         return right.count - left.count;
@@ -268,7 +278,7 @@ export async function loadOverviewRows(): Promise<ChekichaRow[]> {
 export async function loadTimelineRows(): Promise<TimelineEvent[]> {
   return supabaseSelect<TimelineEvent>(
     "chekicha",
-    "id,start_time,end_time,event_name,event_series,event_team,event_type,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(full_name,nickname,avatar_url),member_b:member_id_b(full_name,nickname,avatar_url)",
+    "id,start_time,end_time,event_name,event_series,event_team,event_type,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(full_name,nickname,avatar_url,status),member_b:member_id_b(full_name,nickname,avatar_url,status)",
     { orderBy: "start_time", orderDirection: "desc" },
   );
 }
@@ -284,7 +294,7 @@ export async function loadMembers(): Promise<MemberRecord[]> {
 export async function loadMemberArchiveRows(): Promise<MemberHistoryEntry[]> {
   return supabaseSelect<MemberHistoryEntry>(
     "chekicha",
-    "id,event_name,event_team,event_type,start_time,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(full_name,nickname,avatar_url,generasi),member_b:member_id_b(full_name,nickname,avatar_url,generasi)",
+    "id,event_name,event_series,event_team,event_type,start_time,event_image_url,slot_mode,member_id_a,member_id_b,member_a:member_id_a(full_name,nickname,avatar_url,generasi),member_b:member_id_b(full_name,nickname,avatar_url,generasi)",
     { orderBy: "start_time", orderDirection: "desc" },
   );
 }

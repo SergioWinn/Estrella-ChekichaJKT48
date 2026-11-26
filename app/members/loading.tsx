@@ -1,30 +1,22 @@
 export default function Loading() {
   return (
-    <div className="space-y-6">
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6">
-        <div className="h-4 w-24 animate-pulse rounded bg-[var(--surface-strong)]" />
-        <div className="mt-3 h-7 w-full max-w-64 animate-pulse rounded bg-[var(--surface-strong)]" />
-        <div className="mt-2 h-5 w-full max-w-80 animate-pulse rounded bg-[var(--surface-strong)]" />
-      </div>
-      <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
-        <div className="grid gap-4 md:grid-cols-3">
-          <div className="h-16 animate-pulse rounded bg-[var(--surface-strong)]" />
-          <div className="h-16 animate-pulse rounded bg-[var(--surface-strong)]" />
-          <div className="h-16 animate-pulse rounded bg-[var(--surface-strong)]" />
-        </div>
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <div key={i} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4">
-            <div className="flex items-center gap-4">
-              <div className="size-16 animate-pulse rounded-full bg-[var(--surface-strong)]" />
-              <div className="flex-1 space-y-2">
-                <div className="h-5 w-20 animate-pulse rounded bg-[var(--surface-strong)]" />
-                <div className="h-4 w-16 animate-pulse rounded bg-[var(--surface-strong)]" />
+    <div className="page-wrap archive-workspace" role="status">
+      <span className="sr-only">Loading members</span>
+      <div aria-hidden="true" className="members-workspace motion-safe:animate-pulse">
+        <div className="h-9 w-36 rounded bg-[var(--surface-strong)]" />
+        <div className="h-11 w-52 max-w-full rounded bg-[var(--surface-strong)]" />
+        <div className="h-11 rounded-lg bg-[var(--surface-strong)]" />
+        <ul className="archive-member-list">
+          {Array.from({ length: 8 }, (_, index) => (
+            <li key={index}>
+              <div className="archive-member-row">
+                <div className="archive-card-photo" />
+                <div className="h-6 w-40 max-w-full rounded bg-[var(--surface-strong)]" />
+                <div className="size-6 rounded bg-[var(--surface-strong)]" />
               </div>
-            </div>
-          </div>
-        ))}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

@@ -2,17 +2,18 @@
 
 /* Hallmark | pre-emit critique: P4 H5 E4 S5 R5 V4 */
 
-import type { CSSProperties } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { EventTeamBadge } from "@/components/EventTeamBadge";
+import { EventResultLabel } from "@/components/EventResultLabel";
 import { FilterPill } from "@/components/FilterPill";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
 import { CloseIcon } from "@/components/UiIcons";
 import { useDebouncedValue } from "@/components/useDebouncedValue";
 import { addCollectionAction, deleteCollectionEntryAction, updateCollectionQuantityAction } from "@/lib/v2-actions.ts";
 import { formatEventDate, formatEventTime } from "@/lib/format.ts";
+import { getRouletteSeriesOptions, matchesRouletteSeries } from "@/lib/timeline-view.ts";
 import type { CollectibleSlot } from "@/lib/v2-collection.ts";
 import { STATUS_OPTIONS as MEMBER_STATUS_OPTIONS } from "@/lib/v2-helpers.ts";
 import type { CollectionEntry } from "@/lib/types.ts";
@@ -22,8 +23,38 @@ const STATUS_FILTER_OPTIONS = ["All", ...MEMBER_STATUS_OPTIONS] as const;
 const DESK_MODES = ["Add", "Manage"] as const;
 const SLOT_PAGE_SIZE = 6;
 
-function buildStaggerStyle(index: number): CSSProperties {
-  return { "--i": Math.min(index, 5) } as CSSProperties;
+function MemberStatusSelect({ id, value, onChange }: {
+  id: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-2">
+      <label htmlFor={id} className="text-sm font-semibold text-[var(--muted-strong)]">Member status</label>
+      <select id={id} value={value} onChange={(event) => onChange(event.target.value)} className="app-input min-h-11 w-full min-w-0 px-3 text-base">
+        {STATUS_FILTER_OPTIONS.map((option) => <option key={option}>{option}</option>)}
+      </select>
+    </div>
+  );
+}
+
+function CollectionFilterSelect({ id, label, allLabel = "All", options, value, onChange }: {
+  id: string;
+  label: string;
+  allLabel?: string;
+  options: string[];
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div className="grid gap-1">
+      <label htmlFor={id} className="text-sm font-semibold text-[var(--muted-strong)]">{label}</label>
+      <select id={id} value={value} onChange={(event) => onChange(event.target.value)} className="app-input min-h-12 w-full min-w-0 px-3 text-base">
+        <option value="All">{allLabel}</option>
+        {options.map((option) => <option key={option}>{option}</option>)}
+      </select>
+    </div>
+  );
 }
 
 type MemberCollection = {
@@ -37,7 +68,7 @@ type MemberCollection = {
   totalQuantity: number;
 };
 
-function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; onClose: () => void }) {
+function MemberHistoryDialog({ member, onClose, onManage }: { member: MemberCollection; onClose: () => void; onManage: () => void }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -49,7 +80,7 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
     <dialog
       ref={dialogRef}
       aria-labelledby="member-history-title"
-      className="app-modal-dialog m-auto max-h-[min(80dvh,42rem)] w-[calc(100%_-_2rem)] max-w-2xl overflow-hidden rounded-[var(--archive-radius-lg)] border border-[var(--border)] bg-[var(--panel)] p-0 text-[var(--foreground)] shadow-2xl"
+      className="app-modal-dialog archive-detail-drawer"
       onClick={(event) => {
         if (event.target === event.currentTarget) event.currentTarget.close();
       }}
@@ -58,8 +89,8 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
         window.setTimeout(onClose, delay);
       }}
     >
-      <div className="flex max-h-[min(80dvh,42rem)] flex-col">
-        <div className="flex items-start justify-between gap-4 border-b border-[var(--border)] p-4 sm:p-5">
+      <div className="flex flex-col">
+        <header className="archive-sticky-header collection-history-header flex items-center justify-between gap-4 border-b border-[var(--border)] p-4 sm:p-5">
           <div className="flex min-w-0 items-center gap-3" tabIndex={-1} autoFocus>
             <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] sm:size-16">
               {member.avatarUrl ? (
@@ -86,9 +117,14 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
           >
             <CloseIcon className="size-4" />
           </button>
-        </div>
+        </header>
 
-        <div className="overflow-y-auto p-3 sm:p-4">
+        <div className="border-b border-[var(--border)] px-4 py-2 sm:px-5">
+          <button type="button" className="archive-secondary-action" onClick={() => { dialogRef.current?.close(); onManage(); }}>
+            Manage copies
+          </button>
+        </div>
+        <div className="p-3 sm:p-4">
           <div className="grid gap-2">
             {member.entries.map((entry) => {
               const showSlot = entry.event_type !== "Birthday" && entry.event_type !== "Graduation";
@@ -106,11 +142,12 @@ function MemberHistoryDialog({ member, onClose }: { member: MemberCollection; on
                       x{entry.quantity}
                     </span>
                   </div>
-                  <div className="mt-3 flex flex-wrap gap-1.5">
+                  <div className="mt-3 flex flex-wrap items-center gap-1.5">
                     <span className="rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[var(--accent)]">
                       {entry.event_type}
                     </span>
                     <EventTeamBadge team={entry.event_team} eventType={entry.event_type} compact />
+                    {entry.event_result_status && <EventResultLabel status={entry.event_result_status} />}
                     {showSlot ? (
                       <span className="rounded-full border border-[var(--border)] bg-[var(--surface-hover)] px-2.5 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[var(--foreground-soft)]">
                         Slot {entry.slot_key}
@@ -142,7 +179,9 @@ export function CollectionClient({
 }) {
   const searchParams = useSearchParams();
   const [filter, setFilter] = useState<(typeof FILTER_OPTIONS)[number]>("All");
+  const [collectionSeries, setCollectionSeries] = useState("All");
   const [statusFilter, setStatusFilter] = useState<(typeof STATUS_FILTER_OPTIONS)[number]>("All");
+  const [memberQuery, setMemberQuery] = useState("");
   const [deskMode, setDeskMode] = useState<(typeof DESK_MODES)[number]>(() => {
     const modeParam = searchParams.get("mode");
     if (modeParam === "add" || modeParam === "manage") return modeParam === "add" ? "Add" : "Manage";
@@ -154,9 +193,16 @@ export function CollectionClient({
   });
   const deskDialogRef = useRef<HTMLDialogElement>(null);
   const [addFilter, setAddFilter] = useState<(typeof FILTER_OPTIONS)[number]>("All");
+  const [addSeries, setAddSeries] = useState("All");
+  const [addStatus, setAddStatus] = useState("All");
   const [addQuery, setAddQuery] = useState("");
   const [visibleSlotCount, setVisibleSlotCount] = useState(SLOT_PAGE_SIZE);
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+  const [manageMemberId, setManageMemberId] = useState<string | null>(null);
+  const [manageQuery, setManageQuery] = useState("");
+  const [manageFilter, setManageFilter] = useState<(typeof FILTER_OPTIONS)[number]>("All");
+  const [manageSeries, setManageSeries] = useState("All");
+  const [manageStatus, setManageStatus] = useState("All");
   const debouncedAddQuery = useDebouncedValue(addQuery);
 
   /* eslint-disable react-hooks/set-state-in-effect -- URL parameters intentionally synchronize the collection desk. */
@@ -195,9 +241,10 @@ export function CollectionClient({
       entries.filter(
         (entry) =>
           (filter === "All" || entry.event_type === filter) &&
+          (filter !== "Roulette" || matchesRouletteSeries(entry, collectionSeries)) &&
           (statusFilter === "All" || (entry.member_status || "").toUpperCase() === statusFilter),
       ),
-    [entries, filter, statusFilter],
+    [collectionSeries, entries, filter, statusFilter],
   );
   const memberCollections = useMemo(() => {
     const members = new Map<string, MemberCollection>();
@@ -229,28 +276,68 @@ export function CollectionClient({
       .toSorted((a, b) => a.sortName.localeCompare(b.sortName));
   }, [visibleEntries]);
   const selectedMember = memberCollections.find((member) => member.id === selectedMemberId) ?? null;
-  const visibleQuantity = memberCollections.reduce((sum, member) => sum + member.totalQuantity, 0);
+  const memberName = memberQuery.trim().toLowerCase();
+  const visibleMembers = memberName
+    ? memberCollections.filter((member) => [member.name, member.sortName].some((name) => name.toLowerCase().includes(memberName)))
+    : memberCollections;
+  const visibleQuantity = visibleMembers.reduce((sum, member) => sum + member.totalQuantity, 0);
+  const rouletteSeriesOptions = useMemo(() => getRouletteSeriesOptions([...entries, ...collectibleSlots]), [collectibleSlots, entries]);
+  const normalizedAddQuery = addQuery.trim() ? debouncedAddQuery.trim().toLowerCase() : "";
   const filteredCollectibleSlots = useMemo(() => {
-    const normalizedQuery = debouncedAddQuery.trim().toLowerCase();
-
     return collectibleSlots.filter((slot) => {
       const matchesFilter = addFilter === "All" || slot.event_type === addFilter;
+      const matchesSeries = addFilter !== "Roulette" || matchesRouletteSeries(slot, addSeries);
+      const matchesStatus = addStatus === "All" || (slot.member_status || "").toUpperCase() === addStatus;
       const matchesQuery =
-        !normalizedQuery ||
-        slot.display_label.toLowerCase().includes(normalizedQuery) ||
-        slot.member_name.toLowerCase().includes(normalizedQuery) ||
-        slot.event_name.toLowerCase().includes(normalizedQuery);
+        !normalizedAddQuery ||
+        slot.display_label.toLowerCase().includes(normalizedAddQuery) ||
+        slot.member_name.toLowerCase().includes(normalizedAddQuery) ||
+        slot.event_name.toLowerCase().includes(normalizedAddQuery);
 
-      return matchesFilter && matchesQuery;
+      return matchesFilter && matchesSeries && matchesStatus && matchesQuery;
     });
-  }, [addFilter, collectibleSlots, debouncedAddQuery]);
+  }, [addFilter, addSeries, addStatus, collectibleSlots, normalizedAddQuery]);
   const visibleCollectibleSlots = useMemo(() => filteredCollectibleSlots.slice(0, visibleSlotCount), [filteredCollectibleSlots, visibleSlotCount]);
   const hasMoreCollectibleSlots = visibleCollectibleSlots.length < filteredCollectibleSlots.length;
 
   const totalQuantity = entries.reduce((sum, entry) => sum + Number(entry.quantity || 0), 0);
   const uniqueMembers = new Set(entries.map((entry) => entry.member_id)).size;
+  const hasActiveFilter = filter !== "All" || statusFilter !== "All";
+  const managedEntries = manageMemberId ? entries.filter((entry) => entry.member_id === manageMemberId) : entries;
+  const managedSearch = manageQuery.trim().toLowerCase();
+  const matchingManagedIds = new Set(managedEntries.filter((entry) =>
+    (manageFilter === "All" || entry.event_type === manageFilter) &&
+    (manageFilter !== "Roulette" || matchesRouletteSeries(entry, manageSeries)) &&
+    (manageStatus === "All" || (entry.member_status || "").toUpperCase() === manageStatus) &&
+    [entry.member_name, entry.member_full_name, entry.event_name].some((name) => (name ?? "").toLowerCase().includes(managedSearch)),
+  ).map((entry) => entry.id));
 
-  function openDesk() {
+  function resetCollectionSearch() {
+    setMemberQuery("");
+    setFilter("All");
+    setCollectionSeries("All");
+    setStatusFilter("All");
+  }
+
+  function resetAddSearch() {
+    setAddQuery("");
+    setAddFilter("All");
+    setAddSeries("All");
+    setAddStatus("All");
+    setVisibleSlotCount(SLOT_PAGE_SIZE);
+  }
+
+  function resetManageSearch() {
+    setManageQuery("");
+    setManageFilter("All");
+    setManageSeries("All");
+    setManageStatus("All");
+  }
+
+  function openDesk(mode: (typeof DESK_MODES)[number], memberId: string | null = null) {
+    setManageMemberId(memberId);
+    if (memberId) resetManageSearch();
+    setDeskMode(mode);
     setDeskOpen(true);
   }
 
@@ -258,30 +345,49 @@ export function CollectionClient({
     deskDialogRef.current?.close();
   }
 
-  return (
-    <div className="space-y-6">
-      <div className="archive-summary">
-        <span>@{username}</span><span><strong>{totalQuantity}</strong> Chekicha owned</span><span><strong>{uniqueMembers}</strong> members</span>
-      </div>
-
+  const deskFeedback = (
+    <>
       {success ? <div role="status" aria-live="polite" className="app-status-message rounded-lg border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] p-3 text-sm font-semibold text-[var(--accent)]">{success}</div> : null}
       {error ? <div role="alert" className="app-status-message rounded-lg border border-[var(--danger-border)] bg-[var(--danger-soft)] p-3 text-sm text-[var(--danger-foreground)]">{error}</div> : null}
+    </>
+  );
 
-      <section className="archive-controls">
-        <div className="motion-card app-card grid gap-4 p-4 md:p-5">
-          <div className="grid gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(12rem,16rem)] lg:items-start lg:gap-4">
-            <div>
-              <p className="text-sm font-semibold text-[var(--muted-strong)]">Filter collection</p>
-            </div>
-            <button
-              type="button"
-              onClick={openDesk}
-              className="min-h-11 whitespace-nowrap rounded-lg bg-[var(--accent)] px-5 text-sm font-semibold text-[var(--accent-foreground)] transition-colors hover:bg-[var(--accent-strong)]"
-            >
-              Add or manage Chekicha
+  return (
+    <div className="collection-workspace">
+      <div className="collection-toolbar">
+        <div className="archive-summary">
+          <span>@{username}</span><span><strong>{totalQuantity}</strong> Chekicha owned</span><span><strong>{uniqueMembers}</strong> members</span>
+        </div>
+        <button type="button" onClick={() => openDesk("Add")} className="archive-primary-action">Add Chekicha</button>
+      </div>
+
+      {!deskOpen && deskFeedback}
+
+      {entries.length > 0 && (
+        <search aria-label="Collection search" className="grid max-w-md gap-1.5">
+          <label htmlFor="collection-member-search" className="text-sm font-semibold text-[var(--muted-strong)]">Search by member name</label>
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+            <input
+              id="collection-member-search"
+              type="search"
+              value={memberQuery}
+              onChange={(event) => setMemberQuery(event.target.value)}
+              placeholder="Nickname or full name"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck={false}
+              className="app-input min-h-12 w-full px-3 py-2 text-base placeholder:text-[var(--muted)]"
+            />
+            <button type="button" className="archive-secondary-action" aria-label="Reset search and filters" onClick={resetCollectionSearch}>
+              Reset
             </button>
           </div>
-          <div className="grid gap-3 md:grid-cols-2">
+        </search>
+      )}
+
+      <details className="collection-filters app-disclosure">
+        <summary>Filter collection{hasActiveFilter ? " · Active" : ""}</summary>
+          <div className="grid gap-3 pt-2 md:grid-cols-2">
             <div className="space-y-2">
               <div className="text-xs font-semibold text-[var(--muted-strong)]">Event type</div>
               <div className="flex flex-wrap gap-2">
@@ -291,6 +397,9 @@ export function CollectionClient({
                   </FilterPill>
                 ))}
               </div>
+              {filter === "Roulette" && (
+                <CollectionFilterSelect id="collection-roulette-series" label="Roulette series" allLabel="All roulette series" options={rouletteSeriesOptions} value={collectionSeries} onChange={setCollectionSeries} />
+              )}
             </div>
             <div className="space-y-2">
               <div className="text-xs font-semibold text-[var(--muted-strong)]">Member status</div>
@@ -303,80 +412,71 @@ export function CollectionClient({
               </div>
             </div>
           </div>
-        </div>
-      </section>
+      </details>
 
-      <p className="text-sm text-[var(--muted)]" aria-live="polite">{visibleQuantity} Chekicha · {memberCollections.length} {memberCollections.length === 1 ? "member" : "members"}</p>
-      {memberCollections.length ? (
-        <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {memberCollections.map((member, index) => (
-            <button
-              key={member.id}
-              type="button"
-              aria-expanded={selectedMemberId === member.id}
-              aria-haspopup="dialog"
-              onClick={() => setSelectedMemberId(member.id)}
-              className="album-member-card motion-card motion-list-item app-card flex min-h-24 w-full items-center gap-3 p-3 text-left hover:bg-[var(--surface-hover)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 sm:p-4"
-              style={buildStaggerStyle(index)}
-            >
-              <div className="album-directory-photo">
-                {member.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={member.avatarUrl} alt="" loading={index < 12 ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover" />
-                ) : (
-                  <span className="text-lg font-bold text-[var(--foreground)]">{(member.name || "?").slice(0, 1).toUpperCase()}</span>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-[15px] font-medium tracking-[-0.04em] text-[var(--foreground)] sm:text-lg">{member.name}</div>
-                <div className="mt-0.5 text-xs text-[var(--muted)] sm:text-sm">
-                  {[member.status, member.generation ? `Gen ${member.generation}` : null].filter(Boolean).join(" | ") || "Member details unavailable"}
-                </div>
-              </div>
-              <span className="shrink-0 rounded-full border border-[var(--accent-soft-strong)] bg-[var(--accent-soft)] px-2 py-1 text-xs font-bold tabular-nums text-[var(--foreground)] sm:px-2.5 sm:text-xs">
-                x{member.totalQuantity}
-              </span>
-            </button>
+      <p role="status" className="text-sm text-[var(--muted)] empty:absolute">
+        {entries.length > 0 && (hasActiveFilter || memberName) && (
+          visibleMembers.length
+            ? `Showing ${visibleQuantity} Chekicha · ${visibleMembers.length} ${visibleMembers.length === 1 ? "member" : "members"}`
+            : memberName ? "No members match this search and filters." : "No matches. Try different filters."
+        )}
+      </p>
+      {visibleMembers.length > 0 && (
+        <ul className="archive-member-list" role="list" aria-label="Collection by member">
+          {visibleMembers.map((member, index) => (
+            <li key={member.id}>
+              <button type="button" className="archive-member-row" aria-haspopup="dialog" onClick={() => setSelectedMemberId(member.id)}>
+                <span className="archive-card-photo" aria-hidden="true">
+                  {member.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={member.avatarUrl} alt="" loading={index < 8 ? "eager" : "lazy"} decoding="async" />
+                  ) : (member.name || "?").slice(0, 1).toUpperCase()}
+                </span>
+                <span className="archive-member-identity">
+                  <strong>{member.name}</strong>
+                  <span>{[member.status, member.generation ? `Gen ${member.generation}` : null].filter(Boolean).join(" · ")}</span>
+                </span>
+                <span className="archive-member-quantity"><strong>{member.totalQuantity}</strong> {member.totalQuantity === 1 ? "copy" : "copies"}</span>
+              </button>
+            </li>
           ))}
-        </section>
-      ) : (
-        <div className="app-card p-6 text-sm text-[var(--muted)]">
-          {entries.length ? "No matches. Try different filters." : "No Chekicha yet. Choose Add or manage Chekicha to get started."}
-        </div>
+        </ul>
       )}
+      {entries.length === 0 && <p className="app-card p-6 text-sm text-[var(--muted)]">No Chekicha yet. Choose Add Chekicha to get started.</p>}
 
-      {selectedMember ? <MemberHistoryDialog member={selectedMember} onClose={() => setSelectedMemberId(null)} /> : null}
+      {selectedMember ? <MemberHistoryDialog member={selectedMember} onClose={() => setSelectedMemberId(null)} onManage={() => openDesk("Manage", selectedMember.id)} /> : null}
 
         <dialog
           ref={deskDialogRef}
           aria-labelledby="collection-desk-title"
-          className="app-modal-dialog m-auto h-[100dvh] max-h-[100dvh] w-full max-w-none overflow-y-auto bg-transparent px-4 py-6 text-[var(--foreground)]"
+          className="app-modal-dialog collection-editor"
           onClick={(event) => { if (event.target === event.currentTarget) closeDesk(); }}
           onClose={() => setDeskOpen(false)}
         >
           <div
-            className="collection-desk-shell mx-auto w-full max-w-6xl rounded-xl border border-[var(--border)] bg-[var(--panel)] p-5 shadow-[var(--shadow-modal)]"
+            className="collection-desk-shell"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-start justify-between gap-4">
+            <header className="archive-sticky-header collection-desk-header flex items-center justify-between gap-4">
               <div>
-                <h3 id="collection-desk-title" className="text-lg font-semibold tracking-[-0.04em] text-[var(--foreground)] md:text-xl">Add or manage Chekicha</h3>
+                <h3 id="collection-desk-title" className="text-lg font-semibold tracking-[-0.04em] text-[var(--foreground)] md:text-xl">{deskMode === "Add" ? "Add Chekicha" : "Manage copies"}</h3>
               </div>
               <button
                 type="button"
                 onClick={closeDesk}
-                className="inline-flex size-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)]"
+                className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] transition-colors hover:bg-[var(--surface-hover)]"
                 aria-label="Close collection editor"
               >
                 <CloseIcon className="size-4" />
               </button>
-            </div>
+            </header>
+            {deskOpen && (error || success) && <div className="mt-3">{deskFeedback}</div>}
 
             <div className="mt-5 flex flex-wrap gap-2">
               {DESK_MODES.map((mode) => (
                 <FilterPill
                   key={mode}
-                  onClick={() => setDeskMode(mode)}
+                  onClick={() => { setDeskMode(mode); setManageMemberId(null); }}
                   active={deskMode === mode}
                 >
                   {mode}
@@ -390,30 +490,36 @@ export function CollectionClient({
                   Adding the same slot again increases your saved quantity.
                 </div>
                 {collectibleSlots.length ? (
-                  <section className="p-4 md:p-5">
+                  <section aria-label="Find slots">
                     <div className="flex flex-col gap-4">
                       <div className="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
                         <div>
                           <div className="text-sm font-semibold text-[var(--accent)]">Find slots</div>
                         </div>
-                        <div className="text-xs font-semibold text-[var(--muted)]">
+                        <div role="status" className="text-xs font-semibold text-[var(--muted)]">
                           {filteredCollectibleSlots.length} matches
                         </div>
                       </div>
 
-                        <div className="grid gap-3 border-t border-[var(--border)] pt-4">
-                        <input
-                          value={addQuery}
-                          onChange={(event) => {
-                            setAddQuery(event.target.value);
-                            setVisibleSlotCount(SLOT_PAGE_SIZE);
-                          }}
-                          aria-label="Search collection slots by member or event"
-                          placeholder="Search member or event"
-                            className="app-input min-h-11 w-full px-4 py-3 text-sm placeholder:text-[var(--muted)] md:text-base"
-                        />
+                      <div className="grid gap-3 border-t border-[var(--border)] pt-4">
+                        <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+                          <input
+                            type="search"
+                            value={addQuery}
+                            onChange={(event) => {
+                              setAddQuery(event.target.value);
+                              setVisibleSlotCount(SLOT_PAGE_SIZE);
+                            }}
+                            aria-label="Search collection slots by member or event"
+                            placeholder="Member or event"
+                            className="app-input min-h-12 w-full px-3 py-2 text-base placeholder:text-[var(--muted)]"
+                          />
+                          <button type="button" className="archive-secondary-action" aria-label="Reset slot search and filters" onClick={resetAddSearch}>
+                            Reset
+                          </button>
+                        </div>
 
-                        <div className="flex flex-wrap gap-2">
+                        <div role="group" aria-label="Event type" className="flex flex-wrap gap-1.5 [&>button]:px-2">
                           {FILTER_OPTIONS.map((option) => (
                             <FilterPill
                               key={option}
@@ -428,6 +534,16 @@ export function CollectionClient({
                             </FilterPill>
                           ))}
                         </div>
+                        {addFilter === "Roulette" && (
+                          <CollectionFilterSelect id="add-roulette-series" label="Roulette series" allLabel="All roulette series" options={rouletteSeriesOptions} value={addSeries} onChange={(series) => {
+                            setAddSeries(series);
+                            setVisibleSlotCount(SLOT_PAGE_SIZE);
+                          }} />
+                        )}
+                        <MemberStatusSelect id="add-member-status" value={addStatus} onChange={(status) => {
+                          setAddStatus(status);
+                          setVisibleSlotCount(SLOT_PAGE_SIZE);
+                        }} />
                       </div>
 
                       {visibleCollectibleSlots.length ? (
@@ -436,7 +552,10 @@ export function CollectionClient({
                               <form key={slot.slot_uid} action={addCollectionAction} className="grid gap-3 border-t border-[var(--border)] pt-4 lg:grid-cols-[minmax(0,1fr)_7rem_auto] lg:items-center">
                               <div className="min-w-0">
                                 <div className="truncate text-sm font-medium tracking-[-0.02em] text-[var(--foreground)] md:text-[0.95rem]">{slot.member_name}</div>
-                                <div className="truncate text-sm text-[var(--muted)] md:text-[0.95rem]">{slot.event_name}</div>
+                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[var(--muted)] md:text-[0.95rem]">
+                                  <span className="min-w-0 break-words">{slot.event_name}</span>
+                                  <EventResultLabel status={slot.event_result_status} />
+                                </div>
                                 <div className="mt-1 text-xs uppercase tracking-[0.14em] text-[var(--muted)]">
                                   {slot.slot_label} | {formatEventDate(slot.start_time)} | {formatEventTime(slot.start_time, slot.end_time)} WIB
                                 </div>
@@ -464,7 +583,7 @@ export function CollectionClient({
                         </div>
                       ) : (
                         <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-4 text-sm text-[var(--muted)]">
-                          No slots match your search. Try another member, event, or event type.
+                          No slots match your search and filters.
                         </div>
                       )}
 
@@ -487,21 +606,60 @@ export function CollectionClient({
               </div>
             ) : (
               <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {managedEntries.length > 0 && (
+                  <search aria-label="Manage copies search" className="grid gap-1.5 md:col-span-2">
+                    <label htmlFor="manage-collection-search" className="text-sm font-semibold text-[var(--muted-strong)]">Search by member or event</label>
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+                      <input
+                        id="manage-collection-search"
+                        type="search"
+                        value={manageQuery}
+                        onChange={(event) => setManageQuery(event.target.value)}
+                        placeholder="Member or event"
+                        autoCorrect="off"
+                        autoCapitalize="none"
+                        spellCheck={false}
+                        className="app-input min-h-12 w-full px-3 py-2 text-base placeholder:text-[var(--muted)]"
+                      />
+                      <button type="button" className="archive-secondary-action" aria-label="Reset Manage copies search and filters" onClick={resetManageSearch}>
+                        Reset
+                      </button>
+                    </div>
+                    <div role="group" aria-label="Event type" className="flex flex-wrap gap-1.5 [&>button]:px-2">
+                      {FILTER_OPTIONS.map((option) => (
+                        <FilterPill key={option} active={manageFilter === option} inactiveTone="soft" onClick={() => setManageFilter(option)}>
+                          {option}
+                        </FilterPill>
+                      ))}
+                    </div>
+                    {manageFilter === "Roulette" && (
+                      <CollectionFilterSelect id="manage-roulette-series" label="Roulette series" allLabel="All roulette series" options={rouletteSeriesOptions} value={manageSeries} onChange={setManageSeries} />
+                    )}
+                    <MemberStatusSelect id="manage-member-status" value={manageStatus} onChange={setManageStatus} />
+                    <p role="status" className="text-sm text-[var(--muted)]">
+                      {matchingManagedIds.size === 0 ? "No collection entries match this search and filter." : `${matchingManagedIds.size} ${matchingManagedIds.size === 1 ? "entry" : "entries"}`}
+                    </p>
+                  </search>
+                )}
                 <div className="md:col-span-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">
-                  Save replaces your total. Remove only affects your collection.
+                  {manageMemberId && <button type="button" className="archive-secondary-action mb-2" onClick={() => setManageMemberId(null)}>Show all members</button>}
+                  <p>Save replaces your total. Remove only affects your collection.</p>
                 </div>
-                {entries.length ? (
-                  entries.map((entry) => (
-                    <article key={entry.id} className="border-t border-[var(--border)] pt-4">
+                {managedEntries.length ? (
+                  managedEntries.map((entry) => (
+                    <article key={entry.id} hidden={!matchingManagedIds.has(entry.id)} className="border-t border-[var(--border)] pt-4">
                       <div className="flex items-start justify-between gap-4">
-                        <div>
+                        <div className="min-w-0">
                           <div className="text-sm font-medium tracking-[-0.02em] text-[var(--foreground)] md:text-[0.95rem]">{entry.member_name}</div>
-                          <div className="text-sm text-[var(--muted)] md:text-[0.95rem]">{entry.event_name}</div>
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-[var(--muted)] md:text-[0.95rem]">
+                            <span className="min-w-0 break-words">{entry.event_name}</span>
+                            {entry.event_result_status && <EventResultLabel status={entry.event_result_status} />}
+                          </div>
                           <div className="mt-2 text-sm text-[var(--muted)] md:text-[0.95rem]">
                             {formatEventDate(entry.start_time)} | {formatEventTime(entry.start_time, entry.end_time)} WIB
                           </div>
                         </div>
-                        <div className="text-right">
+                        <div className="shrink-0 text-right">
                           <div className="text-sm font-bold tracking-[-0.02em] text-[var(--foreground)]">
                             <span className="tabular-nums">x{entry.quantity}</span>
                           </div>

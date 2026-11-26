@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { buildTimelineCardState, buildTimelineFilterNote, countTimelineTeams, filterTimelineEvents, getRouletteSeriesOptions } from "../lib/timeline-view.ts";
+import { buildTimelineCardState, buildTimelineFilterNote, countTimelineTeams, filterTimelineEvents, getRouletteSeriesOptions, matchesEventMemberStatus } from "../lib/timeline-view.ts";
 
 test("timeline search and member filter compose with categories and either slot", () => {
   const events = [
@@ -23,6 +23,22 @@ test("album cards distinguish a single-slot show from a pending second slot", ()
   assert.equal(double.members.length, 2);
   assert.equal(double.members[1].waiting, true);
   assert.equal(double.members[0].avatarUrl, "portrait.webp");
+});
+
+test("timeline status matches assigned members and composes with other filters", () => {
+  const double = {
+    id: "double", event_type: "Roulette", event_name: "Pajama Drive", start_time: "2026-11-20T14:10:00Z", slot_mode: 2,
+    member_id_a: "c", member_a: { nickname: "Cynthia", status: "LOVE" },
+    member_id_b: "r", member_b: { full_name: "Raisha Syifa", status: "passion" },
+  };
+  const events = [double, { ...double, id: "single", slot_mode: 1 }, { ...double, id: "birthday", event_type: "Birthday" }];
+  assert.deepEqual(filterTimelineEvents(events, "Roulette", "Pajama Drive", "TRAINEE", "Raisha", "r", "PASSION").map(({ id }) => id), ["double"]);
+  assert.equal(filterTimelineEvents(events, "All", "All", "All", "", "c", "PASSION").length, 0);
+  assert.deepEqual(filterTimelineEvents(events, "Birthday", "All", "All", "", "All", "LOVE").map(({ id }) => id), ["birthday"]);
+  assert.equal(filterTimelineEvents(events, "Birthday", "All", "All", "", "All", "PASSION").length, 0);
+  const pending = { ...double, member_id_a: null, member_a: null };
+  assert.equal(matchesEventMemberStatus(pending, "PASSION"), true);
+  assert.equal(matchesEventMemberStatus({ ...pending, member_id_b: null, member_b: null }, "PASSION"), false);
 });
 
 test("buildTimelineFilterNote summarizes the active filters", () => {

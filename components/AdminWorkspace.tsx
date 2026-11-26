@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+import { EventResultLabel } from "@/components/EventResultLabel";
 import { EventTeamBadge } from "@/components/EventTeamBadge";
 import { MediaPlaceholder } from "@/components/MediaPlaceholder";
 import { PendingSubmitButton } from "@/components/PendingSubmitButton";
@@ -16,10 +17,12 @@ import {
   updateQueueAction,
 } from "@/lib/v2-actions.ts";
 import { formatEventDate, formatEventTime } from "@/lib/format.ts";
-import { GENERATION_OPTIONS, STATUS_OPTIONS, getEffectiveEventTeam, getFixedEventTeam, singleMemberEvent } from "@/lib/v2-helpers.ts";
+import { getRouletteSeriesOptions, matchesEventMemberStatus, matchesRouletteSeries } from "@/lib/timeline-view.ts";
+import { GENERATION_OPTIONS, STATUS_OPTIONS, getEffectiveEventTeam, getEventResultStatus, getEventSlotProgress, getFixedEventTeam, singleMemberEvent } from "@/lib/v2-helpers.ts";
 import type { ChekichaRow, EventPreset, MemberRecord } from "@/lib/types.ts";
 
 const MANUAL_EVENT_TEAM_OPTIONS = ["LOVE", "DREAM", "PASSION"] as const;
+const STANDARD_EVENT_TYPES = ["Roulette", "Birthday", "Graduation"];
 
 const ADMIN_TABS = [
   { key: "queue", label: "Fill Results" },
@@ -29,14 +32,6 @@ const ADMIN_TABS = [
 
 type AdminTabKey = (typeof ADMIN_TABS)[number]["key"];
 const JAKARTA_TIME_ZONE = "Asia/Jakarta";
-
-function hasPendingSlotA(row: Pick<ChekichaRow, "member_id_a">) {
-  return !String(row.member_id_a ?? "").trim();
-}
-
-function hasPendingSlotB(row: Pick<ChekichaRow, "member_id_b" | "slot_mode">) {
-  return Number(row.slot_mode || 1) === 2 && !String(row.member_id_b ?? "").trim();
-}
 
 function getJakartaParts(value?: string | null) {
   const dt = value ? new Date(value) : null;
@@ -86,6 +81,107 @@ function coerceManualEventTeam(value: string | null | undefined) {
 
 function memberOptionLabel(member: MemberRecord) {
   return `${member.nickname || "Unknown"} (${member.full_name || "No full name"})`;
+}
+
+function matchesAdminEventFilters(event: Pick<ChekichaRow, "event_type" | "event_name" | "event_series">, type: string, series: string) {
+  const eventType = event.event_type || "Roulette";
+  if (type !== "All" && eventType !== type) return false;
+  if (type !== "All" && type !== "Roulette") return true;
+  return series === "All" || (eventType === "Roulette" && matchesRouletteSeries(event, series));
+}
+
+function AdminFilterSelect({ id, label, allLabel, options, value, onChange }: {
+  id: string;
+  label: string;
+  allLabel: string;
+  options: readonly string[];
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div className="grid gap-1">
+      <label htmlFor={id} className="text-sm font-semibold text-[var(--muted-strong)]">{label}</label>
+      <select id={id} value={value} onChange={(event) => onChange(event.target.value)} className="app-input min-h-12 w-full min-w-0 px-3 text-base">
+        <option value="All">{allLabel}</option>
+        {options.map((option) => <option key={option}>{option}</option>)}
+      </select>
+    </div>
+  );
+}
+
+function AdminRecordList({ label, records, eventTypeOptions, rouletteSeriesOptions, memberStatusOptions, selectedId, createLabel, creating, onSelect, onCreate }: {
+  label: string;
+  records: { id: string; title: string; detail: string; event?: ChekichaRow; memberStatus?: string }[];
+  eventTypeOptions?: string[];
+  rouletteSeriesOptions?: string[];
+  memberStatusOptions?: readonly string[];
+  selectedId: string;
+  createLabel: string;
+  creating: boolean;
+  onSelect: (id: string) => void;
+  onCreate: () => void;
+}) {
+  const [query, setQuery] = useState("");
+  const [eventType, setEventType] = useState("All");
+  const [rouletteSeries, setRouletteSeries] = useState("All");
+  const [memberStatus, setMemberStatus] = useState("All");
+  const normalized = query.trim().toLowerCase();
+  const matches = records.filter(({ title, detail, event, memberStatus: recordStatus }) =>
+    `${title} ${detail}`.toLowerCase().includes(normalized) &&
+    (event
+      ? matchesAdminEventFilters(event, eventType, rouletteSeries) && matchesEventMemberStatus(event, memberStatus)
+      : memberStatus === "All" || recordStatus === memberStatus),
+  );
+
+  function resetFilters() {
+    setQuery("");
+    setEventType("All");
+    setRouletteSeries("All");
+    setMemberStatus("All");
+  }
+
+  return (
+    <aside className="admin-record-list" aria-label={label}>
+      <button type="button" className="archive-primary-action" onClick={onCreate} aria-pressed={creating}>{createLabel}</button>
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+        <input
+          type="search"
+          aria-label={`Search ${label.toLowerCase()}`}
+          placeholder={`Search ${label.toLowerCase()}`}
+          className="app-input min-h-12 w-full px-3 text-base"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+        <button type="button" className="archive-secondary-action" aria-label={`Reset ${label.toLowerCase()} search and filters`} onClick={resetFilters}>
+          Reset
+        </button>
+      </div>
+      {eventTypeOptions && (
+        <AdminFilterSelect id="admin-event-type-filter" label="Event type" allLabel="All event types" options={eventTypeOptions} value={eventType} onChange={setEventType} />
+      )}
+      {!!rouletteSeriesOptions?.length && (eventType === "All" || eventType === "Roulette") && (
+        <AdminFilterSelect id="admin-event-series-filter" label="Roulette series" allLabel="All roulette series" options={rouletteSeriesOptions} value={rouletteSeries} onChange={setRouletteSeries} />
+      )}
+      {memberStatusOptions && (
+        <AdminFilterSelect id="admin-member-status-filter" label="Member status" allLabel="All" options={memberStatusOptions} value={memberStatus} onChange={setMemberStatus} />
+      )}
+      {matches.length ? (
+        <ul className="admin-record-items">
+          {matches.map((record) => (
+            <li key={record.id}>
+              <button type="button" aria-pressed={!creating && selectedId === record.id} onClick={() => onSelect(record.id)}>
+                <strong className={record.event ? "flex flex-wrap items-center justify-between gap-x-2 gap-y-1" : undefined}>
+                  {record.title}
+                  {record.event && <EventResultLabel status={getEventResultStatus(record.event)} />}
+                </strong>
+                <span>{record.detail}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : <p className="archive-empty">{records.length ? `No ${label.toLowerCase()} match these filters.` : "No records yet."}</p>}
+    </aside>
+  );
 }
 
 const EARLIEST_START_TIME = "12:45";
@@ -200,6 +296,13 @@ export function AdminWorkspace({
   success: string;
 }) {
   const [activeTab, setActiveTab] = useState<AdminTabKey>("queue");
+  const [queueQuery, setQueueQuery] = useState("");
+  const [queueEventType, setQueueEventType] = useState("All");
+  const [queueSeries, setQueueSeries] = useState("All");
+  const [queueMemberStatus, setQueueMemberStatus] = useState("All");
+  const [editor, setEditor] = useState<"edit" | "create" | null>(null);
+  const editorHeading = useRef<HTMLHeadingElement>(null);
+  const listTrigger = useRef<HTMLElement | null>(null);
   const [createPresetId, setCreatePresetId] = useState(presets[0]?.id ?? "");
   const [createDate, setCreateDate] = useState(new Date().toISOString().slice(0, 10));
   const [createTimeValue, setCreateTimeValue] = useState(EARLIEST_START_TIME);
@@ -228,10 +331,37 @@ export function AdminWorkspace({
   const queueRows = useMemo(
     () =>
       events
-        .filter((event) => hasPendingSlotA(event) || hasPendingSlotB(event))
+        .filter((event) => getEventSlotProgress(event).waitingCount > 0)
         .toSorted((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime()),
     [events],
   );
+  const queueSeriesOptions = useMemo(() => getRouletteSeriesOptions(queueRows), [queueRows]);
+  const queueSearch = queueQuery.trim().toLocaleLowerCase();
+  const matchingQueueRows = new Set(queueRows.filter((event) =>
+    (!queueSearch || [event.event_name || "Untitled event", event.event_series].some((name) => name?.toLocaleLowerCase().includes(queueSearch))) &&
+    matchesAdminEventFilters(event, queueEventType, queueSeries) &&
+    matchesEventMemberStatus(event, queueMemberStatus),
+  ));
+  useEffect(() => {
+    if (editor && !window.matchMedia("(min-width: 48rem)").matches) {
+      editorHeading.current?.focus();
+    }
+  }, [editor]);
+
+  const eventRecords = useMemo(() => events.flatMap((event) => event.id ? [{
+    id: String(event.id),
+    title: event.event_name || "Untitled event",
+    detail: `${formatEventDate(event.start_time)} · ${formatEventTime(event.start_time, event.end_time)} WIB · ${getEffectiveEventTeam(event.event_name, event.event_type, event.event_team)}`,
+    event,
+  }] : []), [events]);
+  const eventTypeOptions = useMemo(() => [...new Set([...STANDARD_EVENT_TYPES, ...events.map((event) => event.event_type || "Roulette")])], [events]);
+  const rouletteSeriesOptions = useMemo(() => getRouletteSeriesOptions(events), [events]);
+  const memberRecords = useMemo(() => members.map((member) => ({
+    id: member.id,
+    title: member.nickname || "Unknown member",
+    detail: [member.full_name, member.status].filter(Boolean).join(" · "),
+    memberStatus: member.status?.toUpperCase(),
+  })), [members]);
   const createEventType = selectedCreatePreset?.event_type || "Roulette";
   const createSingleMember = singleMemberEvent(createEventType);
   const editSingleMember = singleMemberEvent(editEventType);
@@ -243,7 +373,11 @@ export function AdminWorkspace({
   const editManualTeam = coerceManualEventTeam(editEventTeam);
   const editSelectedTeam = editFixedTeam ?? editManualTeam;
   const createEventDateText = `${createDate || "No date"} | ${createTimeValue} WIB`;
-  const memberOptions = useMemo(() => members.map((m) => ({ label: memberOptionLabel(m), value: m.id })), [members]);
+  const memberOptions = useMemo(() => members.map((member) => ({
+    label: memberOptionLabel(member),
+    value: member.id,
+    status: member.status?.toUpperCase(),
+  })), [members]);
 
   function setEditEventType(nextValue: string) {
     setEditState({ eventId: selectedEventKey, eventType: nextValue, slotMode: editSlotMode });
@@ -251,6 +385,23 @@ export function AdminWorkspace({
 
   function setEditSlotMode(nextValue: string) {
     setEditState({ eventId: selectedEventKey, eventType: editEventType, slotMode: nextValue });
+  }
+
+  function openEditor(mode: "edit" | "create") {
+    listTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    setEditor(mode);
+  }
+
+  function backToRecords() {
+    setEditor(null);
+    requestAnimationFrame(() => listTrigger.current?.focus());
+  }
+
+  function resetQueueFilters() {
+    setQueueQuery("");
+    setQueueEventType("All");
+    setQueueSeries("All");
+    setQueueMemberStatus("All");
   }
 
   return (
@@ -263,7 +414,7 @@ export function AdminWorkspace({
           <button
             key={tab.key}
             type="button"
-            onClick={() => setActiveTab(tab.key)}
+            onClick={() => { setActiveTab(tab.key); setEditor(null); }}
             aria-pressed={activeTab === tab.key}
             className={`inline-flex min-h-11 min-w-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-2 text-xs font-semibold transition-colors sm:px-4 sm:text-sm ${
               activeTab === tab.key
@@ -284,49 +435,61 @@ export function AdminWorkspace({
               <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">Fill results</h1>
               <p className="mt-1 text-sm text-[var(--muted)]">Choose each winning member, then save.</p>
             </div>
-            <span className="shrink-0 text-sm font-semibold text-[var(--muted-strong)]">{queueRows.length} waiting</span>
+            <span role="status" className="shrink-0 text-sm font-semibold text-[var(--muted-strong)]">
+              {matchingQueueRows.size === queueRows.length ? `${queueRows.length} waiting` : `${matchingQueueRows.size} of ${queueRows.length} waiting`}
+            </span>
           </header>
 
           {queueRows.length ? (
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            <>
+            <search aria-label="Find pending events" className="grid max-w-md gap-2">
+              <label htmlFor="queue-event-search" className="text-sm font-semibold text-[var(--muted-strong)]">Search events</label>
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+                <input id="queue-event-search" type="search" placeholder="Event name or series" className="app-input min-h-12 w-full px-3 text-base" value={queueQuery} onChange={(event) => setQueueQuery(event.target.value)} />
+                <button type="button" className="archive-secondary-action" aria-label="Reset pending event search and filters" onClick={resetQueueFilters}>Reset</button>
+              </div>
+              <AdminFilterSelect id="queue-event-type-filter" label="Event type" allLabel="All event types" options={eventTypeOptions} value={queueEventType} onChange={setQueueEventType} />
+              {queueSeriesOptions.length > 0 && (queueEventType === "All" || queueEventType === "Roulette") && (
+                <AdminFilterSelect id="queue-event-series-filter" label="Roulette series" allLabel="All roulette series" options={queueSeriesOptions} value={queueSeries} onChange={setQueueSeries} />
+              )}
+              <AdminFilterSelect id="queue-event-member-status-filter" label="Member status" allLabel="All" options={STATUS_OPTIONS} value={queueMemberStatus} onChange={setQueueMemberStatus} />
+            </search>
+            {!matchingQueueRows.size && <p className="archive-empty">No pending events match these filters.{queueMemberStatus !== "All" && " Member status applies to saved slot results."}</p>}
+            <div className="admin-queue" hidden={!matchingQueueRows.size}>
               {queueRows.map((event, index) => {
-                const waitingB = hasPendingSlotB(event) && !singleMemberEvent(event.event_type);
+                const { waitingA, waitingB, waitingCount } = getEventSlotProgress(event);
 
                 return (
-                  <form key={String(event.id || `${event.event_name}-${event.start_time}`)} action={updateQueueAction} className="motion-card space-y-4 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5">
+                  <form key={String(event.id || `${event.event_name}-${event.start_time}`)} action={updateQueueAction} className="admin-queue-row" hidden={!matchingQueueRows.has(event)}>
                     <input type="hidden" name="event_id" value={event.id || ""} />
                     <input type="hidden" name="event_name" value={event.event_name || "Event"} />
                     <input type="hidden" name="slot_mode" value={event.slot_mode || 1} />
-                    <div className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,1fr)_6rem] md:items-start">
+                    <div className="min-w-0">
                       <div className="min-w-0">
-                        <div className="flex min-w-0 items-start justify-between gap-3">
-                          <h2 className="truncate text-xl font-semibold text-[var(--foreground)] sm:text-2xl" title={event.event_name || "Untitled event"}>{event.event_name || "Untitled event"}</h2>
-                          <span className="shrink-0 rounded-md bg-[var(--surface-hover)] px-2 py-1 text-xs font-semibold text-[var(--foreground-soft)]">{waitingB ? "2 slots" : "1 slot"}</span>
+                        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                          <h2 className="break-words font-semibold text-[var(--foreground)]">{event.event_name || "Untitled event"}</h2>
+                          <EventResultLabel status={getEventResultStatus(event)} />
                         </div>
-                        <div className="mt-2 flex min-w-0 flex-wrap items-center gap-2 text-sm text-[var(--muted)]"><EventTeamBadge team={event.event_team} eventType={event.event_type} /><span>{formatEventDate(event.start_time)} · {formatEventTime(event.start_time, event.end_time)} WIB</span></div>
-                      </div>
-                      <div className="hidden h-24 items-center justify-center overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--panel)] md:flex">
-                        {event.event_image_url ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img src={event.event_image_url} alt={event.event_name || "Event banner"} loading="lazy" decoding="async" className="h-full w-full object-contain" />
-                        ) : (
-                          <MediaPlaceholder />
-                        )}
+                        <div className="mt-1 flex min-w-0 flex-wrap items-center gap-2 text-sm text-[var(--muted)]"><EventTeamBadge team={event.event_team} eventType={event.event_type} /><span>{formatEventDate(event.start_time)} · {formatEventTime(event.start_time, event.end_time)} WIB</span></div>
+                        <p className="mt-1 text-sm text-[var(--accent)]">{waitingCount} {waitingCount === 1 ? "result" : "results"} needed</p>
                       </div>
                     </div>
 
                     <div className="grid gap-3">
+                      {waitingA ? (
                       <div className="space-y-2">
-                        <label htmlFor={`queue-member-a-${index}`} className="block text-sm font-semibold text-[var(--muted-strong)]">Slot A member</label>
+                        <label htmlFor={`queue-member-a-${index}`} className="block text-sm font-semibold text-[var(--muted-strong)]">{singleMemberEvent(event.event_type) ? "Member" : "Slot A member"}</label>
                         <SearchableSelect
                           id={`queue-member-a-${index}`}
-                          ariaLabel="Slot A member"
+                          ariaLabel={singleMemberEvent(event.event_type) ? "Member" : "Slot A member"}
                           name="member_id_a"
                           defaultValue={event.member_id_a || ""}
                           options={memberOptions}
+                          statusOptions={STATUS_OPTIONS}
                           placeholder="Choose member"
                         />
                       </div>
+                      ) : <input type="hidden" name="member_id_a" value={event.member_id_a || ""} />}
                       {waitingB ? (
                         <div className="space-y-2">
                           <label htmlFor={`queue-member-b-${index}`} className="block text-sm font-semibold text-[var(--muted-strong)]">Slot B member</label>
@@ -336,6 +499,7 @@ export function AdminWorkspace({
                             name="member_id_b"
                             defaultValue={event.member_id_b || ""}
                             options={memberOptions}
+                            statusOptions={STATUS_OPTIONS}
                             placeholder="Choose member"
                           />
                         </div>
@@ -348,7 +512,8 @@ export function AdminWorkspace({
                   </form>
                 );
               })}
-            </section>
+            </div>
+            </>
           ) : (
             <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-12 text-center text-sm text-[var(--muted)]">
               <svg aria-hidden="true" className="size-10 text-[var(--muted-strong)]" fill="none" viewBox="0 0 24 24"><path d="M12 6v6l4 2" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5"/><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/></svg>
@@ -365,9 +530,19 @@ export function AdminWorkspace({
             <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">Events</h1>
           </header>
 
-          <div className="grid gap-6 xl:grid-cols-2">
-            <details name="event-admin-action" open className="app-disclosure motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
-              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Create event</summary>
+          <div className="admin-record-layout" data-editor-open={editor !== null}>
+            <AdminRecordList label="Events" records={eventRecords} eventTypeOptions={eventTypeOptions} rouletteSeriesOptions={rouletteSeriesOptions} memberStatusOptions={STATUS_OPTIONS} selectedId={selectedEventKey} createLabel="Create event" creating={editor === "create"} onCreate={() => openEditor("create")} onSelect={(id) => {
+              const nextEvent = events.find((item) => String(item.id) === id);
+              setSelectedEventId(id);
+              setEditEventName(nextEvent?.event_name || "");
+              setEditEventTeam(coerceManualEventTeam(nextEvent?.event_team));
+              setEditState(null);
+              openEditor("edit");
+            }} />
+            <section className="admin-editor">
+              <button type="button" className="admin-editor-back archive-secondary-action" onClick={backToRecords}>Back to events</button>
+              {editor === "create" ? <>
+              <h2 ref={editorHeading} tabIndex={-1}>Create event</h2>
               <form action={createEventAction} className="space-y-4">
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-[var(--muted)]">Event date</label>
@@ -441,6 +616,7 @@ export function AdminWorkspace({
                     ariaLabel="Member for slot A"
                     name="member_id_a"
                     options={memberOptions}
+                    statusOptions={STATUS_OPTIONS}
                     value={createMemberA}
                     onChange={setCreateMemberA}
                     placeholder="None (Waiting for roulette)"
@@ -454,6 +630,7 @@ export function AdminWorkspace({
                       ariaLabel="Member for slot B"
                       name="member_id_b"
                       options={memberOptions}
+                      statusOptions={STATUS_OPTIONS}
                       value={createMemberB}
                       onChange={setCreateMemberB}
                       placeholder="None (Waiting for roulette)"
@@ -472,27 +649,11 @@ export function AdminWorkspace({
                 />
                 <PendingSubmitButton pendingLabel="Creating event…" className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create event</PendingSubmitButton>
               </form>
-            </details>
-
-            <details name="event-admin-action" className="app-disclosure motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
-              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Edit event</summary>
+              </> : <>
+              <h2 ref={editorHeading} tabIndex={-1}>Edit event</h2>
               {selectedEvent ? (
                 <>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-semibold text-[var(--muted)]">Event to edit</label>
-                    <p className="text-sm text-[var(--muted)]">Use the date and time to distinguish events with the same name.</p>
-                    <select aria-label="Event to edit" value={selectedEventKey} onChange={(event) => {
-                      const nextEvent = events.find((item) => String(item.id || "") === event.target.value) ?? null;
-                      setSelectedEventId(event.target.value);
-                      setEditEventName(nextEvent?.event_name || "");
-                      setEditEventTeam(coerceManualEventTeam(nextEvent?.event_team));
-                      setEditState(null);
-                    }} className="app-input min-h-12 w-full px-4 py-3 text-lg">
-                      {events.map((event) => (
-                        <option key={String(event.id || event.start_time)} value={String(event.id || "")}>{eventOptionLabel(event)}</option>
-                      ))}
-                    </select>
-                  </div>
+                  <p className="text-sm text-[var(--muted)]">{eventOptionLabel(selectedEvent)}</p>
                   <div key={String(selectedEvent.id || "no-event")} className="space-y-4">
                     <form action={updateEventAction} className="space-y-4">
                       <input type="hidden" name="event_id" value={selectedEvent.id || ""} />
@@ -562,6 +723,7 @@ export function AdminWorkspace({
                           name="member_id_a"
                           defaultValue={selectedEvent.member_id_a || ""}
                           options={memberOptions}
+                          statusOptions={STATUS_OPTIONS}
                           placeholder="None (Waiting for roulette)"
                         />
                       </div>
@@ -574,6 +736,7 @@ export function AdminWorkspace({
                             name="member_id_b"
                             defaultValue={selectedEvent.member_id_b || ""}
                             options={memberOptions}
+                            statusOptions={STATUS_OPTIONS}
                             placeholder="None (Waiting for roulette)"
                           />
                         </div>
@@ -604,7 +767,8 @@ export function AdminWorkspace({
               ) : (
                 <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] p-6 text-sm text-[var(--muted)]">No events are available to edit. Create an event to get started.</div>
               )}
-            </details>
+              </>}
+            </section>
           </div>
         </section>
       ) : null}
@@ -615,9 +779,12 @@ export function AdminWorkspace({
             <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">Members</h1>
           </header>
 
-          <div className="grid gap-6 xl:grid-cols-2">
-            <details name="member-admin-action" open className="app-disclosure motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
-              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Add member</summary>
+          <div className="admin-record-layout" data-editor-open={editor !== null}>
+            <AdminRecordList label="Members" records={memberRecords} memberStatusOptions={STATUS_OPTIONS} selectedId={selectedMember?.id ?? ""} createLabel="Add member" creating={editor === "create"} onCreate={() => openEditor("create")} onSelect={(id) => { setSelectedMemberId(id); openEditor("edit"); }} />
+            <section className="admin-editor">
+              <button type="button" className="admin-editor-back archive-secondary-action" onClick={backToRecords}>Back to members</button>
+              {editor === "create" ? <>
+              <h2 ref={editorHeading} tabIndex={-1}>Add member</h2>
               <form action={createMemberAction} className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-2">
@@ -662,25 +829,10 @@ export function AdminWorkspace({
                 />
                 <PendingSubmitButton pendingLabel="Creating member…" className="min-h-11 w-full whitespace-nowrap rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-semibold text-[var(--accent-foreground)] hover:bg-[var(--accent-strong)]">Create member</PendingSubmitButton>
               </form>
-            </details>
-
-            <details name="member-admin-action" className="app-disclosure motion-card space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
-              <summary className="cursor-pointer text-xl font-bold text-[var(--foreground)]">Edit member</summary>
+              </> : <>
+              <h2 ref={editorHeading} tabIndex={-1}>Edit member</h2>
               {selectedMember ? (
                 <>
-                    <div className="space-y-2">
-                      <label className="block text-sm font-semibold text-[var(--muted)]">Member record</label>
-                      <select
-                        aria-label="Member record"
-                        value={selectedMember.id}
-                        onChange={(event) => setSelectedMemberId(event.target.value)}
-                        className="app-input min-h-12 w-full px-4 py-3 text-lg"
-                      >
-                        {members.map((member) => (
-                          <option key={member.id} value={member.id}>{memberOptionLabel(member)}</option>
-                        ))}
-                      </select>
-                    </div>
                   <div key={selectedMember.id} className="space-y-4">
                     <p className="text-sm text-[var(--muted)]">Deleting a member is permanent.</p>
                     <form action={updateMemberAction} className="space-y-4">
@@ -743,10 +895,11 @@ export function AdminWorkspace({
                 <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-6 py-12 text-center text-sm text-[var(--muted)]">
                   <svg aria-hidden="true" className="size-10 text-[var(--muted-strong)]" fill="none" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5"/><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5"/></svg>
                   <span className="font-semibold text-[var(--foreground)]">No members yet</span>
-                  <span>Create the first member record above, then edit it here.</span>
+                  <span>Use Add member to create the first record.</span>
                 </div>
               )}
-            </details>
+              </>}
+            </section>
           </div>
         </section>
       ) : null}

@@ -1,3 +1,5 @@
+import type { getEventResultStatus } from "./v2-helpers.ts";
+
 export interface MemberRelation {
   avatar_url?: string | null;
   full_name?: string | null;
@@ -45,6 +47,7 @@ export interface OverviewLeaderboardEntry {
   member_id: string;
   nickname: string;
   rank: number;
+  roulette_series: string[];
 }
 
 export interface OverviewSnapshot {
@@ -106,6 +109,8 @@ export interface CollectionEntry {
   event_id: string;
   event_image_url?: string | null;
   event_name: string;
+  event_result_status?: ReturnType<typeof getEventResultStatus>;
+  event_series?: string | null;
   event_team?: string | null;
   event_type: string;
   id: string;

@@ -1,6 +1,7 @@
 import type { ChekichaRow, MemberRelation } from "./types.ts";
 import { formatEventTime, parseDate } from "./format.ts";
 import type { CollectionEntry } from "./types.ts";
+import { getEventResultStatus } from "./v2-helpers.ts";
 
 export interface CollectibleSlot {
   display_label: string;
@@ -8,6 +9,8 @@ export interface CollectibleSlot {
   event_id: string;
   event_image_url?: string | null;
   event_name: string;
+  event_result_status: ReturnType<typeof getEventResultStatus>;
+  event_series?: string | null;
   event_team?: string | null;
   event_type: string;
   member_avatar_url?: string | null;
@@ -38,6 +41,7 @@ export function buildCollectibleSlots(rows: ChekichaRow[]): CollectibleSlot[] {
     const memberA = relationToSingleMember(row.member_a);
     const memberB = relationToSingleMember(row.member_b);
     const eventName = row.event_name || "Untitled event";
+    const resultStatus = getEventResultStatus(row);
     const eventType = row.event_type || "Roulette";
     const eventTeam = row.event_team || "ALL";
     const dayTime = dt ? `${dt.getUTCDate()} ${dt.toLocaleString("en-US", { month: "short", timeZone: "UTC" })} ${dt.getUTCFullYear()} | ${formatEventTime(row.start_time, row.end_time)}` : "Unknown date";
@@ -50,6 +54,8 @@ export function buildCollectibleSlots(rows: ChekichaRow[]): CollectibleSlot[] {
         slot_key: "A",
         slot_label: slotLabel,
         event_name: eventName,
+        event_result_status: resultStatus,
+        event_series: row.event_series,
         event_team: eventTeam,
         event_type: eventType,
         start_time: row.start_time,
@@ -72,6 +78,8 @@ export function buildCollectibleSlots(rows: ChekichaRow[]): CollectibleSlot[] {
         slot_key: "B",
         slot_label: "Slot B",
         event_name: eventName,
+        event_result_status: resultStatus,
+        event_series: row.event_series,
         event_team: eventTeam,
         event_type: eventType,
         start_time: row.start_time,
@@ -118,7 +126,7 @@ export function addCollectionQuantityToEntries(
 export function hydrateCollectionEntries(
   rows: Array<Pick<CollectionEntry, "created_at" | "event_id" | "id" | "member_id" | "quantity" | "slot_key" | "updated_at" | "user_id">>,
   slots: CollectibleSlot[],
-  fallbackEvents: Array<Pick<CollectionEntry, "end_time" | "event_id" | "event_image_url" | "event_name" | "event_team" | "event_type" | "start_time">>,
+  fallbackEvents: Array<Pick<CollectionEntry, "end_time" | "event_id" | "event_image_url" | "event_name" | "event_result_status" | "event_series" | "event_team" | "event_type" | "start_time">>,
   fallbackMembers: Array<Pick<CollectionEntry, "member_avatar_url" | "member_full_name" | "member_generasi" | "member_id" | "member_name" | "member_status">>,
 ): CollectionEntry[] {
   const slotsByKey = new Map(slots.map((slot) => [`${slot.event_id}:${slot.slot_key}`, slot]));
@@ -135,6 +143,8 @@ export function hydrateCollectionEntries(
       ...row,
       slot_key: slotKey,
       event_name: slot?.event_name || event?.event_name || "Archived event",
+      event_result_status: slot?.event_result_status ?? event?.event_result_status,
+      event_series: slot?.event_series ?? event?.event_series,
       event_team: slot?.event_team || event?.event_team || "ALL",
       event_type: slot?.event_type || event?.event_type || "Roulette",
       start_time: slot?.start_time || event?.start_time,

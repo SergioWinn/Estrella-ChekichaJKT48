@@ -478,7 +478,7 @@ export function MembersClient({ members, leaderboard, rouletteSeriesOptions, ini
 
                     return (
                       <article key={row.id} className="directory-history-row">
-                        <div className="archive-card-photo">
+                        <div className={slotLabel ? "archive-card-photo directory-show-art" : "archive-card-photo"}>
                           {row.event_image_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={row.event_image_url} alt="" loading="lazy" decoding="async" />

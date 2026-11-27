@@ -284,7 +284,7 @@ button.archive-member-row:hover { background: var(--surface-hover); }
 }
 .archive-drawer-content { position: relative; padding: 1rem; }
 .directory-history-row { display: grid; grid-template-columns: 3.5rem minmax(0, 1fr); align-items: start; gap: 0.75rem; padding-block: 0.65rem; border-block-start: 1px solid var(--border); }
-.directory-show-art img { object-position: center; }
+.directory-history-row > .archive-card-photo img { object-position: center; }
 .collection-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; }
 .collection-toolbar .archive-summary { gap: 0.2rem 0.75rem; }
 .archive-primary-action, .archive-secondary-action { display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem; padding: 0.45rem 0.8rem; border-radius: 8px; font-size: 0.875rem; font-weight: 650; }
